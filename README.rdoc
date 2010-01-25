@@ -8,7 +8,7 @@ Watch a list of files and directoriess:
 
   require 'filewatcher'
 
-  FileWatcher.new(["./lib/", "Rakefile", "test"]).watch do |filename|
+  FileWatcher.new(["lib/", "Rakefile"]).watch do |filename|
     puts "Updated " + filename
   end
 
