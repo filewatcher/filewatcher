@@ -26,6 +26,11 @@ To check for changes more often than once every second second:
     puts "Updated " + filename
   end
 
+= Install
+
+  sudo gem install filewatcher
+
+
 = Credits
 
 Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
