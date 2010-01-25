@@ -1,6 +1,6 @@
 = Filewatcher
 
-Simple file watcher. Detect detect changes in files.
+Simple file watcher. Detects changes in files.
 
 Examples:
 
