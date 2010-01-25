@@ -31,6 +31,7 @@ To check for changes more often than once every second second:
 = Credits
 
 Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
+
 Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
 
 == Note on Patches/Pull Requests
