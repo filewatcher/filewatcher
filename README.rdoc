@@ -1,0 +1,44 @@
+= Filewatcher
+
+Simple file watcher. Detect detect changes in files.
+
+Examples:
+
+  require 'filewatcher'
+
+  FileWatcher.new(["file1.txt", "file2.txt"]).watch do |filename|
+    puts "Updated " + filename
+  end
+
+Watch directories and files:
+
+  FileWatcher.new(["./lib/", "Rakefile", "test"]).watch do |filename|
+    puts "Updated " + filename
+  end
+
+Print a list of watched files to stdout out before watching files:
+
+  FileWatcher.new(["./lib/"],"Watching files.").watch do |filename|
+    puts "Updated " + filename
+  end
+
+To check for changes more often than once every second second:
+
+  FileWatcher.new(["./lib/"],"Watching files.").watch(0.5) do |filename|
+    puts "Updated " + filename
+  end
+
+== Note on Patches/Pull Requests
+
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so I don't break it in a
+  future version unintentionally.
+* Commit, do not mess with rakefile, version, or history.
+  (if you want to have your own version, that is fine but
+   bump version in a commit by itself I can ignore when I pull)
+* Send me a pull request. Bonus points for topic branches.
+
+== Copyright
+
+Copyright (c) 2010 Thomas Flemming. See LICENSE for details.
