@@ -4,7 +4,7 @@ Simple file watcher. Detects changes in files.
 
 Examples:
 
-Watch a list of files and directoriess:
+Watch a list of files and directories:
 
   require 'filewatcher'
 
@@ -14,7 +14,7 @@ Watch a list of files and directoriess:
 
 Print names of files beeing watched before we begin:
 
-  FileWatcher.new(["./lib/"],"Watching files:").watch do |filename|
+  FileWatcher.new(["lib/"],"Watching files:").watch do |filename|
     puts "Updated " + filename
   end
   => Watching files:
