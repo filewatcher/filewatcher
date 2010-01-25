@@ -20,7 +20,7 @@ Print names of files beeing watched before we begin:
   => Watching files:
   lib/filewatcher.rb
 
-To check for changes more often than once every second second:
+To check for changes more often than once every second:
 
   FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
     puts "Updated " + filename
