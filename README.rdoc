@@ -17,7 +17,7 @@ Print names of files beeing watched before we begin:
   FileWatcher.new(["./lib/"],"Watching files:").watch do |filename|
     puts "Updated " + filename
   end
-  => Watcing files:
+  => Watching files:
   lib/filewatcher.rb
 
 To check for changes more often than once every second second:
