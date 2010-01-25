@@ -6,6 +6,8 @@ Examples:
 
 Watch a list of files and directoriess:
 
+  require 'filewatcher'
+
   FileWatcher.new(["./lib/", "Rakefile", "test"]).watch do |filename|
     puts "Updated " + filename
   end
