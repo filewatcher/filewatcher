@@ -12,19 +12,17 @@ Watch a list of files and directoriess:
     puts "Updated " + filename
   end
 
-Print a list of watched files to stdout out before watching files:
+Print names of files beeing watched before we begin:
 
   FileWatcher.new(["./lib/"],"Watching files:").watch do |filename|
     puts "Updated " + filename
   end
-
-  =>
-  Watcing files:
+  => Watcing files:
   lib/filewatcher.rb
 
 To check for changes more often than once every second second:
 
-  FileWatcher.new(["./lib/"],"Watching files.").watch(0.5) do |filename|
+  FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
     puts "Updated " + filename
   end
 
