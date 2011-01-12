@@ -1,3 +1,6 @@
+# Simple file watcher. Detect changes in files and directories.
+#
+# Issues: Currently doesn't monitor changes in directorynames
 class FileWatcher
 
   def initialize(filenames,print_filelist=false)
