@@ -4,7 +4,6 @@ Simple file watcher. Monitors changes in files by polling files.
 
 = Command line utility
 
-
 Filewatcher scans filesystem and execute shell commands when files changes.
 
 Usage:
@@ -27,7 +26,7 @@ Options:
 
   sudo gem install filewatcher
 
-= API
+= Ruby API
 
 Examples:
 
@@ -73,4 +72,4 @@ Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
 
 == Copyright
 
-Copyright (c) 2010 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2011 Thomas Flemming. See LICENSE for details.
