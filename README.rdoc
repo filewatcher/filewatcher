@@ -1,6 +1,33 @@
 = Filewatcher
 
-Simple file watcher. Detects changes in files.
+Simple file watcher. Monitors changes in files by polling files.
+
+= Command line utility
+
+
+Filewatcher scans filesystem and execute shell commands when files changes.
+
+Usage:
+   filewatcher [-i interval] "<filename>" "<shell command>"
+Where
+   filename: filename(s) to scan.
+   shell command: shell command to execute when file changes on disk.
+
+Examples:
+   filewatcher "myfile" "echo 'myfile has changed'"
+   filewathcer -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+
+Options:
+  --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds.
+       --version, -v:   Print version and exit
+          --help, -h:   Show this message
+
+
+= Install
+
+  sudo gem install filewatcher
+
+= API
 
 Examples:
 
@@ -12,7 +39,7 @@ Watch a list of files and directories:
     puts "Updated " + filename
   end
 
-Print names of files beeing watched before we begin:
+Print the names of files beeing watched before we begin:
 
   FileWatcher.new(["lib/"],"Watching files:").watch do |filename|
     puts "Updated " + filename
@@ -25,10 +52,6 @@ To check for changes more often than once every second:
   FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
     puts "Updated " + filename
   end
-
-= Install
-
-  sudo gem install filewatcher
 
 
 = Credits

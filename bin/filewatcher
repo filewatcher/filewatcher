@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'filewatcher'
+require 'trollop'
+
+options = Trollop::options do
+  version "filewatcher, version 0.1.1 by Thomas Flemming 2011"
+  banner <<-EOS
+Filewatcher scans filesystem and execute shell commands when files changes.
+
+Usage:
+   filewatcher [-i interval] "<filename>" "<shell command>"
+Where
+   filename: filename(s) to scan.
+   shell command: shell command to execute when file changes on disk.
+
+Examples:
+   filewatcher "myfile" "echo 'myfile has changed'"
+   filewathcer -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+
+Options:
+EOS
+  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float
+end
+
+Trollop::die "must have one or two arguments" if(ARGV.size == 0 or ARGV.size > 2)
+
+interval = 0.5
+if(options[:interval] > 0.0)then
+  interval = options[:interval]
+end
+
+files = []
+ARGV[0].split(/\s+/).each do |arg|
+  Dir.glob(arg).each do |file|
+    files << file
+  end
+end
+
+FileWatcher.new(files).watch(interval) do |filename|
+  if(ARGV[1])then
+    system(ARGV[1])
+  else
+    puts "file updated: " + filename
+  end
+end
