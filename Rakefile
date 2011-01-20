@@ -12,6 +12,7 @@ begin
     gem.executables = ["filewatcher"]
     gem.authors = ["Thomas Flemming"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.add_dependency "trollop", ">= 1.16.2"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError

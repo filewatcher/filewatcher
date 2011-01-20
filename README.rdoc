@@ -26,6 +26,8 @@ Options:
 
   sudo gem install filewatcher
 
+You need ruby and rubygems installed.
+
 = Ruby API
 
 Examples:
