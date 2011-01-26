@@ -4,7 +4,7 @@ require 'filewatcher'
 require 'trollop'
 
 options = Trollop::options do
-  version "filewatcher, version 0.1.2 by Thomas Flemming 2011"
+  version "filewatcher, version 0.1.4 by Thomas Flemming 2011"
   banner <<-EOS
 Filewatcher scans filesystem and execute shell commands when files changes.
 
@@ -20,15 +20,11 @@ Examples:
 
 Options:
 EOS
-  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float
+
+  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
 end
 
 Trollop::die "must have one or two arguments" if(ARGV.size == 0 or ARGV.size > 2)
-
-interval = 0.5
-if(options[:interval] > 0.0)then
-  interval = options[:interval]
-end
 
 files = []
 ARGV[0].split(/\s+/).each do |arg|
@@ -37,7 +33,7 @@ ARGV[0].split(/\s+/).each do |arg|
   end
 end
 
-FileWatcher.new(files).watch(interval) do |filename|
+FileWatcher.new(files).watch(options[:interval]) do |filename|
   if(ARGV[1])then
     system(ARGV[1])
   else
