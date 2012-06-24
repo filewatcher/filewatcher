@@ -12,12 +12,23 @@ Where
    filename: filename(s) to scan.
    shell command: shell command to execute when file changes on disk.
 
-Examples:
-   filewatcher "myfile" "echo 'myfile has changed'"
-   filewathcer -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+= Examples:
+
+Run the echo command when the file myfile is changed:
+
+   $ filewatcher "myfile" "echo 'myfile has changed'"
+
+Run the ruby script when it is changed (works with ruby, perl, python and awk):
+
+   $ filewatcher -r ruby-script.rb
+
+At 2 seconds intervall check all files matching *.rb and ../src/*.rb, and run "ruby run_tests.rb".
+
+   $ filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
 
 Options:
   --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds.
+           --run, -r:   Run file as a program when file is updated.
        --version, -v:   Print version and exit
           --help, -h:   Show this message
 
