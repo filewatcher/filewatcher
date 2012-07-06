@@ -1,6 +1,6 @@
 = Filewatcher
 
-Simple file watcher. Monitors changes in files by polling files.
+Simple file watcher. Monitors changes in files by polling.
 
 = Command line utility
 
