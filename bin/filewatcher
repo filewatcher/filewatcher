@@ -25,14 +25,14 @@ EOS
   opt :run, "Run file as a program when file is updated.", :short => 'r', :type => :boolean, :default => false
 end
 
-Trollop::die "must have one or two arguments" if(ARGV.size == 0 or ARGV.size > 2)
+Trollop::die "must have at least one argument" if(ARGV.size == 0)
 
 files = []
-ARGV[0].split(/\s+/).each do |arg|
-  Dir.glob(arg).each do |file|
-    files << file
-  end
+ARGV[0...-1].each do |a|
+  files << a
 end
+
+puts "watching:", files.inspect 
 
 runners = {".py" => "python", ".rb" => "ruby", ".pl" => "perl", ".awk" => "awk"}
 
@@ -41,8 +41,8 @@ FileWatcher.new(files).watch(options[:interval]) do |filename|
     extension = filename[/(\.[^\.]*)/,0]
     runner = runners[extension].to_s
     system(runner + " " + filename)
-  elsif(ARGV[1])then
-    system(ARGV[1])
+  elsif(ARGV[-1])then
+    system(ARGV[-1])
   else
     puts "file updated: " + filename
   end
