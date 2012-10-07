@@ -23,6 +23,7 @@ EOS
 
   opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
   opt :run, "Run file as a program when file is updated.", :short => 'r', :type => :boolean, :default => false
+  opt :list, "Print name of files being watched"
 end
 
 Trollop::die "must have at least one argument" if(ARGV.size == 0)
@@ -32,7 +33,9 @@ ARGV[0...-1].each do |a|
   files << a
 end
 
-puts "watching:", files.inspect 
+if(options[:list])
+  puts "watching:", files.inspect
+end
 
 runners = {".py" => "python", ".rb" => "ruby", ".pl" => "perl", ".awk" => "awk"}
 
