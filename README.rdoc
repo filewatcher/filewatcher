@@ -27,11 +27,14 @@ At 2 seconds intervall check all files matching *.rb and ../src/*.rb, and run "r
    $ filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
 
 Options:
-  --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds.
-           --run, -r:   Run file as a program when file is updated.
+  --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds. (Default: 0.5)
+          --exec, -e:   Execute file as a script when file is updated.
+   --recurse, -r <s>:   Recurse into the directory, watching everything matching 'expression'
+   --include, -n <s>:   Include files (default: *)
+   --exclude, -x <s>:   Exclude file(s) matching (default: "")
+          --list, -l:   Print name of files being watched
        --version, -v:   Print version and exit
           --help, -h:   Show this message
-
 
 = Install
 
