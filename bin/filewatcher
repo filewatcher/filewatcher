@@ -22,7 +22,10 @@ Options:
 EOS
 
   opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
-  opt :run, "Run file as a program when file is updated.", :short => 'r', :type => :boolean, :default => false
+  opt :run, "Execute file as a program when file is updated.", :short => 'e', :type => :boolean, :default => false
+  opt :recurse, "Recurse into the directory, watching everything matching 'expression'", :short => 'r', :type => :string
+  opt :include, "Include files", :type => :string, :default => "*"
+  opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
   opt :list, "Print name of files being watched"
 end
 
@@ -31,6 +34,13 @@ Trollop::die "must have at least one argument" if(ARGV.size == 0)
 files = []
 ARGV[0...-1].each do |a|
   files << a
+end
+
+if(options[:recurse])
+  base = File.join(options[:recurse], "**")
+  inc = Dir.glob(File.join(base, options[:include]))
+  exc = Dir.glob(File.join(base, options[:exclude]))
+  files = inc - exc
 end
 
 if(options[:list])
