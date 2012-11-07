@@ -22,7 +22,7 @@ Options:
 EOS
 
   opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
-  opt :exec, "Execute file as a program when file is updated.", :short => 'e', :type => :boolean, :default => false
+  opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
   opt :recurse, "Recurse into the directory, watching everything matching 'expression'", :short => 'r', :type => :string
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
