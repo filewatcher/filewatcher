@@ -16,7 +16,7 @@ Where
 
 Examples:
    filewatcher "myfile" "echo 'myfile has changed'"
-   filewathcer -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+   filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
 
 Options:
 EOS
