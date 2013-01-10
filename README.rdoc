@@ -18,13 +18,30 @@ Run the echo command when the file myfile is changed:
 
    $ filewatcher "myfile" "echo 'myfile has changed'"
 
-Run the ruby script when it is changed (works with ruby, perl, python and awk):
+Run the ruby script when it is changed:
 
-   $ filewatcher -r ruby-script.rb
+   $ filewatcher -e ruby-script.rb
+
+Works with ruby, perl, python and awk by detecting file extensions.
 
 At 2 seconds intervall check all files matching *.rb and ../src/*.rb, and run "ruby run_tests.rb".
 
    $ filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+
+= Globbing
+
+Print a list of all files matching *.css at start and the:
+
+   $ filewatcher -l *.css
+
+= Available enviroment variables
+
+The environment variable $FILENAME is available in the command. On unix like systems the command
+has to be enclosed in single quotes. To run node whenever a javascript file is update:
+
+   $ filewatcher *.js 'node $FILENAME'
+
+The environment variables $FILEPATH and $FILEDIR is also available.
 
 Options:
   --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds. (Default: 0.5)
@@ -68,12 +85,17 @@ To check for changes more often than once every second:
     puts "Updated " + filename
   end
 
+= TODO
+
+The Ruby API is fairly well tested but the command line program is buggy at the time beeing.
 
 = Credits
 
 Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 
 Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
+
+Globbing by Kristoffer Roupé https://github.com/kitofr
 
 == Note on Patches/Pull Requests
 
@@ -88,4 +110,4 @@ Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
 
 == Copyright
 
-Copyright (c) 2011 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2011 - 2013 Thomas Flemming. See LICENSE for details.

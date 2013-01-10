@@ -2,9 +2,10 @@
 require 'rubygems'
 require 'filewatcher'
 require 'trollop'
+require 'pathname'
 
 options = Trollop::options do
-  version "filewatcher, version 0.1.4 by Thomas Flemming 2011"
+  version "filewatcher, version 0.1.8 by Thomas Flemming 2011"
   banner <<-EOS
 Filewatcher scans filesystem and execute shell commands when files changes.
 
@@ -16,7 +17,7 @@ Where
 
 Examples:
    filewatcher "myfile" "echo 'myfile has changed'"
-   filewathcer -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
+   filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
 
 Options:
 EOS
@@ -36,6 +37,10 @@ ARGV[0...-1].each do |a|
   files << a
 end
 
+if(ARGV.length == 1)
+  files << ARGV[0]
+end
+
 if(options[:recurse])
   base = File.join(options[:recurse], "**")
   inc = Dir.glob(File.join(base, options[:include]))
@@ -50,11 +55,15 @@ end
 runners = {".py" => "python", ".rb" => "ruby", ".pl" => "perl", ".awk" => "awk"}
 
 FileWatcher.new(files).watch(options[:interval]) do |filename|
-  if(options[:run])
+  if(options[:exec])
     extension = filename[/(\.[^\.]*)/,0]
     runner = runners[extension].to_s
     system(runner + " " + filename)
   elsif(ARGV[-1])then
+    path = Pathname.new(filename)
+    ENV['FILENAME'] = path.to_s
+    ENV['FILEPATH'] = path.realpath.to_s
+    ENV['FILEDIR'] = path.parent.realpath.to_s
     system(ARGV[-1])
   else
     puts "file updated: " + filename

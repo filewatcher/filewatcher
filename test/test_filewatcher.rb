@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '.'))
 require 'helper'
 
 class TestFilewatcher < Test::Unit::TestCase
@@ -13,7 +14,6 @@ class TestFilewatcher < Test::Unit::TestCase
     end
 
   end
-
 
 #   should "should detect changes in files" do
 
@@ -36,4 +36,3 @@ class TestFilewatcher < Test::Unit::TestCase
 #   end
 
 end
-
