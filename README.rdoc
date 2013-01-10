@@ -24,15 +24,9 @@ Run the ruby script when it is changed:
 
 Works with ruby, perl, python and awk by detecting file extensions.
 
-At 2 seconds intervall check all files matching *.rb and ../src/*.rb, and run "ruby run_tests.rb".
+Print a list of all files matching *.css first and the print filename when a file is beeing updated:
 
-   $ filewatcher -i 2 "*.rb ../src/*.rb" "ruby run_tests.rb"
-
-= Globbing
-
-Print a list of all files matching *.css at start and the:
-
-   $ filewatcher -l *.css
+   $ filewatcher -l *.css 'echo file: $FILENAME'
 
 = Available enviroment variables
 
@@ -43,8 +37,9 @@ has to be enclosed in single quotes. To run node whenever a javascript file is u
 
 The environment variables $FILEPATH and $FILEDIR is also available.
 
-Options:
-  --interval, -i <f>:   Interval to scan filesystem. Defaults to 0.5 seconds. (Default: 0.5)
+= Commnd line options
+
+  --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
           --exec, -e:   Execute file as a script when file is updated.
    --recurse, -r <s>:   Recurse into the directory, watching everything matching 'expression'
    --include, -n <s>:   Include files (default: *)
