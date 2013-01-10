@@ -50,7 +50,6 @@ end
 
 if(options[:list])
   puts "watching:", files.inspect
-  puts "DEUBG: " + ARGV[-1]
 end
 
 runners = {".py" => "python", ".rb" => "ruby", ".pl" => "perl", ".awk" => "awk"}
