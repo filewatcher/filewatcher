@@ -18,6 +18,13 @@ Run the echo command when the file myfile is changed:
 
    $ filewatcher "myfile" "echo 'myfile has changed'"
 
+Run any javascript in current folder when it is updated on Linux/OSX:
+   $ filewatcher *.js "node $FILENAME"
+
+In Windows Powershell:
+
+    > filewatcher *.js "node %FILENAME%" 
+
 Run the ruby script when it is changed:
 
    $ filewatcher -e ruby-script.rb
