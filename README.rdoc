@@ -2,6 +2,12 @@
 
 Simple file watcher. Monitors changes in files by polling.
 
+= Install
+
+Needs Ruby and Rubygems:
+
+   $ gem install filewatcher
+
 = Command line utility
 
 Filewatcher scans filesystem and execute shell commands when files changes.
