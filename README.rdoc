@@ -6,7 +6,7 @@ Simple file watcher. Monitors changes in files by polling.
 
 Needs Ruby and Rubygems:
 
-   $ gem install filewatcher
+   $ [sudo] gem install filewatcher
 
 = Command line utility
 
@@ -18,7 +18,7 @@ Where
    filename: filename(s) to scan.
    shell command: shell command to execute when file changes on disk.
 
-= Examples:
+= Examples
 
 Run the echo command when the file myfile is changed:
 
@@ -50,7 +50,7 @@ has to be enclosed in single quotes. To run node whenever a javascript file is u
 
 The environment variables $FILEPATH and $FILEDIR is also available.
 
-= Commnd line options
+= Command line options
 
   --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
           --exec, -e:   Execute file as a script when file is updated.
@@ -60,12 +60,6 @@ The environment variables $FILEPATH and $FILEDIR is also available.
           --list, -l:   Print name of files being watched
        --version, -v:   Print version and exit
           --help, -h:   Show this message
-
-= Install
-
-  sudo gem install filewatcher
-
-You need ruby and rubygems installed.
 
 = Ruby API
 
