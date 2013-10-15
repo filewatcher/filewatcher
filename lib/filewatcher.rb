@@ -3,6 +3,10 @@
 # Issues: Currently doesn't monitor changes in directorynames
 class FileWatcher
 
+  def self.VERSION
+    return "0.2.0"
+  end
+
   def initialize(filenames,print_filelist=false)
     if(filenames.kind_of?String)
       filenames = [filenames]
@@ -38,7 +42,12 @@ class FileWatcher
 
   def file_updated?
     @filenames.each do |filename|
-      mtime = File.stat(filename).mtime
+      begin
+        mtime = File.stat(filename).mtime
+      rescue Errno::ENOENT
+        puts "filewatcher: File not found: " + filename
+        exit(66)
+      end
       updated = @last_mtimes[filename] < mtime
       @last_mtimes[filename] = mtime
       if(updated)
