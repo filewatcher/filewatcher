@@ -5,7 +5,7 @@ require 'trollop'
 require 'pathname'
 
 options = Trollop::options do
-  version "filewatcher, version 0.1.8 by Thomas Flemming 2011"
+  version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2013"
   banner <<-EOS
 Filewatcher scans filesystem and execute shell commands when files changes.
 
@@ -61,10 +61,14 @@ FileWatcher.new(files).watch(options[:interval]) do |filename|
     system(runner + " " + filename)
   elsif(ARGV[-1])then
     path = Pathname.new(filename)
-    ENV['FILENAME'] = path.to_s
-    ENV['FILEPATH'] = path.realpath.to_s
-    ENV['FILEDIR'] = path.parent.realpath.to_s
-    system(ARGV[-1])
+    cmd = ARGV[-1]
+    env = {
+      'FILENAME'=> path.to_s,
+      'FILEPATH' => path.realpath.to_s,
+      'FILEDIR' => path.parent.realpath.to_s
+    }
+    pid = Process.spawn(env, cmd);
+    pid = Process.wait();
   else
     puts "file updated: " + filename
   end
