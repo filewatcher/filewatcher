@@ -15,6 +15,10 @@ class TestFilewatcher < Test::Unit::TestCase
 
   end
 
+  should "return version number" do
+    assert FileWatcher.VERSION.size > 2
+  end
+
 #   should "should detect changes in files" do
 
 #     @pid = fork do
