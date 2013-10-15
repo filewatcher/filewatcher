@@ -35,7 +35,11 @@ class FileWatcher
 
   def watch(sleep=1, &on_update)
     loop do
-      Kernel.sleep sleep until file_updated?
+      begin
+        Kernel.sleep sleep until file_updated?
+      rescue SystemExit,Interrupt
+        Kernel.exit
+      end
       yield @updated_file
     end
   end
