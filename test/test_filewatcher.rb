@@ -5,8 +5,10 @@ class TestFilewatcher < Test::Unit::TestCase
 
   should "should detect directories and extract filenames" do
 
-    FileWatcher.new(["test/"],"Watching files. Ctrl-C to abort.").watch(0.1) do |filename|
-      puts "updated: " + filename
+    puts " "
+
+    FileWatcher.new(["test/"],"Watching files. Ctrl-C to abort.").watch(0.1) do |filename, event|
+      puts "updated: " + filename.to_s + " event:" + event.to_s
     end
 
     FileWatcher.new(["./test/", "Rakefile", "lib"]).watch(0.1) do |filename|

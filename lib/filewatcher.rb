@@ -31,6 +31,7 @@ class FileWatcher
       @last_mtimes[filename] = File.stat(filename).mtime
     end
     @filenames = filenames
+    @deleted_files = []
   end
 
   def watch(sleep=1, &on_update)
@@ -40,23 +41,31 @@ class FileWatcher
       rescue SystemExit,Interrupt
         Kernel.exit
       end
-      yield @updated_file
+      yield @updated_file, @event
     end
   end
 
   def file_updated?
     @filenames.each do |filename|
-      begin
+
+      if(not(@deleted_files.include?(filename)))
+
+        if(not(File.exist?(filename)))
+          @deleted_files << filename
+          @updated_file = filename
+          @event = :delete
+          return true
+        end
         mtime = File.stat(filename).mtime
-      rescue Errno::ENOENT
-        puts "filewatcher: File not found: " + filename
-        exit(66)
-      end
-      updated = @last_mtimes[filename] < mtime
-      @last_mtimes[filename] = mtime
-      if(updated)
-        @updated_file = filename
-        return true
+
+        updated = @last_mtimes[filename] < mtime
+        @last_mtimes[filename] = mtime
+        if(updated)
+          @updated_file = filename
+          @event = :update
+          return true
+        end
+
       end
     end
     return false
