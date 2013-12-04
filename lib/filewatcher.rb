@@ -4,7 +4,7 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.2.0"
+    return "0.2.1"
   end
 
   def initialize(filenames,print_filelist=false)
