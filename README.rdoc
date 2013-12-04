@@ -90,7 +90,7 @@ To check for changes more often than the default once every second:
 To detect if a file is updated or deleted:
 
   FileWatcher.new(["README.rdoc"]).watch() do |filename, event|
-    if(event == :updated)
+    if(event == :changed)
       puts "Updated " + filename
     end
     if(event == :deleted)

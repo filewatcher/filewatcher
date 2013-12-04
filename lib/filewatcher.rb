@@ -62,7 +62,7 @@ class FileWatcher
         @last_mtimes[filename] = mtime
         if(updated)
           @updated_file = filename
-          @event = :update
+          @event = :changed
           return true
         end
 
