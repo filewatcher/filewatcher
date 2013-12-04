@@ -29,7 +29,7 @@ Run any javascript in current folder when it is updated on Linux/OSX:
 
 In Windows Powershell:
 
-    > filewatcher *.js "node %FILENAME%" 
+    > filewatcher *.js "node %FILENAME%"
 
 Run the ruby script when it is changed:
 
@@ -81,10 +81,21 @@ Print the names of files beeing watched before we begin:
   => Watching files:
   lib/filewatcher.rb
 
-To check for changes more often than once every second:
+To check for changes more often than the default once every second:
 
   FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
     puts "Updated " + filename
+  end
+
+To detect if a file is updated or deleted:
+
+  FileWatcher.new(["README.rdoc"]).watch() do |filename, event|
+    if(event == :updated)
+      puts "Updated " + filename
+    end
+    if(event == :deleted)
+      puts "Deleted " + filename
+    end
   end
 
 = TODO
