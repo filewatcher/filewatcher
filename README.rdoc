@@ -128,4 +128,4 @@ Globbing by Kristoffer Roupé https://github.com/kitofr
 
 == Copyright
 
-Copyright (c) 2011 - 2013 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2011 - 2014 Thomas Flemming. See LICENSE for details.
