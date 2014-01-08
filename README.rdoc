@@ -96,6 +96,9 @@ To detect if a file is updated or deleted:
     if(event == :deleted)
       puts "Deleted " + filename
     end
+    if(event == :new)
+      puts "New file " + filename
+    end
   end
 
 = TODO
