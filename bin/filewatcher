@@ -5,7 +5,7 @@ require 'trollop'
 require 'pathname'
 
 options = Trollop::options do
-  version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2013"
+  version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2014"
   banner <<-EOS
 Filewatcher scans filesystem and execute shell commands when files changes.
 

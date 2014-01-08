@@ -4,7 +4,7 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.3.0"
+    return "0.3.1"
   end
 
   def initialize(unexpanded_filenames, print_filelist=false)
