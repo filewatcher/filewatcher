@@ -48,13 +48,9 @@ if(options[:recurse])
   files = inc - exc
 end
 
-if(options[:list])
-  puts "watching:", files.inspect
-end
-
 runners = {".py" => "python", ".rb" => "ruby", ".pl" => "perl", ".awk" => "awk"}
 
-FileWatcher.new(files).watch(options[:interval]) do |filename|
+FileWatcher.new(files, options[:list]).watch(options[:interval]) do |filename, event|
   if(options[:exec])
     extension = filename[/(\.[^\.]*)/,0]
     runner = runners[extension].to_s
@@ -64,12 +60,24 @@ FileWatcher.new(files).watch(options[:interval]) do |filename|
     cmd = ARGV[-1]
     env = {
       'FILENAME'=> path.to_s,
-      'FILEPATH' => path.realpath.to_s,
       'FILEDIR' => path.parent.realpath.to_s
     }
+    if(event != :delete)
+      ENV['FILEPATH'] = path.realpath.to_s
+    end
     pid = Process.spawn(env, cmd);
     pid = Process.wait();
   else
-    puts "file updated: " + filename
+    case(event)
+    when :changed
+      print "file updated"
+    when :delete
+      print "file eleted"
+    when :new
+      print "new file"
+    else
+      print event.to_s
+    end
+    puts ": " + filename
   end
 end
