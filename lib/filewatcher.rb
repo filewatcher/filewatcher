@@ -4,40 +4,26 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.2.1"
+    return "0.3.0"
   end
 
-  def initialize(filenames,print_filelist=false)
-    if(filenames.kind_of?String)
-      filenames = [filenames]
-    end
-
-    filenames = expand_directories(filenames)
-
-    if(print_filelist)
-      if(print_filelist.kind_of?String)
-        puts print_filelist
-      else
-        puts "Watching:"
-      end
-      filenames.each do |filename|
-        puts filename
-      end
-    end
-
+  def initialize(unexpanded_filenames, print_filelist=false)
+    @unexpanded_filenames = unexpanded_filenames
     @last_mtimes = { }
-    filenames.each do |filename|
+    @filenames = expand_directories(@unexpanded_filenames)
+
+    puts "Watching:" if print_filelist
+    @filenames.each do |filename|
       raise "File does not exist" unless File.exist?(filename)
       @last_mtimes[filename] = File.stat(filename).mtime
+      puts filename if print_filelist
     end
-    @filenames = filenames
-    @deleted_files = []
   end
 
   def watch(sleep=1, &on_update)
     loop do
       begin
-        Kernel.sleep sleep until file_updated?
+        Kernel.sleep sleep until filesystem_updated?
       rescue SystemExit,Interrupt
         Kernel.exit
       end
@@ -45,33 +31,45 @@ class FileWatcher
     end
   end
 
-  def file_updated?
+  def filesystem_updated?
+    filenames = expand_directories(@unexpanded_filenames)
+
+    if(filenames.size > @filenames.size)
+      filename = (filenames - @filenames).first
+      @filenames << filename
+      @last_mtimes[filename] = File.stat(filename).mtime
+      @updated_file = filename
+      @event = :new
+      return true
+    end
+
+    if(filenames.size < @filenames.size)
+      filename = (@filenames - filenames).first
+      @filenames.delete(filename)
+      @last_mtimes.delete(filename)
+      @updated_file = filename
+      @event = :delete
+      return true
+    end
+
     @filenames.each do |filename|
-
-      if(not(@deleted_files.include?(filename)))
-
-        if(not(File.exist?(filename)))
-          @deleted_files << filename
-          @updated_file = filename
-          @event = :delete
-          return true
-        end
-        mtime = File.stat(filename).mtime
-
-        updated = @last_mtimes[filename] < mtime
-        @last_mtimes[filename] = mtime
-        if(updated)
-          @updated_file = filename
-          @event = :changed
-          return true
-        end
-
+      mtime = File.stat(filename).mtime
+      updated = @last_mtimes[filename] < mtime
+      @last_mtimes[filename] = mtime
+      if(updated)
+        @updated_file = filename
+        @event = :changed
+        return true
       end
     end
+
     return false
   end
 
   def expand_directories(filenames)
+    if(filenames.kind_of?String)
+      filenames = [filenames]
+    end
     files = []
     filenames.each do |filename|
       if(File.directory?(filename))

@@ -5,20 +5,10 @@ class TestFilewatcher < Test::Unit::TestCase
 
   should "should detect directories and extract filenames" do
 
-    puts " "
-
     FileWatcher.new(["test/"],"Watching files. Ctrl-C to abort.").watch(0.1) do |filename, event|
-      puts "updated: " + filename.to_s + " event:" + event.to_s
+      puts "updated: '#{filename.to_s} event:'#{event.to_s}'"
     end
 
-    FileWatcher.new(["./test/", "Rakefile", "lib"]).watch(0.1) do |filename|
-      puts "updated: " + filename
-    end
-
-  end
-
-  should "return version number" do
-    assert FileWatcher.VERSION.size > 2
   end
 
 #   should "should detect changes in files" do
