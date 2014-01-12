@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "filewatcher"
     gem.summary = %Q{Simple filewatcher.}
-    gem.description = %Q{Detect changes in files.}
+    gem.description = %Q{Detect changes in filesystem.}
     gem.email = "thomas.flemming@gmail.com"
     gem.homepage = "http://github.com/thomasfl/filewatcher"
     gem.executables = ["filewatcher"]

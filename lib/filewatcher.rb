@@ -4,7 +4,7 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.3.1"
+    return "0.3.2"
   end
 
   def initialize(unexpanded_filenames, print_filelist=false)
@@ -53,6 +53,13 @@ class FileWatcher
     end
 
     @filenames.each do |filename|
+      if(not(File.exists?(filename)))
+        @filenames.delete(filename)
+        @last_mtimes.delete(filename)
+        @updated_file = filename
+        @event = :delete
+        return true
+      end
       mtime = File.stat(filename).mtime
       updated = @last_mtimes[filename] < mtime
       @last_mtimes[filename] = mtime
