@@ -46,7 +46,7 @@ Print a list of all files matching *.css first and the print filename when a fil
 = Available enviroment variables
 
 The environment variable $FILENAME is available in the command. On unix like systems the command
-has to be enclosed in single quotes. To run node whenever a javascript file is update:
+has to be enclosed in single quotes. To run node whenever a javascript file is updated:
 
    $ filewatcher *.js 'node $FILENAME'
 
@@ -75,20 +75,6 @@ Watch a list of files and directories:
     puts "Updated " + filename
   end
 
-Print the names of files beeing watched before we begin:
-
-  FileWatcher.new(["lib/"],"Watching files:").watch do |filename|
-    puts "Updated " + filename
-  end
-  => Watching files:
-  lib/filewatcher.rb
-
-To check for changes more often than the default once every second:
-
-  FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
-    puts "Updated " + filename
-  end
-
 To detect if a file is updated or deleted:
 
   FileWatcher.new(["README.rdoc"]).watch() do |filename, event|
@@ -102,6 +88,21 @@ To detect if a file is updated or deleted:
       puts "New file: " + filename
     end
   end
+
+To check for changes more often than the default once every second:
+
+  FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
+    puts "Updated " + filename
+  end
+
+Print the names of files beeing watched before we begin:
+
+  FileWatcher.new(["lib/"],"Watching files:").watch do |filename|
+    puts "Updated " + filename
+  end
+  => Watching files:
+  lib/filewatcher.rb
+
 
 = TODO
 
