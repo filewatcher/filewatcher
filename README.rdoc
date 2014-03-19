@@ -1,6 +1,6 @@
 = Filewatcher
 
-Simple file watcher. Monitors changes in filesystem by polling. No dependencies.
+Simple file watcher. Monitors changes in filesystem by polling. API has no dependencies.
 
 = Install
 
