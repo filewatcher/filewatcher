@@ -24,16 +24,23 @@ Run the echo command when the file myfile is changed:
 
    $ filewatcher "myfile" "echo 'myfile has changed'"
 
-Run any javascript in the current folder when it is updated in Windows Powershell:
+Run any javascript in the current directory when it is updated in Windows Powershell:
 
    > filewatcher *.js "node %FILENAME%"
 
 In Linux/OSX:
 
-   $ filewatcher *.js "node $FILENAME"
+   $ filewatcher *.js 'node $FILENAME'
 
+Use ruby filename globbing instead of shell filename globbing by quoting filename. Will look for files in subdirectories.
 
-Run the ruby script when it is changed:
+   > filewatcher "*.js" "node %FILENAME%"
+
+In Linux/OSX:
+
+   > filewatcher '*.js' 'node $FILENAME'
+
+Run script when it is changed with the execute switch. Only works with python, ruby, perl and awk scripts.
 
    $ filewatcher -e ruby-script.rb
 
@@ -97,12 +104,17 @@ To check for changes more often than the default once every second:
 
 Print the names of files beeing watched before we begin:
 
-  FileWatcher.new(["lib/"],"Watching files:").watch do |filename|
+  FileWatcher.new(["lib/"],true).watch do |filename|
     puts "Updated " + filename
   end
   => Watching files:
   lib/filewatcher.rb
 
+Use patterns to match filenames in current directory and subdirectories. The pattern is not a regular expression; instead it follows rules similar to shell filename globbing. Se Ruby documentation[http://www.ruby-doc.org/core-2.1.1/File.html#method-c-fnmatch] for syntax.
+
+  FileWatcher.new(["*.rb", "*.xml"]).watch do |filename|
+    puts "Updated " + filename
+  end
 
 = TODO
 

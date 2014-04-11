@@ -11,19 +11,11 @@ begin
     gem.homepage = "http://github.com/thomasfl/filewatcher"
     gem.executables = ["filewatcher"]
     gem.authors = ["Thomas Flemming"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    gem.add_dependency "trollop", ">= 1.16.2"
+    gem.add_dependency 'trollop', '~> 2.0'
     gem.licenses = ["MIT"]
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
-
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
 end
 
 begin

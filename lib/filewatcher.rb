@@ -4,7 +4,7 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.3.2"
+    return "0.3.3"
   end
 
   def initialize(unexpanded_filenames, print_filelist=false)
@@ -73,20 +73,20 @@ class FileWatcher
     return false
   end
 
-  def expand_directories(filenames)
-    if(filenames.kind_of?String)
-      filenames = [filenames]
+  def expand_directories(patterns)
+    if(!patterns.kind_of?Array)
+      patterns = [patterns]
     end
-    files = []
-    filenames.each do |filename|
+    filenames = []
+    patterns.each do |filename|
       if(File.directory?(filename))
-        files = files + find(filename)
-      end
-      if(File.file?(filename))
-        files << filename
+        filenames = filenames + find(filename)
+      else
+        filenames = filenames + find(".", filename, true)
       end
     end
-    filenames = files
+
+    return filenames.uniq
   end
 
   def find(dir, filename="*.*", subdirs=true)
