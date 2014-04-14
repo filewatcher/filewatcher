@@ -44,8 +44,6 @@ Run script when it is changed with the execute switch. Only works with python, r
 
    $ filewatcher -e ruby-script.rb
 
-Works with ruby, perl, python and awk by detecting file extensions.
-
 Print a list of all files matching *.css first and the print filename when a file is beeing updated:
 
    $ filewatcher -l *.css 'echo file: $FILENAME'
