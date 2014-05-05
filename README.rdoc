@@ -32,7 +32,7 @@ In Linux/OSX:
 
    $ filewatcher *.js 'node $FILENAME'
 
-Use ruby filename globbing instead of shell filename globbing by quoting filename. Will look for files in subdirectories.
+Place filenames or filenames in quotes to use ruby filename globbing instead of shell filename globbing. This will make filewatcher look for files in subdirectories too.
 
    > filewatcher "*.js" "node %FILENAME%"
 
@@ -40,13 +40,18 @@ In Linux/OSX:
 
    > filewatcher '*.js' 'node $FILENAME'
 
-Run script when it is changed with the execute switch. Only works with python, ruby, perl and awk scripts.
+Try to run the updated file as a script when it is updated by using the --exec/-e option. Works with files with file extensions that looks like a python, ruby, perl, php,
+javascript or awk script.
 
-   $ filewatcher -e ruby-script.rb
+   $ filewatcher -e *.rb
 
-Print a list of all files matching *.css first and the print filename when a file is beeing updated:
+Print a list of all files matching *.css first and then output the filename when a file is beeing updated by using the --list/-l option:
 
    $ filewatcher -l *.css 'echo file: $FILENAME'
+
+Watch the "src" and "test" folders recursively, and run test when the filesystem gets updated:
+
+   $ filewatcher "src test" "ruby test/test_suite.rb"
 
 = Available enviroment variables
 
@@ -55,7 +60,7 @@ has to be enclosed in single quotes. To run node whenever a javascript file is u
 
    $ filewatcher *.js 'node $FILENAME'
 
-The environment variables $FILEPATH and $FILEDIR is also available.
+The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
 
 = Command line options
 
@@ -80,7 +85,7 @@ Watch a list of files and directories:
     puts "Updated " + filename
   end
 
-To detect if a file is updated or deleted:
+To detect if a file is updated, added or deleted:
 
   FileWatcher.new(["README.rdoc"]).watch() do |filename, event|
     if(event == :changed)
@@ -90,7 +95,7 @@ To detect if a file is updated or deleted:
       puts "File deleted: " + filename
     end
     if(event == :new)
-      puts "New file: " + filename
+      puts "Added file: " + filename
     end
   end
 
@@ -100,7 +105,7 @@ To check for changes more often than the default once every second:
     puts "Updated " + filename
   end
 
-Print the names of files beeing watched before we begin:
+Print the names of the files found before watching files and folders:
 
   FileWatcher.new(["lib/"],true).watch do |filename|
     puts "Updated " + filename
