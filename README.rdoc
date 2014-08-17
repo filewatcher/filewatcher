@@ -1,6 +1,6 @@
 = Filewatcher
 
-Simple file watcher. Monitors changes in filesystem by polling. API has no dependencies.
+Simple filewatcher. Monitors changes in the filesystem by polling. Gem has no dependencies.
 
 = Install
 
@@ -10,13 +10,13 @@ Needs Ruby and Rubygems:
 
 = Command line utility
 
-Filewatcher scans filesystem and execute shell commands when files changes.
+Filewatcher scans the filesystem and execute shell commands when files are changed.
 
 Usage:
    filewatcher [-i interval] "<filename>" "<shell command>"
 Where
    filename: filename(s) to scan.
-   shell command: shell command to execute when file changes on disk.
+   shell command: shell command to execute when a file is changed
 
 = Examples
 
@@ -55,7 +55,7 @@ Watch the "src" and "test" folders recursively, and run test when the filesystem
 
 = Available enviroment variables
 
-The environment variable $FILENAME is available in the command. On unix like systems the command
+The environment variable $FILENAME is available in the shell command argument. On unix like systems the command
 has to be enclosed in single quotes. To run node whenever a javascript file is updated:
 
    $ filewatcher *.js 'node $FILENAME'
@@ -121,7 +121,7 @@ Use patterns to match filenames in current directory and subdirectories. The pat
 
 = TODO
 
-The Ruby API is fairly well tested but the command line program is buggy at the time beeing.
+The Ruby API is fairly well tested but the command line program has been buggy.
 
 = Credits
 
