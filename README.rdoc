@@ -75,8 +75,6 @@ The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
 
 = Ruby API
 
-Examples:
-
 Watch a list of files and directories:
 
   require 'filewatcher'
