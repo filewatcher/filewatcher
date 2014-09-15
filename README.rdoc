@@ -1,6 +1,8 @@
 = Filewatcher
 
-Simple filewatcher. Monitors changes in the filesystem by polling. Gem has no dependencies.
+Simple filewatcher. Monitors changes in the filesystem by polling. Works everywhere.
+
+The library is a single sourcefile with 83 lines of code, with no dependencies or platform specific code.
 
 = Install
 
@@ -116,6 +118,8 @@ Use patterns to match filenames in current directory and subdirectories. The pat
   FileWatcher.new(["*.rb", "*.xml"]).watch do |filename|
     puts "Updated " + filename
   end
+
+The filewatcher library is just a single file with 96 LOC (including comments) with no dependencies.
 
 = TODO
 
