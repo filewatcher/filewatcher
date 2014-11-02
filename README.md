@@ -22,17 +22,15 @@ Command line utility
 Filewatcher scans the filesystem and execute shell commands when files are
 changed.
 
-Usage:
-    filewatcher [-i interval] "<filename>" "<shell command>"
+    Usage:
+        filewatcher [-i interval] "<filename>" "<shell command>"
 
-Where
-    filename: filename(s) to scan.
-    shell command: shell command to execute when a file is changed
+    Where
+        filename: filename(s) to scan.
+        shell command: shell command to execute when a file is changed
 
 Examples
 --------
-
-[![Build Status](https://secure.travis-ci.org/thomasfl/filewatcher.png?branch=master)](http://travis-ci.org/thomasfl/filewatcher) [![Dependency Status](https://gemnasium.com/thomasfl/filewatcher.png?travis)](https://gemnasium.com/thomasfl/filewatcher) [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
 Run the echo command when the file myfile is changed:
 
@@ -158,8 +156,7 @@ buggy.
 Credits
 -------
 
-Code inspired by Tom Lieber's blogg posting:
-http://alltom.com/pages/detecting-file-changes-with-ruby
+Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 
 Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
 
@@ -170,12 +167,8 @@ Note on Patches/Pull Requests
 
 *   Fork the project.
 *   Make your feature addition or bug fix.
-*   Add tests for it. This is important so I don't break it in a future
-    version unintentionally.
-*   Commit, do not mess with rakefile, version, or history. (if you want to
-    have your own version, that is fine but
-        bump version in a commit by itself I can ignore when I pull)
-
+*   Add tests for it. This is important so I don't break it in a future version unintentionally.
+*   Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 *   Send me a pull request. Bonus points for topic branches.
 
 
