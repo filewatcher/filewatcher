@@ -1,4 +1,7 @@
-# Filewatcher
+Filewatcher
+===========
+
+[![Build Status](https://secure.travis-ci.org/judofyr/temple.png?branch=master)](http://travis-ci.org/judofyr/temple) [![Dependency Status](https://gemnasium.com/judofyr/temple.png?travis)](https://gemnasium.com/judofyr/temple) [![Code Climate](https://codeclimate.com/github/judofyr/temple.png)](https://codeclimate.com/github/judofyr/temple)
 
 Simple filewatcher. Monitors changes in the filesystem by polling. Works
 everywhere.
@@ -6,13 +9,15 @@ everywhere.
 The library is a single sourcefile with 83 lines of code, with no dependencies
 or platform specific code.
 
-# Install
+Install
+-------
 
 Needs Ruby and Rubygems:
 
     $ [sudo] gem install filewatcher
 
-# Command line utility
+Command line utility
+--------------------
 
 Filewatcher scans the filesystem and execute shell commands when files are
 changed.
@@ -24,7 +29,10 @@ Where
     filename: filename(s) to scan.
     shell command: shell command to execute when a file is changed
 
-# Examples
+Examples
+--------
+
+[![Build Status](https://secure.travis-ci.org/thomasfl/filewatcher.png?branch=master)](http://travis-ci.org/thomasfl/filewatcher) [![Dependency Status](https://gemnasium.com/thomasfl/filewatcher.png?travis)](https://gemnasium.com/thomasfl/filewatcher) [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
 Run the echo command when the file myfile is changed:
 
@@ -65,7 +73,8 @@ filesystem gets updated:
 
     $ filewatcher "src test" "ruby test/test_suite.rb"
 
-# Available enviroment variables
+Available enviroment variables
+------------------------------
 
 The environment variable $FILENAME is available in the shell command argument.
 On unix like systems the command has to be enclosed in single quotes. To run
@@ -75,7 +84,8 @@ node whenever a javascript file is updated:
 
 The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
 
-# Command line options
+Command line options
+--------------------
 
     --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
             --exec, -e:   Execute file as a script when file is updated.
@@ -86,7 +96,8 @@ The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
          --version, -v:   Print version and exit
             --help, -h:   Show this message
 
-# Ruby API
+Ruby API
+--------
 
 Watch a list of files and directories:
 
@@ -137,12 +148,15 @@ for syntax.
 The filewatcher library is just a single file with 96 LOC (including comments)
 with no dependencies.
 
-# TODO
+TODO
+----
 
+Use thor in the command line utility.
 The Ruby API is fairly well tested but the command line program has been
 buggy.
 
-# Credits
+Credits
+-------
 
 Code inspired by Tom Lieber's blogg posting:
 http://alltom.com/pages/detecting-file-changes-with-ruby
@@ -151,7 +165,8 @@ Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
 
 Globbing by Kristoffer Roupé https://github.com/kitofr
 
-## Note on Patches/Pull Requests
+Note on Patches/Pull Requests
+-----------------------------
 
 *   Fork the project.
 *   Make your feature addition or bug fix.
@@ -164,6 +179,7 @@ Globbing by Kristoffer Roupé https://github.com/kitofr
 *   Send me a pull request. Bonus points for topic branches.
 
 
-## Copyright
+Copyright
+---------
 
 Copyright (c) 2011 - 2014 Thomas Flemming. See LICENSE for details.
