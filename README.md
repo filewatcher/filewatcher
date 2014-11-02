@@ -1,7 +1,10 @@
 Filewatcher
 ===========
 
-[![Build Status](https://secure.travis-ci.org/judofyr/temple.png?branch=master)](http://travis-ci.org/judofyr/temple) [![Dependency Status](https://gemnasium.com/judofyr/temple.png?travis)](https://gemnasium.com/judofyr/temple) [![Code Climate](https://codeclimate.com/github/judofyr/temple.png)](https://codeclimate.com/github/judofyr/temple)
+[![Gem Version](https://badge.fury.io/rb/filewatcher.svg)](http://badge.fury.io/rb/filewatcher)
+[![Build Status](https://secure.travis-ci.org/judofyr/temple.png?branch=master)](http://travis-ci.org/judofyr/temple)
+[![Dependency Status](https://gemnasium.com/judofyr/temple.png?travis)](https://gemnasium.com/judofyr/temple)
+[![Code Climate](https://codeclimate.com/github/judofyr/temple.png)](https://codeclimate.com/github/judofyr/temple)
 
 Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code.
 Works everywhere. Monitors changes in the filesystem by polling. No config files needed to run.
