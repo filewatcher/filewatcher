@@ -30,4 +30,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency('trollop','~> 2.0')
   s.add_development_dependency('rake','~> 10.3')
+  s.add_development_dependency('bacon','~> 1.2')
 end
