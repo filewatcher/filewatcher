@@ -14,12 +14,6 @@ Gem::Specification.new do |s|
   s.description   = 'Detect changes in filesystem.'
 
   s.require_paths = ['lib']
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = ['filewatcher']
-
-  s.licenses = ['MIT']
-
   s.files = [
     'LICENSE',
     'README.md',
@@ -27,6 +21,10 @@ Gem::Specification.new do |s|
     'bin/filewatcher',
     'lib/filewatcher.rb'
   ]
+  s.executables   = ['filewatcher']
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+
+  s.licenses = ['MIT']
 
   s.add_runtime_dependency('trollop','~> 2.0')
   s.add_development_dependency('rake','~> 10.3')
