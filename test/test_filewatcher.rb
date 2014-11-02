@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bacon'
-require 'FileUtils'
+require 'fileutils'
 require File.expand_path("../lib/filewatcher.rb",File.dirname(__FILE__))
 
 describe FileWatcher do
