@@ -3,11 +3,8 @@ Filewatcher
 
 [![Build Status](https://secure.travis-ci.org/judofyr/temple.png?branch=master)](http://travis-ci.org/judofyr/temple) [![Dependency Status](https://gemnasium.com/judofyr/temple.png?travis)](https://gemnasium.com/judofyr/temple) [![Code Climate](https://codeclimate.com/github/judofyr/temple.png)](https://codeclimate.com/github/judofyr/temple)
 
-Simple filewatcher. Monitors changes in the filesystem by polling. Works
-everywhere.
-
-The library is a single sourcefile with 83 lines of code, with no dependencies
-or platform specific code.
+Lightweight filewatcher weighing less than 90 LoC. No dependencies or platform specific code.
+Works everywhere. Monitors changes in the filesystem by polling.
 
 Install
 -------
