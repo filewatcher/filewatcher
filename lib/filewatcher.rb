@@ -4,7 +4,7 @@
 class FileWatcher
 
   def self.VERSION
-    return "0.3.4"
+    return '0.3.5'
   end
 
   def initialize(unexpanded_filenames, print_filelist=false)
@@ -12,9 +12,9 @@ class FileWatcher
     @last_mtimes = { }
     @filenames = expand_directories(@unexpanded_filenames)
 
-    puts "Watching:" if print_filelist
+    puts 'Watching:' if print_filelist
     @filenames.each do |filename|
-      raise "File does not exist" unless File.exist?(filename)
+      raise 'File does not exist' unless File.exist?(filename)
       @last_mtimes[filename] = File.stat(filename).mtime
       puts filename if print_filelist
     end
@@ -62,6 +62,7 @@ class FileWatcher
       end
       mtime = File.stat(filename).mtime
       updated = @last_mtimes[filename] < mtime
+
       @last_mtimes[filename] = mtime
       if(updated)
         @updated_file = filename
@@ -82,15 +83,15 @@ class FileWatcher
       if(File.directory?(filename))
         filenames = filenames + find(filename)
       else
-        filenames = filenames + find(".", filename, true)
+        filenames = filenames + find('.', filename, true)
       end
     end
 
     return filenames.uniq
   end
 
-  def find(dir, filename="*.*", subdirs=true)
-    Dir[ subdirs ? File.join(dir.split(/\\/), "**", filename) : File.join(dir.split(/\\/), filename) ]
+  def find(dir, filename='*.*', subdirs=true)
+    Dir[ subdirs ? File.join(dir.split(/\\/), '**', filename) : File.join(dir.split(/\\/), filename) ]
   end
 
 end
