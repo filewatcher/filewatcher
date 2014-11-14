@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email         = ['thomas.flemming@gmail.com']
   s.homepage      = 'http://github.com/thomasfl/filewatcher'
   s.summary       = 'Lighweight filewatcher.'
-  s.description   = 'Detect changes in filesystem.'
+  s.description   = 'Detect changes in filesystem. Works anywhere.'
 
   s.require_paths = ['lib']
   s.files = [
