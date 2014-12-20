@@ -7,7 +7,7 @@ require 'pathname'
 options = Trollop::options do
   version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2014"
   banner <<-EOS
-Filewatcher scans filesystem and execute shell commands when files changes.
+Filewatcher scans the filesystem and executes shell commands when files changes.
 
 Usage:
    filewatcher [-i interval] "<filenames>" "<shell commands>"
@@ -106,7 +106,7 @@ FileWatcher.new(files, options[:list]).watch(options[:interval]) do |filename, e
     when :changed
       print "file updated"
     when :delete
-      print "file eleted"
+      print "file deleted"
     when :new
       print "new file"
     else
