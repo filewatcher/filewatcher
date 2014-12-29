@@ -5,6 +5,19 @@ require File.expand_path("../lib/filewatcher.rb",File.dirname(__FILE__))
 
 describe FileWatcher do
 
+  it "should handle explicit relative paths" do
+    filewatcher = FileWatcher.new('./test/fixtures',true)
+
+    expect(filewatcher.filenames).to include *%w(
+      ./test/fixtures/file4.rb
+      ./test/fixtures/subdir/file6.rb
+      ./test/fixtures/subdir/file5.rb
+      ./test/fixtures/file2.txt
+      ./test/fixtures/file1.txt
+      ./test/fixtures/file3.rb)
+
+  end
+
   it "should detect file deletions" do
     filename = "test/fixtures/file1.txt"
     open(filename,"w") { |f| f.puts "content1" }

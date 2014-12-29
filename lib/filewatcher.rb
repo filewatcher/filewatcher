@@ -3,6 +3,8 @@
 # Issues: Currently doesn't monitor changes in directorynames
 class FileWatcher
 
+  attr_accessor :filenames
+
   def self.VERSION
     return '0.3.5'
   end
