@@ -87,7 +87,6 @@ Command line options
 
     --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
             --exec, -e:   Execute file as a script when file is updated.
-     --recurse, -r <s>:   Recurse into the directory, watching everything matching 'expression'
      --include, -n <s>:   Include files (default: *)
      --exclude, -x <s>:   Exclude file(s) matching (default: "")
             --list, -l:   Print name of files being watched
@@ -170,15 +169,11 @@ for syntax.
 The filewatcher library is just a single file with 96 LOC (including comments)
 with no dependencies.
 
-TODO
-----
-
-Use thor in the command line utility.
-The Ruby API is fairly well tested but the command line program has been
-buggy.
 
 Credits
 -------
+
+Support for absolute and globbed paths by flbulgarelli: https://github.com/flbulgarelli
 
 Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 

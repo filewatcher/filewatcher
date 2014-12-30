@@ -18,13 +18,12 @@ Where
 Examples:
    filewatcher "myfile" "echo 'myfile has changed'"
    filewatcher '*.rb' 'ruby $FILENAME'
-
+   filewatcher '**/*.rb' 'ruby $FILENAME' # Watch subdirectories
 Options:
 EOS
 
   opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
   opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
-  opt :recurse, "Recurse into the directory, watching everything matching 'expression'", :short => 'r', :type => :string
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
   opt :list, "Print name of files being watched"
@@ -39,13 +38,6 @@ end
 
 if(ARGV.length == 1)
   files << ARGV[0]
-end
-
-if(options[:recurse])
-  base = File.join(options[:recurse], "**")
-  inc = Dir.glob(File.join(base, options[:include]))
-  exc = Dir.glob(File.join(base, options[:exclude]))
-  files = inc - exc
 end
 
 def split_files_void_escaped_whitespace(files)

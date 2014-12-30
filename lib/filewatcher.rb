@@ -6,7 +6,7 @@ class FileWatcher
   attr_accessor :filenames
 
   def self.VERSION
-    return '0.3.5'
+    return '0.3.6'
   end
 
   def initialize(unexpanded_filenames, print_filelist=false)
