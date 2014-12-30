@@ -3,43 +3,42 @@ require 'bacon'
 require 'fileutils'
 require File.expand_path("../lib/filewatcher.rb",File.dirname(__FILE__))
 
+
+
 describe FileWatcher do
+
+  let(:fixtures) {
+    %w(test/fixtures/file4.rb
+       test/fixtures/subdir/file6.rb
+       test/fixtures/subdir/file5.rb
+       test/fixtures/file2.txt
+       test/fixtures/file1.txt
+       test/fixtures/file3.rb)
+  }
+
+  it "should handle absolute paths with globs" do
+    filewatcher = FileWatcher.new(File.absolute_path('test/fixtures/**/*'))
+
+    expect(filewatcher.filenames).to include *fixtures.map { |it| File.absolute_path(it)}
+  end
 
   it "should handle globs" do
     filewatcher = FileWatcher.new('test/fixtures/**/*')
 
-    expect(filewatcher.filenames).to include *%w(
-      ./test/fixtures/file4.rb
-      ./test/fixtures/subdir/file6.rb
-      ./test/fixtures/subdir/file5.rb
-      ./test/fixtures/file2.txt
-      ./test/fixtures/file1.txt
-      ./test/fixtures/file3.rb)
+    expect(filewatcher.filenames).to include *fixtures
   end
 
 
   it "should handle explicit relative paths with globs" do
     filewatcher = FileWatcher.new('./test/fixtures/**/*')
 
-    expect(filewatcher.filenames).to include *%w(
-      ./test/fixtures/file4.rb
-      ./test/fixtures/subdir/file6.rb
-      ./test/fixtures/subdir/file5.rb
-      ./test/fixtures/file2.txt
-      ./test/fixtures/file1.txt
-      ./test/fixtures/file3.rb)
+    expect(filewatcher.filenames).to include *fixtures.map { |it| "./#{it}" }
   end
 
   it "should handle explicit relative paths" do
     filewatcher = FileWatcher.new('./test/fixtures')
 
-    expect(filewatcher.filenames).to include *%w(
-      ./test/fixtures/file4.rb
-      ./test/fixtures/subdir/file6.rb
-      ./test/fixtures/subdir/file5.rb
-      ./test/fixtures/file2.txt
-      ./test/fixtures/file1.txt
-      ./test/fixtures/file3.rb)
+    expect(filewatcher.filenames).to include *fixtures
   end
 
   it "should detect file deletions" do
