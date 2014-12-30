@@ -17,6 +17,12 @@ describe FileWatcher do
 
   explicit_relative_fixtures =  fixtures.map { |it| "./#{it}" }
 
+  subfolder = 'test/fixtures/new_sub_folder'
+
+  after do
+    FileUtils.rm_rf subfolder
+  end
+
   def includes_all(elements)
     lambda { |it| elements.all? { |element| it.include? element }}
   end
@@ -75,14 +81,21 @@ describe FileWatcher do
   end
 
   it "should detect new files in subfolders" do
-    subfolder = 'test/fixtures/new_sub_folder'
-    filewatcher = FileWatcher.new(["test/fixtures"])
-    filewatcher.filesystem_updated?.should.be.false
     FileUtils::mkdir_p subfolder
+
+    filewatcher = FileWatcher.new(["./test/fixtures"])
     filewatcher.filesystem_updated?.should.be.false
+
     open(subfolder + "/file.txt","w") { |f| f.puts "xyz" }
     filewatcher.filesystem_updated?.should.be.true
-    FileUtils.rm_rf subfolder
+  end
+
+  it "should detect new subfolders" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    filewatcher.filesystem_updated?.should.be.false
+
+    FileUtils::mkdir_p subfolder
+    filewatcher.filesystem_updated?.should.be.true
   end
 
 end
