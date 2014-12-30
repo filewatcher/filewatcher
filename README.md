@@ -105,6 +105,30 @@ Watch a list of files and directories:
       puts "Updated " + filename
     end
 
+Watch a single directory, for changes in all files and subdirectories:
+
+    FileWatcher.new("lib/").watch do |filename|
+      ...
+    end
+
+Notice that the previous is equivalent to the following:
+
+    FileWatcher.new("lib/**/*").watch do |filename|
+      ...
+    end
+
+Watch files and dirs in the given directory - and not in subdirectories:
+
+    FileWatcher.new("lib/*").watch do |filename|
+      ...
+    end
+
+Watch an absolute directory:
+
+    FileWatcher.new("/tmp/foo").watch do |filename|
+      ...
+    end
+
 To detect if a file is updated, added or deleted:
 
     FileWatcher.new(["README.rdoc"]).watch() do |filename, event|
