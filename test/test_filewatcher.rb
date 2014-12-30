@@ -16,6 +16,8 @@ describe FileWatcher do
        test/fixtures/file3.rb)
   }
 
+  let(:explicit_relative_fixtures) { fixtures.map { |it| "./#{it}" } }
+
   it "should handle absolute paths with globs" do
     filewatcher = FileWatcher.new(File.absolute_path('test/fixtures/**/*'))
 
@@ -32,13 +34,13 @@ describe FileWatcher do
   it "should handle explicit relative paths with globs" do
     filewatcher = FileWatcher.new('./test/fixtures/**/*')
 
-    expect(filewatcher.filenames).to include *fixtures.map { |it| "./#{it}" }
+    expect(filewatcher.filenames).to include *explicit_relative_fixtures
   end
 
   it "should handle explicit relative paths" do
     filewatcher = FileWatcher.new('./test/fixtures')
 
-    expect(filewatcher.filenames).to include *fixtures
+    expect(filewatcher.filenames).to include *explicit_relative_fixtures
   end
 
   it "should detect file deletions" do

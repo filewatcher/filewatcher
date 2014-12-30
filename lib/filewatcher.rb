@@ -80,20 +80,18 @@ class FileWatcher
     if(!patterns.kind_of?Array)
       patterns = [patterns]
     end
-    filenames = []
-    patterns.each do |filename|
-      if(File.directory?(filename))
-        filenames = filenames + find(filename)
-      else
-        filenames = filenames + find('.', filename, true)
-      end
+    patterns.flat_map { |it| Dir[fulldepth(it)] }.uniq
+  end
+
+  private
+
+  def fulldepth(pattern)
+    if File.directory? pattern
+      "#{pattern}/**/*"
+    else
+      pattern
     end
-
-    return filenames.uniq
   end
 
-  def find(dir, filename='*.*', subdirs=true)
-    Dir[ subdirs ? File.join(dir.split(/\\/), '**', filename) : File.join(dir.split(/\\/), filename) ]
-  end
 
 end
