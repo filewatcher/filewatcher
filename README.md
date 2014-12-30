@@ -47,9 +47,9 @@ In Linux/OSX:
 
 Place filenames or filenames in quotes to use ruby filename globbing instead
 of shell filename globbing. This will make filewatcher look for files in
-subdirectories too.
+subdirectories too. To watch all javascript files in subdirectories:
 
-    > filewatcher "*.js" "node %FILENAME%"
+    > filewatcher "**/*.js" "node %FILENAME%"
 
 In Linux/OSX:
 
