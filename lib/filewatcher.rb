@@ -80,7 +80,8 @@ class FileWatcher
     if(!patterns.kind_of?Array)
       patterns = [patterns]
     end
-    patterns.flat_map { |it| Dir[fulldepth(it)] }.uniq
+
+    patterns.map { |it| Dir[fulldepth(it)] }.flatten.uniq
   end
 
   private
