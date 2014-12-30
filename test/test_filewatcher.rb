@@ -28,9 +28,9 @@ describe FileWatcher do
   end
 
   it "should handle absolute paths with globs" do
-    filewatcher = FileWatcher.new(File.absolute_path('test/fixtures/**/*'))
+    filewatcher = FileWatcher.new(File.expand_path('test/fixtures/**/*'))
 
-    filewatcher.filenames.should.satisfy &includes_all(fixtures.map { |it| File.absolute_path(it) })
+    filewatcher.filenames.should.satisfy &includes_all(fixtures.map { |it| File.expand_path(it) })
   end
 
   it "should handle globs" do
