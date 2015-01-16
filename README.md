@@ -9,8 +9,10 @@ Filewatcher
 Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code.
 Works everywhere. Monitors changes in the filesystem by polling. No config files needed to run.
 When running filewatcher from the command line, you specify which files to monitor and what action
-to perform on updates. To search recursively for javascript files and run jshint when a
-file is updated, added, renamed or deleted:
+to perform on updates.
+
+Search recursively for javascript files and run jshint when a file is updated, added,
+renamed or deleted:
 
 Linux/OSX:
 
