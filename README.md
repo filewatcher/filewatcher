@@ -8,6 +8,17 @@ Filewatcher
 
 Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code.
 Works everywhere. Monitors changes in the filesystem by polling. No config files needed to run.
+When running filewatcher from the command line, you specify which files to monitor and what action
+to perform on updates. To search recursively for javascript files and run jshint when a
+file is updated, added, renamed or deleted:
+
+Linux/OSX:
+
+    $ filewatcher '**/*.js' 'jshint $FILENAME'
+
+In Windows:
+
+    > filewatcher "**/*.js" "jshint %FILENAME%"
 
 Install
 -------
@@ -53,7 +64,7 @@ subdirectories too. To watch all javascript files in subdirectories:
 
 In Linux/OSX:
 
-    > filewatcher '*.js' 'node $FILENAME'
+    > filewatcher '**/*.js' 'node $FILENAME'
 
 Try to run the updated file as a script when it is updated by using the
 --exec/-e option. Works with files with file extensions that looks like a
