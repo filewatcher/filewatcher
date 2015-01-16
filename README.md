@@ -31,10 +31,10 @@ Command line utility
 --------------------
 
 Filewatcher scans the filesystem and execute shell commands when files are
-changed.
+updated, added, renamed or deleted.
 
     Usage:
-        filewatcher [-i interval] "<filename>" "<shell command>"
+        filewatcher [-i interval][-l] "<filename>" "<shell command>"
 
     Where
         filename: filename(s) to scan.
@@ -112,7 +112,7 @@ Watch a list of files and directories:
     require 'filewatcher'
 
     FileWatcher.new(["lib/", "Rakefile"]).watch do |filename|
-      puts "Updated " + filename
+      puts "Changed " + filename
     end
 
 Watch a single directory, for changes in all files and subdirectories:
@@ -153,6 +153,8 @@ To detect if a file is updated, added or deleted:
       end
     end
 
+When a file is renamed it is detected as a deletion and a file addition.
+
 To check for changes more often than the default once every second:
 
     FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
@@ -184,7 +186,7 @@ with no dependencies.
 Credits
 -------
 
-Support for absolute and globbed paths by flbulgarelli: https://github.com/flbulgarelli
+Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
 
 Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 
