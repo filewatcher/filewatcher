@@ -190,11 +190,9 @@ Credits
 
 Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
 
-Code inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
+Command line globbing by Kristoffer Roupé https://github.com/kitofr
 
-Find method by c00lrguy: http://snippets.dzone.com/posts/show/5457
-
-Globbing by Kristoffer Roupé https://github.com/kitofr
+This game was initially inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 
 Note on Patches/Pull Requests
 -----------------------------
