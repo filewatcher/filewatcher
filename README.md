@@ -187,12 +187,14 @@ with no dependencies.
 
 Credits
 -------
+This project would not be where it is today without the generous help provided by people reporting issues and these contributors: 
 
-Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
 
-Command line globbing by Kristoffer Roupé https://github.com/kitofr
+ * Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
 
-This game was initially inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
+ * Command line globbing by Kristoffer Roupé https://github.com/kitofr
+
+This gem was initially inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 
 Note on Patches/Pull Requests
 -----------------------------
