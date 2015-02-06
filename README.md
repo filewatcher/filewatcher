@@ -84,6 +84,13 @@ filesystem gets updated:
 
     $ filewatcher "src test" "ruby test/test_suite.rb"
 
+Automatic restart of processes
+------------------------------
+
+The `--restart` option restarts the command when changes happens on the file system. The `--dontwait` starts the command when filewatcher is started. To start a webserver and have it automatically restart when html files are updated:
+
+    $ filewatcher --dontwait --restart "*.html" "python -m SimpleHTTPServer"
+
 Available enviroment variables
 ------------------------------
 
@@ -209,4 +216,4 @@ Note on Patches/Pull Requests
 Copyright
 ---------
 
-Copyright (c) 2011 - 2014 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2011 - 2015 Thomas Flemming. See LICENSE for details.

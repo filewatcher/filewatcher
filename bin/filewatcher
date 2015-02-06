@@ -3,9 +3,10 @@ require 'rubygems'
 require 'filewatcher'
 require 'trollop'
 require 'pathname'
+require 'thread'
 
 options = Trollop::options do
-  version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2014"
+  version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2015"
   banner <<-EOS
 Filewatcher scans the filesystem and executes shell commands when files changes.
 
@@ -22,11 +23,13 @@ Examples:
 Options:
 EOS
 
-  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5
+  opt :dontwait, "Do not wait for filesystem updates before running", :short => 'd', :type => :boolean, :default => false
+  opt :restart, "Restart process when filesystem is updated", :short => 'r', :type => :boolean, :default => false
+  opt :list, "Print name of files being watched"
   opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
-  opt :list, "Print name of files being watched"
+  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5  
 end
 
 Trollop::die "must have at least one argument" if(ARGV.size == 0)
@@ -56,7 +59,45 @@ end
 
 files = split_files_void_escaped_whitespace(files)
 
-FileWatcher.new(files, options[:list]).watch(options[:interval]) do |filename, event|
+def fork_process(env, cmd)
+  pipe_read, pipe_write = IO.pipe
+  fork do
+    pipe_read.close
+    pipe_write.write Process.spawn(env,cmd).to_s
+    exit
+  end
+
+  Kernel.sleep 1
+  pipe_write.close
+  child_pid = pipe_read.read.to_i
+  pipe_read.close
+  return child_pid
+end
+
+def kill_process(child_pid)
+  still_running = true
+  begin
+    Process.kill(1, child_pid)
+  rescue Errno::ESRCH
+    still_running = false
+  end
+  while still_running do
+    begin
+      Process.getpgid( child_pid)
+      still_running = true
+    rescue Errno::ESRCH
+      still_running = false
+    end
+    Kernel.sleep 0.1
+  end
+end
+
+if(options[:restart])
+  rd, wr = IO.pipe
+  child_pid = nil
+end
+
+FileWatcher.new(files, options[:list], options[:dontwait]).watch(options[:interval]) do |filename, event|
   cmd = nil
   if(options[:exec] and File.exist?(filename))
     extension = filename[/(\.[^\.]*)$/,0]
@@ -91,8 +132,23 @@ FileWatcher.new(files, options[:list]).watch(options[:interval]) do |filename, e
     if(event != :delete)
       ENV['FILEPATH'] = path.realpath.to_s
     end
-    pid = Process.spawn(env, cmd);
-    pid = Process.wait();
+
+    if(options[:restart])
+      if(child_pid == nil)
+        child_pid = fork_process(env, cmd)
+      else
+        kill_process(child_pid)
+        child_pid = fork_process(env, cmd)
+      end
+    else
+      begin
+        pid = Process.spawn(env, cmd)
+        Process.wait()
+      rescue SystemExit, Interrupt
+        exit(0)
+      end
+    end
+
   else
     case(event)
     when :changed

@@ -6,14 +6,14 @@ class FileWatcher
   attr_accessor :filenames
 
   def self.VERSION
-    return '0.3.6'
+    return '0.4.0'
   end
 
-  def initialize(unexpanded_filenames, print_filelist=false)
+  def initialize(unexpanded_filenames, print_filelist=false, dontwait=false)
     @unexpanded_filenames = unexpanded_filenames
     @last_mtimes = { }
     @filenames = expand_directories(@unexpanded_filenames)
-
+    @dontwait = dontwait
     puts 'Watching:' if print_filelist
     @filenames.each do |filename|
       raise 'File does not exist' unless File.exist?(filename)
@@ -23,6 +23,9 @@ class FileWatcher
   end
 
   def watch(sleep=1, &on_update)
+    if(@dontwait)
+      yield '',''
+    end
     loop do
       begin
         Kernel.sleep sleep until filesystem_updated?
