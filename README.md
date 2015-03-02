@@ -87,7 +87,7 @@ filesystem gets updated:
 Restart long running commands
 -----------------------------
 
-The `--restart` option kills the command if it's still running when a filesystem change happens. Can be used to restart locally running webservers on updates, or kill long running tests and restart on updates. The option often makes filewatcher faster.
+The `--restart` option kills the command if it's still running when a filesystem change happens. Can be used to restart locally running webservers on updates, or kill long running tests and restart on updates. This option often makes filewatcher faster in general. To not wait for tests to finish:
 
     $ filewatcher --restart "**/*.rb" "rake test"
 
