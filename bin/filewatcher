@@ -29,7 +29,7 @@ EOS
   opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
-  opt :interval, "Interval to scan filesystem. Defaults to 0.5 seconds.", :short => 'i', :type => :float, :default => 0.5  
+  opt :interval, "Interval to scan filesystem.", :short => 'i', :type => :float, :default => 0.5
 end
 
 Trollop::die "must have at least one argument" if(ARGV.size == 0)
@@ -77,7 +77,7 @@ end
 def kill_process(child_pid)
   still_running = true
   begin
-    Process.kill(1, child_pid)
+    Process.kill(9, child_pid)
   rescue Errno::ESRCH
     still_running = false
   end
