@@ -84,12 +84,16 @@ filesystem gets updated:
 
     $ filewatcher "src test" "ruby test/test_suite.rb"
 
-Automatic restart of processes
-------------------------------
+Restart long running commands
+-----------------------------
 
-The `--restart` option restarts the command when changes happens on the file system. The `--dontwait` starts the command when filewatcher is started. To start a webserver and have it automatically restart when html files are updated:
+The `--restart` option kills the command if it's still running when a filesystem change happens. Can be used to restart locally running webservers on updates, or kill long running tests and restart on updates. The option often makes filewatcher faster.
 
-    $ filewatcher --dontwait --restart "*.html" "python -m SimpleHTTPServer"
+    $ filewatcher --restart "**/*.rb" "rake test"
+
+The `--dontwait` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
+
+    $ filewatcher --restart --dontwait "*.html" "python -m SimpleHTTPServer"
 
 Available enviroment variables
 ------------------------------
@@ -105,13 +109,20 @@ The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
 Command line options
 --------------------
 
-    --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
-            --exec, -e:   Execute file as a script when file is updated.
-     --include, -n <s>:   Include files (default: *)
-     --exclude, -x <s>:   Exclude file(s) matching (default: "")
-            --list, -l:   Print name of files being watched
+Useful command line options:
+
+            --list, -l:   Print name of files being watched on startup
+         --restart, -r:   Kill the command if it's still running
+        --dontwait, -d:   Start the command immediately
+
+Other command line options:
+
          --version, -v:   Print version and exit
             --help, -h:   Show this message
+    --interval, -i <f>:   Interval in seconds to scan filesystem. Defaults to 0.5 seconds.
+            --exec, -e:   Execute file as a script when file is updated
+     --include, -n <s>:   Include files (default: *)
+     --exclude, -x <s>:   Exclude file(s) matching (default: "")
 
 Ruby API
 --------
@@ -194,7 +205,7 @@ with no dependencies.
 
 Credits
 -------
-This project would not be where it is today without the generous help provided by people reporting issues and these contributors: 
+This project would not be where it is today without the generous help provided by people reporting issues and these contributors:
 
 
  * Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
