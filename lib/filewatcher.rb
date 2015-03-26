@@ -58,7 +58,7 @@ class FileWatcher
     end
 
     @filenames.each do |filename|
-      if(not(File.exists?(filename)))
+      if(not(File.exist?(filename)))
         @filenames.delete(filename)
         @last_mtimes.delete(filename)
         @updated_file = filename
