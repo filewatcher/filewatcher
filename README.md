@@ -221,7 +221,7 @@ over the network)
     filewatcher.finalize   # Ensure all filesystem changes made prior to
                            # ending the watch are handled.
 
-The filewatcher library is just a single file with 123 LOC (including comments)
+The filewatcher library is just a single file with 147 LOC (including comments)
 with no dependencies.
 
 
