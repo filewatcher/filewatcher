@@ -106,6 +106,33 @@ describe FileWatcher do
     thread.join.should.equal thread # Proves thread successfully joined
   end
 
+  it "should be pauseable/resumable" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    filewatcher.filesystem_updated?.should.be.false
+    processed = []
+    thread = Thread.new(filewatcher,processed) do
+      filewatcher.watch{|f| processed << f }
+    end
+    sleep 0.5  # thread needs a chance to start
+    filewatcher.pause_watch
+    (1..4).each do |n|
+      open("test/fixtures/file#{n}.txt","w") { |f| f.puts "content#{n}" }
+    end
+    sleep 1 # Give filewatcher time to respond
+    processed.should.equal []  #update block should not have been called
+    filewatcher.resume_watch
+    sleep 1 # Give filewatcher time to respond
+    processed.should.equal []  #update block still should not have been called
+    added_files = []
+    (5..7).each do |n|
+      added_files << "test/fixtures/file#{n}.txt"
+      open(added_files.last,"w") { |f| f.puts "content#{n}" }
+    end
+    sleep 1 # Give filewatcher time to respond
+    filewatcher.end_watch
+    processed.should.satisfy &includes_all(added_files)
+  end
+
   it "should process all remaining changes at finalize" do
     filewatcher = FileWatcher.new(["test/fixtures"])
     filewatcher.filesystem_updated?.should.be.false

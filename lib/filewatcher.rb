@@ -14,7 +14,9 @@ class FileWatcher
     @filenames = nil
     @stored_update = nil
     @keep_watching = false
+    @pausing = false
     @last_snapshot = mtime_snapshot
+    @end_snapshot = nil
     @dontwait = dontwait
     puts 'Watching:' if print_filelist
     @filenames.each do |filename|
@@ -24,13 +26,18 @@ class FileWatcher
   end
 
   def watch(sleep=1, &on_update)
+    @sleep = sleep
     @stored_update = on_update
     @keep_watching = true
     if(@dontwait)
       yield '',''
     end
     while @keep_watching
-      while @keep_watching && not(filesystem_updated?)
+      @end_snapshot = mtime_snapshot if @pausing
+      while @keep_watching && @pausing
+        Kernel.sleep 1
+      end
+      while @keep_watching && !filesystem_updated? && !@pausing
         Kernel.sleep sleep
       end
       # test and null @updated_file to prevent yielding the last
@@ -38,7 +45,23 @@ class FileWatcher
       yield @updated_file, @event if @updated_file
       @updated_file = nil
     end
+    @end_snapshot = mtime_snapshot
     finalize(&on_update)
+  end
+
+  def pause_watch
+    @pausing = true
+    Kernel.sleep @sleep # Ensure we wait long enough to enter pause loop
+                        # in #watch
+  end
+
+  def resume_watch
+    if !@keep_watching || !@pausing
+      raise "Can't resume unless #watch and #pause were first called"
+    end
+    @last_snapshot = mtime_snapshot  # resume with fresh snapshot
+    @pausing = false
+    Kernel.sleep 1 # Wait long enough to exit pause loop in #watch
   end
 
   # Stops the watch, allowing any remaining changes to be finalized.
@@ -51,11 +74,12 @@ class FileWatcher
   # Calls the update block repeatedly until all changes in the
   # current snapshot are dealt with
   def finalize(&on_update)
-    on_update = @stored_update if not block_given?
-    snapshot = mtime_snapshot
+    on_update = @stored_update if !block_given?
+    snapshot = @end_snapshot ? @end_snapshot : mtime_snapshot
     while filesystem_updated?(snapshot)
       on_update.call(@updated_file, @event)
     end
+    @end_snapshot =nil
     return nil
   end
 
