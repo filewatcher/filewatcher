@@ -97,70 +97,75 @@ if(options[:restart])
   child_pid = nil
 end
 
-FileWatcher.new(files, options[:list], options[:dontwait]).watch(options[:interval]) do |filename, event|
-  cmd = nil
-  if(options[:exec] and File.exist?(filename))
-    extension = filename[/(\.[^\.]*)$/,0]
-    runners = {
-      ".py" => "python",
-      ".js" => "node",
-      ".rb" => "ruby",
-      ".pl" => "perl",
-      ".awk" => "awk",
-      ".php" => "php",
-      ".phtml" => "php",
-      ".php4" => "php",
-      ".php3" => "php",
-      ".php5" => "php",
-      ".phps" => "php"
-    }
-    runner = runners[extension]
-    if(runner)
-      cmd = "env #{runner.to_s} #{filename}"
-    end
-  elsif(ARGV.length > 1)
-    cmd = ARGV[-1]
-  end
-
-  if(cmd)
-    path = Pathname.new(filename)
-    env = {
-      'FILENAME'=> path.to_s,
-      'FILEDIR' => path.parent.realpath.to_s,
-      'FSEVENT' => event.to_s
-    }
-    if(event != :delete)
-      ENV['FILEPATH'] = path.realpath.to_s
+begin
+  fw = FileWatcher.new(files, options[:list], options[:dontwait])
+  fw.watch(options[:interval]) do |filename, event|
+    cmd = nil
+    if(options[:exec] and File.exist?(filename))
+      extension = filename[/(\.[^\.]*)$/,0]
+      runners = {
+        ".py" => "python",
+        ".js" => "node",
+        ".rb" => "ruby",
+        ".pl" => "perl",
+        ".awk" => "awk",
+        ".php" => "php",
+        ".phtml" => "php",
+        ".php4" => "php",
+        ".php3" => "php",
+        ".php5" => "php",
+        ".phps" => "php"
+      }
+      runner = runners[extension]
+      if(runner)
+        cmd = "env #{runner.to_s} #{filename}"
+      end
+    elsif(ARGV.length > 1)
+      cmd = ARGV[-1]
     end
 
-    if(options[:restart])
-      if(child_pid == nil)
-        child_pid = fork_process(env, cmd)
+    if(cmd)
+      path = Pathname.new(filename)
+      env = {
+        'FILENAME'=> path.to_s,
+        'FILEDIR' => path.parent.realpath.to_s,
+        'FSEVENT' => event.to_s
+      }
+      if(event != :delete)
+        ENV['FILEPATH'] = path.realpath.to_s
+      end
+
+      if(options[:restart])
+        if(child_pid == nil)
+          child_pid = fork_process(env, cmd)
+        else
+          kill_process(child_pid)
+          child_pid = fork_process(env, cmd)
+        end
       else
-        kill_process(child_pid)
-        child_pid = fork_process(env, cmd)
+        begin
+          pid = Process.spawn(env, cmd)
+          Process.wait()
+        rescue SystemExit, Interrupt
+          exit(0)
+        end
       end
+
     else
-      begin
-        pid = Process.spawn(env, cmd)
-        Process.wait()
-      rescue SystemExit, Interrupt
-        exit(0)
+      case(event)
+      when :changed
+        print "file updated"
+      when :delete
+        print "file deleted"
+      when :new
+        print "new file"
+      else
+        print event.to_s
       end
+      puts ": " + filename
     end
 
-  else
-    case(event)
-    when :changed
-      print "file updated"
-    when :delete
-      print "file deleted"
-    when :new
-      print "new file"
-    else
-      print event.to_s
-    end
-    puts ": " + filename
   end
-
+rescue SystemExit, Interrupt
+  fw.finalize
 end

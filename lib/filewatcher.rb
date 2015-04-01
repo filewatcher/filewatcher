@@ -11,71 +11,93 @@ class FileWatcher
 
   def initialize(unexpanded_filenames, print_filelist=false, dontwait=false)
     @unexpanded_filenames = unexpanded_filenames
-    @last_mtimes = { }
-    @filenames = expand_directories(@unexpanded_filenames)
+    @filenames = nil
+    @stored_update = nil
+    @keep_watching = false
+    @last_snapshot = mtime_snapshot
     @dontwait = dontwait
     puts 'Watching:' if print_filelist
     @filenames.each do |filename|
       raise 'File does not exist' unless File.exist?(filename)
-      @last_mtimes[filename] = File.stat(filename).mtime
       puts filename if print_filelist
     end
   end
 
   def watch(sleep=1, &on_update)
+    @stored_update = on_update
+    @keep_watching = true
     if(@dontwait)
       yield '',''
     end
-    loop do
-      begin
-        Kernel.sleep sleep until filesystem_updated?
-      rescue SystemExit,Interrupt
-        Kernel.exit
+    while @keep_watching
+      while @keep_watching && not(filesystem_updated?)
+        Kernel.sleep sleep
       end
-      yield @updated_file, @event
+      # test and null @updated_file to prevent yielding the last
+      # file twice if @keep_watching has just been set to false
+      yield @updated_file, @event if @updated_file
+      @updated_file = nil
     end
+    finalize(&on_update)
   end
 
-  def filesystem_updated?
-    filenames = expand_directories(@unexpanded_filenames)
+  # Stops the watch, allowing any remaining changes to be finalized.
+  # Used mainly in multi-threaded situations.
+  def end_watch
+    @keep_watching = false
+    return nil
+  end
 
-    if(filenames.size > @filenames.size)
-      filename = (filenames - @filenames).first
-      @filenames << filename
-      @last_mtimes[filename] = File.stat(filename).mtime
-      @updated_file = filename
-      @event = :new
-      return true
+  # Calls the update block repeatedly until all changes in the
+  # current snapshot are dealt with
+  def finalize(&on_update)
+    on_update = @stored_update if not block_given?
+    snapshot = mtime_snapshot
+    while filesystem_updated?(snapshot)
+      on_update.call(@updated_file, @event)
     end
+    return nil
+  end
 
-    if(filenames.size < @filenames.size)
-      filename = (@filenames - filenames).first
-      @filenames.delete(filename)
-      @last_mtimes.delete(filename)
-      @updated_file = filename
-      @event = :delete
-      return true
-    end
-
+  # Takes a snapshot of the current status of watched files.
+  # (Allows avoidance of potential race condition during #finalize)
+  def mtime_snapshot
+    snapshot = {}
+    @filenames = expand_directories(@unexpanded_filenames)
     @filenames.each do |filename|
-      if(not(File.exist?(filename)))
-        @filenames.delete(filename)
-        @last_mtimes.delete(filename)
-        @updated_file = filename
-        @event = :delete
-        return true
-      end
-      mtime = File.stat(filename).mtime
-      updated = @last_mtimes[filename] < mtime
+      mtime = File.exist?(filename) ? File.stat(filename).mtime : Time.new(0)
+      snapshot[filename] = mtime
+    end
+    return snapshot
+  end
 
-      @last_mtimes[filename] = mtime
-      if(updated)
-        @updated_file = filename
+  def filesystem_updated?(snapshot_to_use = nil)
+    snapshot = snapshot_to_use ? snapshot_to_use : mtime_snapshot
+
+    forward_changes = snapshot.to_a - @last_snapshot.to_a
+
+    forward_changes.each do |file,mtime|
+      @updated_file = file
+      unless @last_snapshot.fetch(@updated_file,false)
+        @last_snapshot[file] = mtime
+        @event = :new
+        return true
+      else
+        @last_snapshot[file] = mtime
         @event = :changed
         return true
       end
     end
 
+    backward_changes = @last_snapshot.to_a - snapshot.to_a
+    forward_names = forward_changes.map{|change| change.first}
+    backward_changes.reject!{|f,m| forward_names.include?(f)}
+    backward_changes.each do |file,mtime|
+      @updated_file = file
+      @last_snapshot.delete(file)
+      @event = :delete
+      return true
+    end
     return false
   end
 

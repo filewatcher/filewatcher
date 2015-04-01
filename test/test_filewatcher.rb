@@ -98,4 +98,31 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.true
   end
 
+  it "should be stoppable" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    thread = Thread.new(filewatcher){filewatcher.watch}
+    sleep 1  # thread needs a chance to start
+    filewatcher.end_watch
+    thread.join.should.equal thread # Proves thread successfully joined
+  end
+
+  it "should process all remaining changes at finalize" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    filewatcher.filesystem_updated?.should.be.false
+    processed = []
+    thread = Thread.new(filewatcher,processed) do
+      filewatcher.watch{|f| processed << f }
+    end
+    sleep 1  # thread needs a chance to start
+    filewatcher.end_watch
+    thread.join
+    added_files = []
+    (1..4).each do |n|
+      added_files << "test/fixtures/file#{n}.txt"
+      open(added_files.last,"w") { |f| f.puts "content#{n}" }
+    end
+    filewatcher.finalize
+    processed.should.satisfy &includes_all(added_files)
+  end
+
 end
