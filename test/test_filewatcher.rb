@@ -100,8 +100,8 @@ describe FileWatcher do
 
   it "should be stoppable" do
     filewatcher = FileWatcher.new(["test/fixtures"])
-    thread = Thread.new(filewatcher){filewatcher.watch}
-    sleep 1  # thread needs a chance to start
+    thread = Thread.new(filewatcher){filewatcher.watch(0.1)}
+    sleep 0.2  # thread needs a chance to start
     filewatcher.end_watch
     thread.join.should.equal thread # Proves thread successfully joined
   end
@@ -111,24 +111,24 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     thread = Thread.new(filewatcher,processed) do
-      filewatcher.watch{|f| processed << f }
+      filewatcher.watch(0.1){|f| processed << f }
     end
-    sleep 0.5  # thread needs a chance to start
+    sleep 0.2  # thread needs a chance to start
     filewatcher.pause_watch
     (1..4).each do |n|
       open("test/fixtures/file#{n}.txt","w") { |f| f.puts "content#{n}" }
     end
-    sleep 1 # Give filewatcher time to respond
+    sleep 0.2 # Give filewatcher time to respond
     processed.should.equal []  #update block should not have been called
     filewatcher.resume_watch
-    sleep 1 # Give filewatcher time to respond
+    sleep 0.2 # Give filewatcher time to respond
     processed.should.equal []  #update block still should not have been called
     added_files = []
     (5..7).each do |n|
       added_files << "test/fixtures/file#{n}.txt"
       open(added_files.last,"w") { |f| f.puts "content#{n}" }
     end
-    sleep 1 # Give filewatcher time to respond
+    sleep 0.2 # Give filewatcher time to respond
     filewatcher.end_watch
     processed.should.satisfy &includes_all(added_files)
   end
@@ -138,9 +138,9 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     thread = Thread.new(filewatcher,processed) do
-      filewatcher.watch{|f| processed << f }
+      filewatcher.watch(0.1){|f| processed << f }
     end
-    sleep 1  # thread needs a chance to start
+    sleep 0.2  # thread needs a chance to start
     filewatcher.end_watch
     thread.join
     added_files = []

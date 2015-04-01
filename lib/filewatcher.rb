@@ -35,7 +35,7 @@ class FileWatcher
     while @keep_watching
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
-        Kernel.sleep 1
+        Kernel.sleep sleep
       end
       while @keep_watching && !filesystem_updated? && !@pausing
         Kernel.sleep sleep
