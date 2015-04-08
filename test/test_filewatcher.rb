@@ -102,7 +102,7 @@ describe FileWatcher do
     filewatcher = FileWatcher.new(["test/fixtures"])
     thread = Thread.new(filewatcher){filewatcher.watch(0.1)}
     sleep 0.2  # thread needs a chance to start
-    filewatcher.end_watch
+    filewatcher.stop
     thread.join.should.equal thread # Proves thread successfully joined
   end
 
@@ -114,13 +114,13 @@ describe FileWatcher do
       filewatcher.watch(0.1){|f,e| processed << f }
     end
     sleep 0.2  # thread needs a chance to start
-    filewatcher.pause_watch
+    filewatcher.pause
     (1..4).each do |n|
       open("test/fixtures/file#{n}.txt","w") { |f| f.puts "content#{n}" }
     end
     sleep 0.2 # Give filewatcher time to respond
     processed.should.equal []  #update block should not have been called
-    filewatcher.resume_watch
+    filewatcher.resume
     sleep 0.2 # Give filewatcher time to respond
     processed.should.equal []  #update block still should not have been called
     added_files = []
@@ -129,7 +129,7 @@ describe FileWatcher do
       open(added_files.last,"w") { |f| f.puts "content#{n}" }
     end
     sleep 0.2 # Give filewatcher time to respond
-    filewatcher.end_watch
+    filewatcher.stop
     processed.should.satisfy &includes_all(added_files)
   end
 
@@ -141,7 +141,7 @@ describe FileWatcher do
       filewatcher.watch(0.1){|f,e| processed << f }
     end
     sleep 0.2  # thread needs a chance to start
-    filewatcher.end_watch
+    filewatcher.stop
     thread.join
     added_files = []
     (1..4).each do |n|

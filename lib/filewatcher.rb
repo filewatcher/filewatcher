@@ -9,7 +9,13 @@ class FileWatcher
     return '0.4.0'
   end
 
-  def initialize(unexpanded_filenames, print_filelist=false, dontwait=false)
+  def update_spinner(label)
+    return nil unless @show_spinner
+    @spinner ||= %w(\\ | / -)
+    print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
+  end
+
+  def initialize(unexpanded_filenames, print_filelist=false, dontwait=false, show_spinner=false)
     @unexpanded_filenames = unexpanded_filenames
     @filenames = nil
     @stored_update = nil
@@ -18,6 +24,7 @@ class FileWatcher
     @last_snapshot = mtime_snapshot
     @end_snapshot = nil
     @dontwait = dontwait
+    @show_spinner = show_spinner
     puts 'Watching:' if print_filelist
     @filenames.each do |filename|
       raise 'File does not exist' unless File.exist?(filename)
@@ -35,9 +42,11 @@ class FileWatcher
     while @keep_watching
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
+        update_spinner('Pausing')
         Kernel.sleep sleep
       end
       while @keep_watching && !filesystem_updated? && !@pausing
+        update_spinner('Scanning')
         Kernel.sleep sleep
       end
       # test and null @updated_file to prevent yielding the last
@@ -49,24 +58,26 @@ class FileWatcher
     finalize(&on_update)
   end
 
-  def pause_watch
+  def pause
     @pausing = true
+    update_spinner('Initiating pause')
     Kernel.sleep @sleep # Ensure we wait long enough to enter pause loop
                         # in #watch
   end
 
-  def resume_watch
+  def resume
     if !@keep_watching || !@pausing
       raise "Can't resume unless #watch and #pause were first called"
     end
     @last_snapshot = mtime_snapshot  # resume with fresh snapshot
     @pausing = false
-    Kernel.sleep 1 # Wait long enough to exit pause loop in #watch
+    update_spinner('Resuming')
+    Kernel.sleep @sleep # Wait long enough to exit pause loop in #watch
   end
 
-  # Stops the watch, allowing any remaining changes to be finalized.
+  # Ends the watch, allowing any remaining changes to be finalized.
   # Used mainly in multi-threaded situations.
-  def end_watch
+  def stop
     @keep_watching = false
     return nil
   end
@@ -77,6 +88,7 @@ class FileWatcher
     on_update = @stored_update if !block_given?
     snapshot = @end_snapshot ? @end_snapshot : mtime_snapshot
     while filesystem_updated?(snapshot)
+      update_spinner('Finalizing')
       on_update.call(@updated_file, @event)
     end
     @end_snapshot =nil
