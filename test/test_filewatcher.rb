@@ -149,6 +149,9 @@ describe FileWatcher do
       open(added_files.last,"w") { |f| f.puts "content#{n}" }
     end
     filewatcher.finalize
+    puts "What is wrong with finalize:"
+    puts "Expect: #{added_files.inspect}"
+    puts "Actual: #{processed.inspect}"
     processed.should.satisfy &includes_all(added_files)
   end
 
