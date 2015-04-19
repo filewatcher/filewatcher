@@ -79,6 +79,7 @@ class FileWatcher
   # Used mainly in multi-threaded situations.
   def stop
     @keep_watching = false
+    update_spinner('Stopping')
     return nil
   end
 
