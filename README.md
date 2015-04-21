@@ -199,7 +199,29 @@ for syntax.
       puts "Updated " + filename
     end
 
-The filewatcher library is just a single file with 96 LOC (including comments)
+Start, pause, resume, stop, and finalize a running watch. This is particularly
+useful when the update block takes a while to process each file (eg. sending
+over the network)
+
+    filewatcher = FileWatcher.new(["*.rb"])
+    thread = Thread.new(filewatcher){|fw| fw.watch{|f| puts "Updated " + f}}
+      ...
+    filewatcher.pause_watch # block stops responding to filesystem changes
+    filewatcher.finalize    # Ensure all filesystem changes made prior to
+                            # pausing are handled.
+      ...
+    filewatcher.resume_watch # block begins responding again, but is not given
+                             # changes made between #pause_watch and
+                             # #resume_watch
+      ...
+    filewatcher.end_watch  # block stops responding to filesystem changes
+                           # and takes a final snapshot of the filesystem
+    thread.join
+
+    filewatcher.finalize   # Ensure all filesystem changes made prior to
+                           # ending the watch are handled.
+
+The filewatcher library is just a single file with 147 LOC (including comments)
 with no dependencies.
 
 

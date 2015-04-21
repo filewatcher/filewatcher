@@ -98,4 +98,61 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.true
   end
 
+  it "should be stoppable" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    thread = Thread.new(filewatcher){filewatcher.watch(0.1)}
+    sleep 0.2  # thread needs a chance to start
+    filewatcher.stop
+    thread.join.should.equal thread # Proves thread successfully joined
+  end
+
+  it "should be pauseable/resumable" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    filewatcher.filesystem_updated?.should.be.false
+    processed = []
+    thread = Thread.new(filewatcher,processed) do
+      filewatcher.watch(0.1){|f,e| processed << f }
+    end
+    sleep 0.2  # thread needs a chance to start
+    filewatcher.pause
+    (1..4).each do |n|
+      open("test/fixtures/file#{n}.txt","w") { |f| f.puts "content#{n}" }
+    end
+    sleep 0.2 # Give filewatcher time to respond
+    processed.should.equal []  #update block should not have been called
+    filewatcher.resume
+    sleep 0.2 # Give filewatcher time to respond
+    processed.should.equal []  #update block still should not have been called
+    added_files = []
+    (5..7).each do |n|
+      added_files << "test/fixtures/file#{n}.txt"
+      open(added_files.last,"w") { |f| f.puts "content#{n}" }
+    end
+    sleep 0.2 # Give filewatcher time to respond
+    filewatcher.stop
+    processed.should.satisfy &includes_all(added_files)
+  end
+
+  it "should process all remaining changes at finalize" do
+    filewatcher = FileWatcher.new(["test/fixtures"])
+    filewatcher.filesystem_updated?.should.be.false
+    processed = []
+    thread = Thread.new(filewatcher,processed) do
+      filewatcher.watch(0.1){|f,e| processed << f }
+    end
+    sleep 0.2  # thread needs a chance to start
+    filewatcher.stop
+    thread.join
+    added_files = []
+    (1..4).each do |n|
+      added_files << "test/fixtures/file#{n}.txt"
+      open(added_files.last,"w") { |f| f.puts "content#{n}" }
+    end
+    filewatcher.finalize
+    puts "What is wrong with finalize:"
+    puts "Expect: #{added_files.inspect}"
+    puts "Actual: #{processed.inspect}"
+    processed.should.satisfy &includes_all(added_files)
+  end
+
 end

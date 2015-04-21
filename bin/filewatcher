@@ -30,9 +30,10 @@ EOS
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
   opt :interval, "Interval to scan filesystem.", :short => 'i', :type => :float, :default => 0.5
+  opt :quiet, "Hide spinner", :short => 'q', :type => :boolean, :default => false
 end
 
-Trollop::die "must have at least one argument" if(ARGV.size == 0)
+Trollop::die Trollop::educate if(ARGV.size == 0)
 
 files = []
 ARGV[0...-1].each do |a|
@@ -59,37 +60,13 @@ end
 
 files = split_files_void_escaped_whitespace(files)
 
-def fork_process(env, cmd)
-  pipe_read, pipe_write = IO.pipe
-  fork do
-    pipe_read.close
-    pipe_write.write Process.spawn(env,cmd).to_s
-    exit
-  end
-
-  Kernel.sleep 1
-  pipe_write.close
-  child_pid = pipe_read.read.to_i
-  pipe_read.close
-  return child_pid
-end
-
-def kill_process(child_pid)
-  still_running = true
-  begin
-    Process.kill(9, child_pid)
-  rescue Errno::ESRCH
-    still_running = false
-  end
-  while still_running do
-    begin
-      Process.getpgid( child_pid)
-      still_running = true
-    rescue Errno::ESRCH
-      still_running = false
-    end
-    Kernel.sleep 0.1
-  end
+def restart(child_pid, env, cmd)
+  Process.kill(9,child_pid)
+  Process.wait(child_pid)
+rescue Errno::ESRCH
+  # already killed
+ensure
+  child_pid = Process.spawn(env, cmd)
 end
 
 if(options[:restart])
@@ -97,70 +74,74 @@ if(options[:restart])
   child_pid = nil
 end
 
-FileWatcher.new(files, options[:list], options[:dontwait]).watch(options[:interval]) do |filename, event|
-  cmd = nil
-  if(options[:exec] and File.exist?(filename))
-    extension = filename[/(\.[^\.]*)$/,0]
-    runners = {
-      ".py" => "python",
-      ".js" => "node",
-      ".rb" => "ruby",
-      ".pl" => "perl",
-      ".awk" => "awk",
-      ".php" => "php",
-      ".phtml" => "php",
-      ".php4" => "php",
-      ".php3" => "php",
-      ".php5" => "php",
-      ".phps" => "php"
-    }
-    runner = runners[extension]
-    if(runner)
-      cmd = "env #{runner.to_s} #{filename}"
-    end
-  elsif(ARGV.length > 1)
-    cmd = ARGV[-1]
-  end
-
-  if(cmd)
-    path = Pathname.new(filename)
-    env = {
-      'FILENAME'=> path.to_s,
-      'FILEDIR' => path.parent.realpath.to_s,
-      'FSEVENT' => event.to_s
-    }
-    if(event != :delete)
-      ENV['FILEPATH'] = path.realpath.to_s
+begin
+  fw = FileWatcher.new(files, options[:list], options[:dontwait], !options[:quiet])
+  fw.watch(options[:interval]) do |filename, event|
+    cmd = nil
+    if(options[:exec] and File.exist?(filename))
+      extension = filename[/(\.[^\.]*)$/,0]
+      runners = {
+        ".py" => "python",
+        ".js" => "node",
+        ".rb" => "ruby",
+        ".pl" => "perl",
+        ".awk" => "awk",
+        ".php" => "php",
+        ".phtml" => "php",
+        ".php4" => "php",
+        ".php3" => "php",
+        ".php5" => "php",
+        ".phps" => "php"
+      }
+      runner = runners[extension]
+      if(runner)
+        cmd = "env #{runner.to_s} #{filename}"
+      end
+    elsif(ARGV.length > 1)
+      cmd = ARGV[-1]
     end
 
-    if(options[:restart])
-      if(child_pid == nil)
-        child_pid = fork_process(env, cmd)
+    if(cmd)
+      path = Pathname.new(filename)
+      env = {
+        'FILENAME'=> path.to_s,
+        'FILEDIR' => path.parent.realpath.to_s,
+        'FSEVENT' => event.to_s
+      }
+      if(event != :delete)
+        ENV['FILEPATH'] = path.realpath.to_s
+      end
+
+      if(options[:restart])
+        if(child_pid == nil)
+          child_pid = Process.spawn(env, cmd)
+        else
+          child_id = restart(child_pid, env, cmd)
+        end
       else
-        kill_process(child_pid)
-        child_pid = fork_process(env, cmd)
+        begin
+          pid = Process.spawn(env, cmd)
+          Process.wait()
+        rescue SystemExit, Interrupt
+          exit(0)
+        end
       end
+
     else
-      begin
-        pid = Process.spawn(env, cmd)
-        Process.wait()
-      rescue SystemExit, Interrupt
-        exit(0)
+      case(event)
+      when :changed
+        print "file updated"
+      when :delete
+        print "file deleted"
+      when :new
+        print "new file"
+      else
+        print event.to_s
       end
+      puts ": " + filename
     end
 
-  else
-    case(event)
-    when :changed
-      print "file updated"
-    when :delete
-      print "file deleted"
-    when :new
-      print "new file"
-    else
-      print event.to_s
-    end
-    puts ": " + filename
   end
-
+rescue SystemExit, Interrupt
+  fw.finalize
 end
