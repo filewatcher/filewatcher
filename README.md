@@ -206,15 +206,15 @@ over the network)
     filewatcher = FileWatcher.new(["*.rb"])
     thread = Thread.new(filewatcher){|fw| fw.watch{|f| puts "Updated " + f}}
       ...
-    filewatcher.pause_watch # block stops responding to filesystem changes
+    filewatcher.pause       # block stops responding to filesystem changes
     filewatcher.finalize    # Ensure all filesystem changes made prior to
                             # pausing are handled.
       ...
-    filewatcher.resume_watch # block begins responding again, but is not given
+    filewatcher.resume       # block begins responding again, but is not given
                              # changes made between #pause_watch and
                              # #resume_watch
       ...
-    filewatcher.end_watch  # block stops responding to filesystem changes
+    filewatcher.end        # block stops responding to filesystem changes
                            # and takes a final snapshot of the filesystem
     thread.join
 
