@@ -229,10 +229,11 @@ Credits
 -------
 This project would not be where it is today without the generous help provided by people reporting issues and these contributors:
 
+ * Penn Taylor: Spinner displayed in the terminal and Start, pause, resume, stop, and finalize a running watch.
+  
+ * Franco Leonardo Bulgarelli: Support for absolute and globbed paths by  https://github.com/flbulgarelli
 
- * Support for absolute and globbed paths by Franco Leonardo Bulgarelli: https://github.com/flbulgarelli
-
- * Command line globbing by Kristoffer Roupé https://github.com/kitofr
+ * Kristoffer Roupé https://github.com/kitofr Command line globbing by 
 
 This gem was initially inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 

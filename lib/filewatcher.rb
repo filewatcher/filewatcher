@@ -6,7 +6,7 @@ class FileWatcher
   attr_accessor :filenames
 
   def self.VERSION
-    return '0.4.0'
+    return '0.5.0'
   end
 
   def update_spinner(label)
@@ -32,7 +32,7 @@ class FileWatcher
     end
   end
 
-  def watch(sleep=1, &on_update)
+  def watch(sleep=0.5, &on_update)
     @sleep = sleep
     @stored_update = on_update
     @keep_watching = true
