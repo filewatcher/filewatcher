@@ -6,7 +6,7 @@ class FileWatcher
   attr_accessor :filenames
 
   def self.VERSION
-    return '0.5.0'
+    return '0.5.1'
   end
 
   def update_spinner(label)

@@ -112,8 +112,9 @@ Command line options
 Useful command line options:
 
             --list, -l:   Print name of files being watched on startup
-         --restart, -r:   Kill the command if it's still running
-        --dontwait, -d:   Start the command immediately
+         --restart, -r:   Run command in separate fork and kill it on filesystem updates
+        --dontwait, -d:   Run the command before any filesystem updates
+         --spinner, -s:   Display an animated spinner
 
 Other command line options:
 
@@ -230,10 +231,10 @@ Credits
 This project would not be where it is today without the generous help provided by people reporting issues and these contributors:
 
  * Penn Taylor: Spinner displayed in the terminal and Start, pause, resume, stop, and finalize a running watch.
-  
+
  * Franco Leonardo Bulgarelli: Support for absolute and globbed paths by  https://github.com/flbulgarelli
 
- * Kristoffer Roupé https://github.com/kitofr Command line globbing by 
+ * Kristoffer Roupé https://github.com/kitofr Command line globbing by
 
 This gem was initially inspired by Tom Lieber's blogg posting: http://alltom.com/pages/detecting-file-changes-with-ruby
 

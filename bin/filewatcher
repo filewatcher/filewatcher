@@ -11,7 +11,7 @@ options = Trollop::options do
 Filewatcher scans the filesystem and executes shell commands when files changes.
 
 Usage:
-   filewatcher [-i interval] "<filenames>" "<shell commands>"
+   filewatcher [--restart] '<filenames or patterns>' '<shell command>'
 Where
    filename: filename(s) to scan.
    shell command: shell command to execute when file changes on disk.
@@ -30,7 +30,7 @@ EOS
   opt :include, "Include files", :type => :string, :default => "*"
   opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
   opt :interval, "Interval to scan filesystem.", :short => 'i', :type => :float, :default => 0.5
-  opt :quiet, "Hide spinner", :short => 'q', :type => :boolean, :default => false
+  opt :spinner, "Show an ascii spinner", :short => 's', :type => :boolean, :default => false
 end
 
 Trollop::die Trollop::educate if(ARGV.size == 0)
@@ -75,7 +75,7 @@ if(options[:restart])
 end
 
 begin
-  fw = FileWatcher.new(files, options[:list], options[:dontwait], !options[:quiet])
+  fw = FileWatcher.new(files, options[:list], options[:dontwait], options[:spinner])
   fw.watch(options[:interval]) do |filename, event|
     cmd = nil
     if(options[:exec] and File.exist?(filename))
