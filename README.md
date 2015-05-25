@@ -7,12 +7,12 @@ Filewatcher
 [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
 Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code.
-Works everywhere. Monitors changes in the filesystem by polling. No config files needed to run.
+Works everywhere. Monitors changes in the filesystem by polling. Has no config files.
 When running filewatcher from the command line, you specify which files to monitor and what action
 to perform on updates.
 
-Search recursively for javascript files and run jshint when a file is updated, added,
-renamed or deleted:
+For example to search recursively for javascript files and run jshint when a file is
+updated, added, renamed or deleted:
 
 Linux/OSX:
 
@@ -36,7 +36,7 @@ Filewatcher scans the filesystem and execute shell commands when files are
 updated, added, renamed or deleted.
 
     Usage:
-        filewatcher [-i interval][-l] "<filename>" "<shell command>"
+        filewatcher [--restart][--list][--dontwait] "<filename>" "<shell command>"
 
     Where
         filename: filename(s) to scan.
@@ -174,7 +174,7 @@ To detect if a file is updated, added or deleted:
       end
     end
 
-When a file is renamed it is detected as a deletion and a file addition.
+When a file is renamed it is detected as a deletion followed by a file addition.
 
 To check for changes more often than the default once every second:
 

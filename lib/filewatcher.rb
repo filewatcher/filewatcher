@@ -33,6 +33,7 @@ class FileWatcher
   end
 
   def watch(sleep=0.5, &on_update)
+    trap("SIGINT") {return }
     @sleep = sleep
     @stored_update = on_update
     @keep_watching = true
@@ -110,7 +111,6 @@ class FileWatcher
 
   def filesystem_updated?(snapshot_to_use = nil)
     snapshot = snapshot_to_use ? snapshot_to_use : mtime_snapshot
-
     forward_changes = snapshot.to_a - @last_snapshot.to_a
 
     forward_changes.each do |file,mtime|
@@ -142,7 +142,6 @@ class FileWatcher
     if(!patterns.kind_of?Array)
       patterns = [patterns]
     end
-
     patterns.map { |it| Dir[fulldepth(it)] }.flatten.uniq
   end
 
@@ -155,6 +154,5 @@ class FileWatcher
       pattern
     end
   end
-
 
 end
