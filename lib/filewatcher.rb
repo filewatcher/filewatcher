@@ -47,7 +47,7 @@ class FileWatcher
         Kernel.sleep sleep
       end
       while @keep_watching && !filesystem_updated? && !@pausing
-        update_spinner('Scanning')
+        update_spinner('Watching')
         Kernel.sleep sleep
       end
       # test and null @updated_file to prevent yielding the last
