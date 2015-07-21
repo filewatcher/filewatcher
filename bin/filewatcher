@@ -103,11 +103,9 @@ begin
 
     if(cmd)
       path = Pathname.new(filename)
-      filedir = Pathname.new('.').realpath.to_s + 
-        (File::SEPARATOR + path.parent.to_s).sub(/[\/|\\]\.$/,'')
       env = {
         'FILENAME'=> path.to_s,
-        'FILEDIR' => filedir,
+        'FILEDIR' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s),
         'FSEVENT' => event.to_s
       }
       if(event != :delete)
