@@ -15,21 +15,31 @@ class FileWatcher
     print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
   end
 
-  def initialize(unexpanded_filenames, print_filelist=false, dontwait=false, show_spinner=false)
+  def initialize(unexpanded_filenames, *args)
+    if(args.first)
+      options = args.first
+    else
+      options = {}
+    end
     @unexpanded_filenames = unexpanded_filenames
+    @excluded_filenames = options[:exclude]
     @filenames = nil
     @stored_update = nil
     @keep_watching = false
     @pausing = false
     @last_snapshot = mtime_snapshot
     @end_snapshot = nil
-    @dontwait = dontwait
-    @show_spinner = show_spinner
-    puts 'Watching:' if print_filelist
-    @filenames.each do |filename|
-      raise 'File does not exist' unless File.exist?(filename)
-      puts filename if print_filelist
-    end
+    @dontwait = options[:dontwait]
+    @show_spinner = options[:spinner]
+
+    # Todo Remove this dead code and replace with something else in bin/filewatcher
+    # that uses filewatcher.filenames() method
+    #
+    # puts 'Watching:' if options[:list]
+    # @filenames.each do |filename|
+    #  raise 'File does not exist' unless File.exist?(filename)
+    #  puts filename if options[:list]
+    # end
   end
 
   def watch(sleep=0.5, &on_update)
@@ -102,7 +112,26 @@ class FileWatcher
   def mtime_snapshot
     snapshot = {}
     @filenames = expand_directories(@unexpanded_filenames)
+
+
+    # TODO Test this properly
+    @filtered_filenames = []
     @filenames.each do |filename|
+      exclude = false
+      if(@excluded_filenames)
+        @excluded_filenames.each do |exclude_filename|
+          if(filename.match(Regexp.new(exclude_filename)))
+            exclude = true
+          end
+        end
+      end
+      if(exclude == false)
+        @filtered_filenames << filename
+      end
+    end
+    
+    
+    @filtered_filenames.each do |filename|
       mtime = File.exist?(filename) ? File.stat(filename).mtime : Time.new(0)
       snapshot[filename] = mtime
     end

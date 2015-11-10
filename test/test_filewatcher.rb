@@ -27,12 +27,21 @@ describe FileWatcher do
     lambda { |it| elements.all? { |element| it.include? element }}
   end
 
+  it "should exclude selected file patterns" do
+    filewatcher = FileWatcher.new(File.expand_path('test/fixtures/**/*'), exclude: [".*\.txt"])
+
+    filewatcher.filenames.should.satisfy &includes_all(fixtures.map { |it| File.expand_path(it) })
+  end
+
+
+  
+  
   it "should handle absolute paths with globs" do
     filewatcher = FileWatcher.new(File.expand_path('test/fixtures/**/*'))
 
     filewatcher.filenames.should.satisfy &includes_all(fixtures.map { |it| File.expand_path(it) })
   end
-
+  
   it "should handle globs" do
     filewatcher = FileWatcher.new('test/fixtures/**/*')
 
