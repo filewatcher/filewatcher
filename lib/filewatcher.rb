@@ -22,7 +22,7 @@ class FileWatcher
       options = {}
     end
     @unexpanded_filenames = unexpanded_filenames
-    @excluded_filenames = options[:exclude]
+    @unexpanded_excluded_filenames = options[:exclude]
     @filenames = nil
     @stored_update = nil
     @keep_watching = false
@@ -113,25 +113,19 @@ class FileWatcher
     snapshot = {}
     @filenames = expand_directories(@unexpanded_filenames)
 
-
-    # TODO Test this properly
-    @filtered_filenames = []
-    @filenames.each do |filename|
-      exclude = false
-      if(@excluded_filenames)
-        @excluded_filenames.each do |exclude_filename|
-          if(filename.match(Regexp.new(exclude_filename)))
-            exclude = true
-          end
+    if(@unexpanded_excluded_filenames != nil and @unexpanded_excluded_filenames.size > 0)
+      # Remove files in the exclude filenames list
+      @filtered_filenames = []
+      @excluded_filenames = expand_directories(@unexpanded_excluded_filenames)
+      @filenames.each do |filename|
+        if(not(@excluded_filenames.include?(filename)))
+          @filtered_filenames << filename
         end
       end
-      if(exclude == false)
-        @filtered_filenames << filename
-      end
+      @filenames = @filtered_filenames
     end
     
-    
-    @filtered_filenames.each do |filename|
+    @filenames.each do |filename|
       mtime = File.exist?(filename) ? File.stat(filename).mtime : Time.new(0)
       snapshot[filename] = mtime
     end
