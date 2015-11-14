@@ -31,15 +31,6 @@ class FileWatcher
     @end_snapshot = nil
     @dontwait = options[:dontwait]
     @show_spinner = options[:spinner]
-
-    # Todo Remove this dead code and replace with something else in bin/filewatcher
-    # that uses filewatcher.filenames() method
-    #
-    # puts 'Watching:' if options[:list]
-    # @filenames.each do |filename|
-    #  raise 'File does not exist' unless File.exist?(filename)
-    #  puts filename if options[:list]
-    # end
   end
 
   def watch(sleep=0.5, &on_update)
@@ -159,6 +150,10 @@ class FileWatcher
       return true
     end
     return false
+  end
+
+  def last_found_filenames
+    @last_snapshot.keys
   end
 
   def expand_directories(patterns)

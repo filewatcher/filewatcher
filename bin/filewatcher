@@ -74,21 +74,17 @@ if(options[:restart])
   child_pid = nil
 end
 
-# TODO Test this:
-if(options[:exclude])
-  exclude_files = split_files_void_escaped_whitespace(options[:exclude])
-  options[:exclude] = exclude_files
-  pp exclude_files
-  exit
+if(options[:exclude] != "")
+  options[:exclude] = split_files_void_escaped_whitespace(options[:exclude].split(" "))  
 end
 
 begin
   fw = FileWatcher.new(files, options)
 
-  # TODO Test this:
   if(options[:list])
-    fw.filename.each do |filename|
-      puts filename if options[:list]
+    puts 'Watching:'
+    fw.last_found_filenames.each do |filename|
+      puts " #{filename}"
     end
   end
   
