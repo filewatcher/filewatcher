@@ -181,7 +181,7 @@ When a file is renamed it is detected as a new file followed by a file deletion.
 
 The API takes some of the same options as the command line interface. To watch all files recursively except files that matches *.rb, display a spinner and only wait for 0.1 seconds between each scan:
 
-    FileWatcher.new(['**/*.*'], exclude: '**/*.rb', spinner: true, interval: 0.1).watch() do |filename|
+    FileWatcher.new('**/*.*', exclude: '**/*.rb', spinner: true, interval: 0.1).watch() do |filename|
         puts filename
     end
 
