@@ -28,7 +28,7 @@ describe FileWatcher do
   end
 
   it "should exclude selected file patterns" do
-    filewatcher = FileWatcher.new(File.expand_path('test/fixtures/**/*'), exclude: [File.expand_path("test/fixtures/**/*.txt")])
+    filewatcher = FileWatcher.new(File.expand_path('test/fixtures/**/*'), :exclude => [File.expand_path("test/fixtures/**/*.txt")])
     filtered_fixtures =
       %w(test/fixtures/file4.rb
          test/fixtures/subdir/file6.rb
