@@ -31,11 +31,15 @@ class FileWatcher
     @end_snapshot = nil
     @dontwait = options[:dontwait]
     @show_spinner = options[:spinner]
+    @interval = options[:interval]
   end
 
   def watch(sleep=0.5, &on_update)
     trap("SIGINT") {return }
     @sleep = sleep
+    if(@interval and @interval > 0)
+      @sleep = @interval
+    end    
     @stored_update = on_update
     @keep_watching = true
     if(@dontwait)
@@ -45,11 +49,11 @@ class FileWatcher
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
         update_spinner('Pausing')
-        Kernel.sleep sleep
+        Kernel.sleep @sleep
       end
       while @keep_watching && !filesystem_updated? && !@pausing
         update_spinner('Watching')
-        Kernel.sleep sleep
+        Kernel.sleep @sleep
       end
       # test and null @updated_file to prevent yielding the last
       # file twice if @keep_watching has just been set to false

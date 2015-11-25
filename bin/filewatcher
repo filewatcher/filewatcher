@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require_relative '../lib/filewatcher'
+require 'filewatcher'
 require 'trollop'
 require 'pathname'
 require 'thread'
@@ -20,6 +20,10 @@ Examples:
    filewatcher "myfile" "echo 'myfile has changed'"
    filewatcher '*.rb' 'ruby $FILENAME'
    filewatcher '**/*.rb' 'ruby $FILENAME' # Watch subdirectories
+
+Other available environment variables are BASENAME, ABSOLUTE_FILENAME, 
+RELATIVE_FILENAME, EVENT and DIRNAME.
+
 Options:
 EOS
 
@@ -116,10 +120,16 @@ begin
     if(cmd)
       path = Pathname.new(filename)
       env = {
-        'FILENAME'=> path.to_s,
-        'FILEDIR' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s),
-        'FSEVENT' => event.to_s
+        'FILENAME' => filename,
+        'BASENAME' => path.basename.to_s,
+        'FILEDIR' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s), # Deprecated
+        'FSEVENT' => event.to_s, # Deprecated,
+        'EVENT' => event.to_s,
+        'DIRNAME' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s),
+        'ABSOLUTE_FILENAME' => File.join(Pathname.new('.').realpath.to_s, path.to_s),
+        'RELATIVE_FILENAME' => File.join(Pathname.new('.').to_s, path.to_s)
       }
+
       if(event != :delete)
         ENV['FILEPATH'] = path.realpath.to_s
       end

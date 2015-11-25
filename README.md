@@ -6,13 +6,9 @@ Filewatcher
 [![Dependency Status](https://gemnasium.com/thomasfl/filewatcher.png?travis)](https://gemnasium.com/thomasfl/filewatcher)
 [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
-Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code.
-Works everywhere. Monitors changes in the filesystem by polling. Has no config files.
-When running filewatcher from the command line, you specify which files to monitor and what action
-to perform on updates.
+Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates.
 
-For example to search recursively for javascript files and run jshint when a file is
-updated, added, renamed or deleted:
+For example to search recursively for javascript files and run jshint when a file is updated, added, renamed or deleted:
 
 Linux/OSX:
 
@@ -60,7 +56,7 @@ In Linux/OSX:
 
 Place filenames or filenames in quotes to use ruby filename globbing instead
 of shell filename globbing. This will make filewatcher look for files in
-subdirectories too. To watch all javascript files in subdirectories:
+subdirectories too. To watch all javascript files in subdirectories in Windows:
 
     > filewatcher "**/*.js" "node %FILENAME%"
 
@@ -77,7 +73,7 @@ python, ruby, perl, php, javascript or awk script.
 Print a list of all files matching *.css first and then output the filename
 when a file is beeing updated by using the --list/-l option:
 
-    $ filewatcher -l *.css 'echo file: $FILENAME'
+    $ filewatcher -l '**/*.css' 'echo file: $FILENAME'
 
 Watch the "src" and "test" folders recursively, and run test when the
 filesystem gets updated:
@@ -93,7 +89,7 @@ The `--restart` option kills the command if it's still running when a filesystem
 
 The `--dontwait` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
 
-    $ filewatcher --restart --dontwait "*.html" "python -m SimpleHTTPServer"
+    $ filewatcher --restart --dontwait "**/*.html" "python -m SimpleHTTPServer"
 
 Available enviroment variables
 ------------------------------
@@ -104,17 +100,24 @@ node whenever a javascript file is updated:
 
     $ filewatcher *.js 'node $FILENAME'
 
-The environment variables $FILEPATH, $FILEDIR and $FSEVENT is also available.
+Environment variables available from the command string:
+
+    BASENAME           File basename.
+    FILENAME           Relative filename.
+    ABSOLUTE_FILENAME  Asolute filename.
+    RELATIVE_FILENAME  Same as FILENAME but starts with "./"
+    EVENT              Event type. Is either 'changed', 'delete' or 'new'.
+    DIRNAME            Absolute directory name.
 
 Command line options
 --------------------
 
 Useful command line options:
 
-            --list, -l:   Print name of files being watched on startup
+            --list, -l:   Print name of matching files on startup
          --restart, -r:   Run command in separate fork and kill it on filesystem updates
         --dontwait, -d:   Run the command before any filesystem updates
-         --spinner, -s:   Display an animated spinner
+         --spinner, -s:   Display an animated spinner while scanning
 
 Other command line options:
 
@@ -174,21 +177,17 @@ To detect if a file is updated, added or deleted:
       end
     end
 
-When a file is renamed it is detected as a deletion followed by a file addition.
+When a file is renamed it is detected as a new file followed by a file deletion.
 
-To check for changes more often than the default once every second:
+The API takes some of the same options as the command line interface. To watch all files recursively except files that matches *.rb, display a spinner and only wait for 0.1 seconds between each scan:
 
-    FileWatcher.new(["README.rdoc"]).watch(0.5) do |filename|
-      puts "Updated " + filename
+    FileWatcher.new(['**/*.*'], exclude: '**/*.rb', spinner: true, interval: 0.1).watch() do |filename|
+        puts filename
     end
 
-Print the names of the files found before watching files and folders:
+To do the same from the command line, use the same options:
 
-    FileWatcher.new(["lib/"],true).watch do |filename|
-      puts "Updated " + filename
-    end
-    => Watching files:
-    lib/filewatcher.rb
+    $ filewatcher '**/*.*' --exclude '**/*.rb' --spinner --interval 0.1 'echo $FILENAME'
 
 Use patterns to match filenames in current directory and subdirectories. The
 pattern is not a regular expression; instead it follows rules similar to shell
@@ -222,7 +221,18 @@ over the network)
     filewatcher.finalize   # Ensure all filesystem changes made prior to
                            # ending the watch are handled.
 
-The filewatcher library is just a single file with 147 LOC (including comments)
+If basename, relative filename or absolute filename is necessay use the stanard lib 'pathname' like this:
+
+    require 'pathname'
+
+    FileWatcher.new(["**/*.*"]).watch() do |filename|
+      path = Pathname.new(filename)
+      puys "Basename         : " + path.basename.to_s
+      puts "Relative filename: " + File.join(Pathname.new('.').to_s, path.to_s)
+      puts "Absolute filename: " + File.join(Pathname.new('.').realpath.to_s, path.to_s)
+    end
+
+The filewatcher library is a single file with 180 LOC (including comments)
 with no dependencies.
 
 
