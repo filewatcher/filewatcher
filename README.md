@@ -235,6 +235,11 @@ If basename, relative filename or absolute filename is necessay use the stanard 
 The filewatcher library is a single file with 180 LOC (including comments)
 with no dependencies.
 
+Changelog
+---------
+0.5.3 Exclude files. More environment variables. Options in ruby api.
+0.5.2 Start, stop and finalize API.
+0.5.1 Kill and restart long running command with --restart option.
 
 Credits
 -------
