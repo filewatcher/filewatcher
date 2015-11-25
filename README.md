@@ -237,9 +237,9 @@ with no dependencies.
 
 Changelog
 ---------
-0.5.3 Exclude files. More environment variables. Options in ruby api.
-0.5.2 Start, stop and finalize API.
-0.5.1 Kill and restart long running command with --restart option.
+ * 0.5.3 Exclude files. More environment variables. Options in ruby api.
+ * 0.5.2 Start, stop and finalize API.
+ * 0.5.1 Kill and restart long running command with --restart option.
 
 Credits
 -------
