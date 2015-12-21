@@ -1,3 +1,4 @@
+# coding: utf-8
 # Simple file watcher. Detect changes in files and directories.
 #
 # Issues: Currently doesn't monitor changes in directorynames
@@ -11,7 +12,7 @@ class FileWatcher
 
   def update_spinner(label)
     return nil unless @show_spinner
-    @spinner ||= %w(\\ | / -)
+    @spinner ||= %w(▌ ▀ ▐ ▄)    
     print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
   end
 
