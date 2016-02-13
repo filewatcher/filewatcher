@@ -62,6 +62,19 @@ describe FileWatcher do
     filewatcher.filenames.should.satisfy &includes_all(explicit_relative_fixtures)
   end
 
+  it "should handle tilde expansion" do
+    filename = File.expand_path('~/file_watcher_1.txt')
+    open(filename, 'w') { |f| f.puts 'content1' }
+
+    filewatcher = FileWatcher.new('~/file_watcher_1.txt')
+
+    begin
+      filewatcher.filenames.should == [filename]
+    ensure
+      FileUtils.rm(filename)
+    end
+  end
+
   it "should detect file deletions" do
     filename = "test/fixtures/file1.txt"
     open(filename,"w") { |f| f.puts "content1" }
