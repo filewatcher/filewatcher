@@ -165,7 +165,7 @@ class FileWatcher
     if(!patterns.kind_of?Array)
       patterns = [patterns]
     end
-    patterns.map { |it| Dir[fulldepth(it)] }.flatten.uniq
+    patterns.map { |it| Dir[fulldepth(expand_path(it))] }.flatten.uniq
   end
 
   private
@@ -173,6 +173,14 @@ class FileWatcher
   def fulldepth(pattern)
     if File.directory? pattern
       "#{pattern}/**/*"
+    else
+      pattern
+    end
+  end
+
+  def expand_path(pattern)
+    if pattern.start_with?('~')
+      File.expand_path(pattern)
     else
       pattern
     end
