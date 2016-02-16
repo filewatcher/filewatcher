@@ -12,7 +12,7 @@ class FileWatcher
 
   def update_spinner(label)
     return nil unless @show_spinner
-    @spinner ||= %w(▌ ▀ ▐ ▄)    
+    @spinner ||= %w(\\ | / -)
     print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
   end
 
@@ -40,7 +40,7 @@ class FileWatcher
     @sleep = sleep
     if(@interval and @interval > 0)
       @sleep = @interval
-    end    
+    end
     @stored_update = on_update
     @keep_watching = true
     if(@dontwait)
@@ -120,7 +120,7 @@ class FileWatcher
       end
       @filenames = @filtered_filenames
     end
-    
+
     @filenames.each do |filename|
       mtime = File.exist?(filename) ? File.stat(filename).mtime : Time.new(0)
       snapshot[filename] = mtime
