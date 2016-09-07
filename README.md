@@ -221,7 +221,7 @@ over the network)
     filewatcher.finalize   # Ensure all filesystem changes made prior to
                            # ending the watch are handled.
 
-If basename, relative filename or absolute filename is necessay use the stanard lib 'pathname' like this:
+If basename, relative filename or absolute filename is necessary use the standard lib 'pathname' like this:
 
     require 'pathname'
 
