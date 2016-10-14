@@ -93,7 +93,7 @@ begin
     end
   end
 
-  Process.daemon if options[:daemon]
+  Process.daemon(true, true) if options[:daemon]
 
   fw.watch(options[:interval]) do |filename, event|
     cmd = nil
