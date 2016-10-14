@@ -28,6 +28,7 @@ Options:
 EOS
 
   opt :dontwait, "Do not wait for filesystem updates before running", :short => 'd', :type => :boolean, :default => false
+  opt :daemon, "Run in the background as system daemon.", :short => 'D', :type => :boolean, :default => false
   opt :restart, "Restart process when filesystem is updated", :short => 'r', :type => :boolean, :default => false
   opt :list, "Print name of files being watched"
   opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
@@ -91,7 +92,9 @@ begin
       puts " #{filename}"
     end
   end
-  
+
+  Process.daemon if options[:daemon]
+
   fw.watch(options[:interval]) do |filename, event|
     cmd = nil
     if(options[:exec] and File.exist?(filename))
