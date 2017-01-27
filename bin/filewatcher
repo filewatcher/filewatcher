@@ -21,7 +21,7 @@ Examples:
    filewatcher '*.rb' 'ruby $FILENAME'
    filewatcher '**/*.rb' 'ruby $FILENAME' # Watch subdirectories
 
-Other available environment variables are BASENAME, ABSOLUTE_FILENAME, 
+Other available environment variables are BASENAME, ABSOLUTE_FILENAME,
 RELATIVE_FILENAME, EVENT and DIRNAME.
 
 Options:
@@ -64,23 +64,19 @@ def split_files_void_escaped_whitespace(files)
 end
 
 files = split_files_void_escaped_whitespace(files)
+child_pid = nil
 
 def restart(child_pid, env, cmd)
-  Process.kill(9,child_pid)
+  Process.kill(9, child_pid)
   Process.wait(child_pid)
 rescue Errno::ESRCH
   # already killed
 ensure
-  child_pid = Process.spawn(env, cmd)
-end
-
-if(options[:restart])
-  rd, wr = IO.pipe
-  child_pid = nil
+  return Process.spawn(env, cmd)
 end
 
 if(options[:exclude] != "")
-  options[:exclude] = split_files_void_escaped_whitespace(options[:exclude].split(" "))  
+  options[:exclude] = split_files_void_escaped_whitespace(options[:exclude].split(" "))
 end
 
 begin
@@ -138,10 +134,10 @@ begin
       end
 
       if(options[:restart])
-        if(child_pid == nil)
+        if child_pid.nil?
           child_pid = Process.spawn(env, cmd)
         else
-          child_id = restart(child_pid, env, cmd)
+          child_pid = restart(child_pid, env, cmd)
         end
       else
         begin
