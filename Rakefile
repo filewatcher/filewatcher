@@ -2,11 +2,11 @@ require 'rubygems'
 require 'rake'
 require 'rake/testtask'
 
-task :default => :test
+task default: :test
 
-desc "Run tests"
+desc 'Run tests'
 task :test do
-  sh "bacon -Ilib -Itest --automatic --quiet"
+  sh 'bacon -Ilib -Itest --automatic --quiet'
   delete_list =
     %w(test/fixtures/file3.txt
        test/fixtures/file4.txt

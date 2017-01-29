@@ -5,7 +5,7 @@ require 'trollop'
 require 'pathname'
 require 'thread'
 
-options = Trollop::options do
+options = Trollop.options do
   version "filewatcher, version #{FileWatcher.VERSION} by Thomas Flemming 2016"
   banner <<-EOS
 Filewatcher scans the filesystem and executes shell commands when files changes.
@@ -27,40 +27,46 @@ RELATIVE_FILENAME, EVENT and DIRNAME.
 Options:
 EOS
 
-  opt :dontwait, "Do not wait for filesystem updates before running", :short => 'd', :type => :boolean, :default => false
-  opt :daemon, "Run in the background as system daemon.", :short => 'D', :type => :boolean, :default => false
-  opt :restart, "Restart process when filesystem is updated", :short => 'r', :type => :boolean, :default => false
-  opt :list, "Print name of files being watched"
-  opt :exec, "Execute file as a script when file is updated.", :short => 'e', :type => :boolean, :default => false
-  opt :include, "Include files", :type => :string, :default => "*"
-  opt :exclude, "Exclude file(s) matching", :type => :string, :default => ""
-  opt :interval, "Interval to scan filesystem.", :short => 'i', :type => :float, :default => 0.5
-  opt :spinner, "Show an ascii spinner", :short => 's', :type => :boolean, :default => false
+  opt :dontwait, 'Do not wait for filesystem updates before running',
+      short: 'd', type: :boolean, default: false
+  opt :daemon, 'Run in the background as system daemon',
+      short: 'D', type: :boolean, default: false
+  opt :restart, 'Restart process when filesystem is updated',
+      short: 'r', type: :boolean, default: false
+  opt :list, 'Print name of files being watched'
+  opt :exec, 'Execute file as a script when file is updated',
+      short: 'e', type: :boolean, default: false
+  opt :include, 'Include files',
+      type: :string, default: '*'
+  opt :exclude, 'Exclude file(s) matching',
+      type: :string, default: ''
+  opt :interval, 'Interval to scan filesystem.',
+      short: 'i', type: :float, default: 0.5
+  opt :spinner, 'Show an ascii spinner',
+      short: 's', type: :boolean, default: false
 end
 
-Trollop::die Trollop::educate if(ARGV.size == 0)
+Trollop.die Trollop.educate if ARGV.size.zero?
 
 files = []
 ARGV[0...-1].each do |a|
   files << a
 end
 
-if(ARGV.length == 1)
-  files << ARGV[0]
-end
+files << ARGV[0] if ARGV.length == 1
 
 def split_files_void_escaped_whitespace(files)
   splitted_filenames = []
   files.each do |name|
-    name = name.gsub(/\\\s/,'_ESCAPED_WHITESPACE_')
+    name = name.gsub(/\\\s/, '_ESCAPED_WHITESPACE_')
     splitted_filenames << name.split(/\s/)
   end
   files = splitted_filenames.flatten.uniq
   splitted_filenames = []
   files.each do |name|
-    splitted_filenames << name.gsub('_ESCAPED_WHITESPACE_','\ ')
+    splitted_filenames << name.gsub('_ESCAPED_WHITESPACE_', '\ ')
   end
-  files = splitted_filenames
+  splitted_filenames
 end
 
 files = split_files_void_escaped_whitespace(files)
@@ -72,17 +78,19 @@ def restart(child_pid, env, cmd)
 rescue Errno::ESRCH
   # already killed
 ensure
-  return Process.spawn(env, cmd)
+  Process.spawn(env, cmd)
 end
 
-if(options[:exclude] != "")
-  options[:exclude] = split_files_void_escaped_whitespace(options[:exclude].split(" "))
+if options[:exclude] != ''
+  options[:exclude] = split_files_void_escaped_whitespace(
+    options[:exclude].split(' ')
+  )
 end
 
 begin
   fw = FileWatcher.new(files, options)
 
-  if(options[:list])
+  if options[:list]
     puts 'Watching:'
     fw.last_found_filenames.each do |filename|
       puts " #{filename}"
@@ -93,75 +101,71 @@ begin
 
   fw.watch(options[:interval]) do |filename, event|
     cmd = nil
-    if(options[:exec] and File.exist?(filename))
-      extension = filename[/(\.[^\.]*)$/,0]
+    if options[:exec] && File.exist?(filename)
+      extension = filename[/(\.[^\.]*)$/, 0]
       runners = {
-        ".py" => "python",
-        ".js" => "node",
-        ".rb" => "ruby",
-        ".pl" => "perl",
-        ".awk" => "awk",
-        ".php" => "php",
-        ".phtml" => "php",
-        ".php4" => "php",
-        ".php3" => "php",
-        ".php5" => "php",
-        ".phps" => "php"
+        '.py' => 'python',
+        '.js' => 'node',
+        '.rb' => 'ruby',
+        '.pl' => 'perl',
+        '.awk' => 'awk',
+        '.php' => 'php',
+        '.phtml' => 'php',
+        '.php4' => 'php',
+        '.php3' => 'php',
+        '.php5' => 'php',
+        '.phps' => 'php'
       }
       runner = runners[extension]
-      if(runner)
-        cmd = "env #{runner.to_s} #{filename}"
-      end
-    elsif(ARGV.length > 1)
+      cmd = "env #{runner} #{filename}" if runner
+    elsif ARGV.length > 1
       cmd = ARGV[-1]
     end
 
-    if(cmd)
+    if cmd
       path = Pathname.new(filename)
       env = {
         'FILENAME' => filename,
         'BASENAME' => path.basename.to_s,
-        'FILEDIR' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s), # Deprecated
+        'FILEDIR' => path.parent.realpath.to_s, # Deprecated
         'FSEVENT' => event.to_s, # Deprecated,
         'EVENT' => event.to_s,
-        'DIRNAME' => File.join(Pathname.new('.').realpath.to_s, path.parent.to_s),
-        'ABSOLUTE_FILENAME' => File.join(Pathname.new('.').realpath.to_s, path.to_s),
-        'RELATIVE_FILENAME' => File.join(Pathname.new('.').to_s, path.to_s)
+        'DIRNAME' => path.parent.realpath.to_s,
+        'ABSOLUTE_FILENAME' => path.realpath.to_s,
+        'RELATIVE_FILENAME' => File.join('.', path)
       }
 
-      if(event != :delete)
-        ENV['FILEPATH'] = path.realpath.to_s
-      end
+      ENV['FILEPATH'] = path.realpath.to_s if event != :delete
 
-      if(options[:restart])
-        if child_pid.nil?
-          child_pid = Process.spawn(env, cmd)
-        else
-          child_pid = restart(child_pid, env, cmd)
-        end
+      if options[:restart]
+        child_pid =
+          if child_pid.nil?
+            Process.spawn(env, cmd)
+          else
+            restart(child_pid, env, cmd)
+          end
       else
         begin
-          pid = Process.spawn(env, cmd)
-          Process.wait()
+          Process.spawn(env, cmd)
+          Process.wait
         rescue SystemExit, Interrupt
           exit(0)
         end
       end
 
     else
-      case(event)
+      case event
       when :changed
-        print "file updated"
+        print 'file updated'
       when :delete
-        print "file deleted"
+        print 'file deleted'
       when :new
-        print "new file"
+        print 'new file'
       else
         print event.to_s
       end
-      puts ": " + filename
+      puts ": #{filename}"
     end
-
   end
 rescue SystemExit, Interrupt
   fw.finalize

@@ -4,7 +4,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name          = 'filewatcher'
-  s.version       = FileWatcher.VERSION
+  s.version       = FileWatcher::VERSION
   s.date          = Date.today.to_s
 
   s.authors       = ['Thomas Flemming']
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
 
   s.licenses = ['MIT']
 
-  s.add_runtime_dependency('trollop','~> 2.1.2')
-  s.add_development_dependency('rake','~> 12.0')
-  s.add_development_dependency('bacon','~> 1.2')
+  s.add_runtime_dependency     'trollop', '~> 2.1.2'
+  s.add_development_dependency 'rake', '~> 12.0'
+  s.add_development_dependency 'bacon', '~> 1.2'
 end
