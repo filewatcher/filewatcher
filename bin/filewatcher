@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'filewatcher'
+require File.expand_path('../lib/filewatcher.rb', File.dirname(__FILE__))
 require 'trollop'
 require 'pathname'
 require 'thread'
