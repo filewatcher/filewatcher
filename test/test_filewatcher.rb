@@ -184,4 +184,22 @@ describe FileWatcher do
     puts "Actual: #{processed.inspect}"
     # processed.should.satisfy &includes_all(added_files)
   end
+
+  describe :VERSION do
+    it 'should exist as constant' do
+      FileWatcher.const_defined?(:VERSION).should.be.true
+    end
+
+    it 'should be an instance of String' do
+      FileWatcher::VERSION.class.should.equal String
+    end
+  end
+
+  describe 'executable' do
+    path = File.expand_path('../bin/filewatcher', File.dirname(__FILE__))
+
+    it 'should run' do
+      system("#{path} > /dev/null").should.be.true
+    end
+  end
 end
