@@ -27,8 +27,8 @@ RELATIVE_FILENAME, EVENT and DIRNAME.
 Options:
 EOS
 
-  opt :dontwait, 'Do not wait for filesystem updates before running',
-      short: 'd', type: :boolean, default: false
+  opt :immediate, 'Immediately execute a command',
+      short: 'I', type: :boolean, default: false
   opt :daemon, 'Run in the background as system daemon',
       short: 'D', type: :boolean, default: false
   opt :restart, 'Restart process when filesystem is updated',
