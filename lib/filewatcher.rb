@@ -119,7 +119,7 @@ class FileWatcher
 
     forward_changes.each do |file, mtime|
       @updated_file = file
-      @event = @last_snapshot.fetch(@updated_file, false) ? :changed : :new
+      @event = @last_snapshot.fetch(@updated_file, false) ? :updated : :created
       @last_snapshot[file] = mtime
       return true
     end
@@ -130,7 +130,7 @@ class FileWatcher
     backward_changes.each do |file, _mtime|
       @updated_file = file
       @last_snapshot.delete(file)
-      @event = :delete
+      @event = :deleted
       return true
     end
     false

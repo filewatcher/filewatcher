@@ -135,7 +135,7 @@ begin
         'RELATIVE_FILENAME' => File.join('.', path)
       }
 
-      ENV['FILEPATH'] = path.realpath.to_s if event != :delete
+      ENV['FILEPATH'] = path.realpath.to_s if event != :deleted
 
       if options[:restart]
         child_pid =
@@ -154,17 +154,7 @@ begin
       end
 
     else
-      case event
-      when :changed
-        print 'file updated'
-      when :delete
-        print 'file deleted'
-      when :new
-        print 'new file'
-      else
-        print event.to_s
-      end
-      puts ": #{filename}"
+      puts "file #{event}: #{filename}"
     end
   end
 rescue SystemExit, Interrupt
