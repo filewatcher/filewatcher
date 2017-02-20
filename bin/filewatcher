@@ -99,25 +99,21 @@ begin
 
   Process.daemon(true, true) if options[:daemon]
 
+  runners = {
+    python: %w(py),
+    node: %w(js),
+    ruby: %w(rb),
+    perl: %w(pl),
+    awk: %w(awk),
+    php: %w(php phtml php4 php3 php5 phps)
+  }
+
   fw.watch(options[:interval]) do |filename, event|
     cmd = nil
     if options[:exec] && File.exist?(filename)
-      extension = filename[/(\.[^\.]*)$/, 0]
-      runners = {
-        '.py' => 'python',
-        '.js' => 'node',
-        '.rb' => 'ruby',
-        '.pl' => 'perl',
-        '.awk' => 'awk',
-        '.php' => 'php',
-        '.phtml' => 'php',
-        '.php4' => 'php',
-        '.php3' => 'php',
-        '.php5' => 'php',
-        '.phps' => 'php'
-      }
-      runner = runners[extension]
-      cmd = "env #{runner} #{filename}" if runner
+      ext = File.extname(filename).delete('.')
+      runner = runners.find { |_cmd, exts| exts.include? ext }
+      cmd = "env #{runner.first} #{filename}" if runner
     elsif ARGV.length > 1
       cmd = ARGV[-1]
     end
