@@ -109,10 +109,10 @@ The `--restart` option kills the command if it's still running when a filesystem
 $ filewatcher --restart "**/*.rb" "rake test"
 ```
 
-The `--dontwait` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
+The `--immediate` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
 
 ```
-$ filewatcher --restart --dontwait "**/*.html" "python -m SimpleHTTPServer"
+$ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
 ```
 
 ## Daemonizing filewatcher process
@@ -147,7 +147,7 @@ Useful command line options:
 ```
         --list, -l:   Print name of matching files on startup
      --restart, -r:   Run command in separate fork and kill it on filesystem updates
-    --dontwait, -d:   Run the command before any filesystem updates
+   --immediate, -I:   Run the command before any filesystem updates
       --daemon, -D:   Run in the background as system daemon
      --spinner, -s:   Display an animated spinner while scanning
 ```
