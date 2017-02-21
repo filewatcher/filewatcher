@@ -136,7 +136,7 @@ BASENAME           File basename.
 FILENAME           Relative filename.
 ABSOLUTE_FILENAME  Asolute filename.
 RELATIVE_FILENAME  Same as FILENAME but starts with "./"
-EVENT              Event type. Is either 'changed', 'delete' or 'new'.
+EVENT              Event type. Is either 'updated', 'deleted' or 'created'.
 DIRNAME            Absolute directory name.
 ```
 
@@ -211,14 +211,7 @@ To detect if a file is updated, added or deleted:
 
 ```ruby
 FileWatcher.new(['README.rdoc']).watch do |filename, event|
-  case event
-  when :changed
-    puts "File updated: #{filename}"
-  when :delete
-    puts "File deleted: #{filename}"
-  when :new
-    puts "Added file: #{filename}"
-  end
+  puts "File #{event}: #{filename}"
 end
 ```
 
