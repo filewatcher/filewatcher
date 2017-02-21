@@ -19,7 +19,7 @@ class FileWatcher
     @keep_watching = false
     @pausing = false
     @last_snapshot = mtime_snapshot
-    @dontwait = options[:dontwait]
+    @immediate = options[:immediate]
     @show_spinner = options[:spinner]
     @interval = options[:interval]
   end
@@ -30,7 +30,7 @@ class FileWatcher
     @sleep = @interval if @interval && @interval > 0
     @stored_update = on_update
     @keep_watching = true
-    yield '', '' if @dontwait
+    yield '', '' if @immediate
     while @keep_watching
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
