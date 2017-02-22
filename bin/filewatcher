@@ -29,6 +29,8 @@ EOS
 
   opt :immediate, 'Immediately execute a command',
       short: 'I', type: :boolean, default: false
+  opt :every, 'Run command for every updated file in one filesystem check',
+      short: 'E', type: :boolean, default: false
   opt :daemon, 'Run in the background as system daemon',
       short: 'D', type: :boolean, default: false
   opt :restart, 'Restart process when filesystem is updated',
@@ -56,27 +58,22 @@ end
 files << ARGV[0] if ARGV.length == 1
 
 def split_files_void_escaped_whitespace(files)
-  splitted_filenames = []
-  files.each do |name|
-    name = name.gsub(/\\\s/, '_ESCAPED_WHITESPACE_')
-    splitted_filenames << name.split(/\s/)
-  end
-  files = splitted_filenames.flatten.uniq
-  splitted_filenames = []
-  files.each do |name|
-    splitted_filenames << name.gsub('_ESCAPED_WHITESPACE_', '\ ')
-  end
-  splitted_filenames
+  files
+    .map { |name| name.gsub(/\\\s/, '_ESCAPED_WHITESPACE_').split(/\s/) }
+    .flatten
+    .uniq
+    .map { |name| name.gsub('_ESCAPED_WHITESPACE_', '\ ') }
 end
 
 files = split_files_void_escaped_whitespace(files)
 child_pid = nil
 
 def restart(child_pid, env, cmd)
+  raise Errno::ESRCH unless child_pid
   Process.kill(9, child_pid)
   Process.wait(child_pid)
 rescue Errno::ESRCH
-  # already killed
+  nil # already killed
 ensure
   Process.spawn(env, cmd)
 end
@@ -85,6 +82,37 @@ if options[:exclude] != ''
   options[:exclude] = split_files_void_escaped_whitespace(
     options[:exclude].split(' ')
   )
+end
+
+def build_env(filename, event)
+  path = Pathname.new(filename)
+  ENV['FILEPATH'] = path.realpath.to_s if event != :deleted
+  {
+    'FILENAME' => filename,
+    'BASENAME' => path.basename.to_s,
+    'EVENT' => event.to_s,
+    'DIRNAME' => path.parent.realpath.to_s,
+    'ABSOLUTE_FILENAME' => path.realpath.to_s,
+    'RELATIVE_FILENAME' => File.join('.', path)
+  }
+end
+
+## Define runners for `--exec` option
+class Filewatcher
+  @runners = {
+    python: %w(py),
+    node: %w(js),
+    ruby: %w(rb),
+    perl: %w(pl),
+    awk: %w(awk),
+    php: %w(php phtml php4 php3 php5 phps)
+  }
+
+  def self.runner_command(filename)
+    ext = File.extname(filename).delete('.')
+    runner = @runners.find { |_cmd, exts| exts.include? ext }
+    "env #{runner.first} #{filename}" if runner
+  end
 end
 
 begin
@@ -99,47 +127,21 @@ begin
 
   Process.daemon(true, true) if options[:daemon]
 
-  runners = {
-    python: %w(py),
-    node: %w(js),
-    ruby: %w(rb),
-    perl: %w(pl),
-    awk: %w(awk),
-    php: %w(php phtml php4 php3 php5 phps)
-  }
+  fw.watch(options[:interval]) do |changes|
+    changes = changes.first(1) unless options[:every]
+    changes.each do |filename, event|
+      cmd =
+        if options[:exec] && File.exist?(filename)
+          Filewatcher.runner_command(filename)
+        elsif ARGV.length > 1
+          ARGV[-1]
+        end
 
-  fw.watch(options[:interval]) do |filename, event|
-    cmd = nil
-    if options[:exec] && File.exist?(filename)
-      ext = File.extname(filename).delete('.')
-      runner = runners.find { |_cmd, exts| exts.include? ext }
-      cmd = "env #{runner.first} #{filename}" if runner
-    elsif ARGV.length > 1
-      cmd = ARGV[-1]
-    end
+      next puts "file #{event}: #{filename}" unless cmd
 
-    if cmd
-      path = Pathname.new(filename)
-      env = {
-        'FILENAME' => filename,
-        'BASENAME' => path.basename.to_s,
-        'FILEDIR' => path.parent.realpath.to_s, # Deprecated
-        'FSEVENT' => event.to_s, # Deprecated,
-        'EVENT' => event.to_s,
-        'DIRNAME' => path.parent.realpath.to_s,
-        'ABSOLUTE_FILENAME' => path.realpath.to_s,
-        'RELATIVE_FILENAME' => File.join('.', path)
-      }
-
-      ENV['FILEPATH'] = path.realpath.to_s if event != :deleted
-
+      env = build_env(filename, event)
       if options[:restart]
-        child_pid =
-          if child_pid.nil?
-            Process.spawn(env, cmd)
-          else
-            restart(child_pid, env, cmd)
-          end
+        child_pid = restart(child_pid, env, cmd)
       else
         begin
           Process.spawn(env, cmd)
@@ -148,9 +150,6 @@ begin
           exit(0)
         end
       end
-
-    else
-      puts "file #{event}: #{filename}"
     end
   end
 rescue SystemExit, Interrupt

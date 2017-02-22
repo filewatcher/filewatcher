@@ -79,6 +79,14 @@ In Linux/macOS:
 $ filewatcher '**/*.js' 'node $FILENAME'
 ```
 
+By default, filewatcher executes the command only for the first changed file
+that found from filesystem check, but you can using the `--every/-E` option
+for running the command on each changed file.
+
+```
+$ filewatcher -E * 'echo file: $FILENAME'
+```
+
 Try to run the updated file as a script when it is updated by using the
 `--exec/-e` option. Works with files with file extensions that looks like a
 Python, Ruby, Perl, PHP, JavaScript or AWK script.
@@ -151,6 +159,7 @@ Useful command line options:
         --list, -l:   Print name of matching files on startup
      --restart, -r:   Run command in separate fork and kill it on filesystem updates
    --immediate, -I:   Run the command before any filesystem updates
+       --every, -E:   Run the command for every updated file in one filesystem check
       --daemon, -D:   Run in the background as system daemon
      --spinner, -s:   Display an animated spinner while scanning
 ```

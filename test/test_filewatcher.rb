@@ -141,7 +141,7 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     Thread.new(filewatcher, processed) do
-      filewatcher.watch(0.1) { |f, _e| processed << f }
+      filewatcher.watch(0.1) { |changes| processed.concat(changes.keys) }
     end
     sleep 0.2 # thread needs a chance to start
     filewatcher.pause
@@ -168,7 +168,7 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     thread = Thread.new(filewatcher, processed) do
-      filewatcher.watch(0.1) { |f, _e| processed << f }
+      filewatcher.watch(0.1) { |changes| processed.concat(changes.keys) }
     end
     sleep 0.2 # thread needs a chance to start
     filewatcher.stop
