@@ -22,6 +22,7 @@ class FileWatcher
     @immediate = options[:immediate]
     @show_spinner = options[:spinner]
     @interval = options[:interval]
+    @delay = options[:delay].to_f
   end
 
   def watch(sleep = 0.5, &on_update)
@@ -45,6 +46,7 @@ class FileWatcher
       # changes twice if @keep_watching has just been set to false
       yield @changes if @changes.any?
       @changes.clear
+      Kernel.sleep @delay if @delay > 0
     end
     @end_snapshot = mtime_snapshot
     finalize(&on_update)

@@ -42,8 +42,10 @@ EOS
       type: :string, default: '*'
   opt :exclude, 'Exclude file(s) matching',
       type: :string, default: ''
-  opt :interval, 'Interval to scan filesystem.',
+  opt :interval, 'Interval to scan filesystem',
       short: 'i', type: :float, default: 0.5
+  opt :delay, 'Delay before a command will be executed again',
+      short: 'd', type: :float, default: 0.0
   opt :spinner, 'Show an ascii spinner',
       short: 's', type: :boolean, default: false
 end

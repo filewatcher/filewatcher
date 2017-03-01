@@ -109,6 +109,12 @@ filesystem gets updated:
 $ filewatcher "src test" "ruby test/test_suite.rb"
 ```
 
+Add a delay before the next command execution:
+
+```
+$ filewatcher -d 1.0 * 'echo file: $FILENAME'
+```
+
 ## Restart long running commands
 
 The `--restart/-r` option kills the command if it's still running when
@@ -170,6 +176,7 @@ Other command line options:
      --version, -v:   Print version and exit
         --help, -h:   Show this message
 --interval, -i <f>:   Interval in seconds to scan filesystem, defaults to 0.5 seconds
+   --delay, -d <f>:   Delay in seconds to execute the command again, defaults to 0.0 seconds
         --exec, -e:   Execute file as a script when file is updated
  --include, -n <s>:   Include files (default: *)
  --exclude, -x <s>:   Exclude file(s) matching (default: "")
