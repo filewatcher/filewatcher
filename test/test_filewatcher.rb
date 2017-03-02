@@ -113,15 +113,17 @@ describe FileWatcher do
   it 'should not detect file updates in delay' do
     filename = 'test/fixtures/file1.txt'
     open(filename, 'w') { |f| f.puts 'content1' }
-    filewatcher = FileWatcher.new(['test/fixtures'], interval: 0.1, delay: 0.5)
+    ## Bigger time is HACK for JRuby, that doesn't count milliseconds:
+    ## https://github.com/jruby/jruby/issues/4520
+    filewatcher = FileWatcher.new(['test/fixtures'], interval: 1, delay: 3)
     processed = []
     thread = Thread.new(filewatcher, processed) do
       filewatcher.watch { |changes| processed.concat(changes.keys) }
     end
-    sleep 0.2 # thread needs a chance to start
+    sleep 2 # thread needs a chance to start
     processed.size.should.be.zero # update block should not have been called
     open(filename, 'w') { |f| f.puts 'content3' }
-    sleep 0.2 # Give filewatcher time to respond
+    sleep 2 # Give filewatcher time to respond
     processed.size.should.equal 1 # update block should have been called
     open(filename, 'w') { |f| f.puts 'content2' }
     processed.size.should.equal 1 # update block should not have been called
