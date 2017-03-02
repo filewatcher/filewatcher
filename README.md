@@ -29,6 +29,13 @@ Needs Ruby and RubyGems:
 $ [sudo] gem install filewatcher
 ```
 
+## Usage warning
+
+JRuby doesn't provide milliseconds of `File.mtime`, as MRI does.
+So be careful with `--interval` and `--delay` less than 1 second.
+
+[Issue](https://github.com/jruby/jruby/issues/4520)).
+
 ## Command line utility
 
 Filewatcher scans the filesystem and execute a shell command when files are

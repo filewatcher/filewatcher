@@ -44,9 +44,12 @@ class FileWatcher
       end
       # test and clear @changes to prevent yielding the last
       # changes twice if @keep_watching has just been set to false
-      yield @changes if @changes.any?
-      @changes.clear
+      thread = Thread.new do
+        yield @changes if @changes.any?
+        @changes.clear
+      end
       Kernel.sleep @delay if @delay > 0
+      thread.join
     end
     @end_snapshot = mtime_snapshot
     finalize(&on_update)
