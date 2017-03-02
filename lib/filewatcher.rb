@@ -22,6 +22,7 @@ class FileWatcher
     @immediate = options[:immediate]
     @show_spinner = options[:spinner]
     @interval = options[:interval]
+    @delay = options[:delay].to_f
   end
 
   def watch(sleep = 0.5, &on_update)
@@ -30,7 +31,7 @@ class FileWatcher
     @sleep = @interval if @interval && @interval > 0
     @stored_update = on_update
     @keep_watching = true
-    yield '', '' if @immediate
+    yield({ '' => '' }) if @immediate
     while @keep_watching
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
@@ -41,10 +42,11 @@ class FileWatcher
         update_spinner('Watching')
         Kernel.sleep @sleep
       end
-      # test and null @updated_file to prevent yielding the last
-      # file twice if @keep_watching has just been set to false
-      yield @updated_file, @event if @updated_file
-      @updated_file = nil
+      # test and clear @changes to prevent yielding the last
+      # changes twice if @keep_watching has just been set to false
+      yield @changes if @changes.any?
+      @changes.clear
+      Kernel.sleep @delay if @delay > 0
     end
     @end_snapshot = mtime_snapshot
     finalize(&on_update)
@@ -82,7 +84,7 @@ class FileWatcher
     snapshot = @end_snapshot ? @end_snapshot : mtime_snapshot
     while filesystem_updated?(snapshot)
       update_spinner('Finalizing')
-      on_update.call(@updated_file, @event)
+      on_update.call(@changes)
     end
     @end_snapshot = nil
   end
@@ -114,26 +116,24 @@ class FileWatcher
   end
 
   def filesystem_updated?(snapshot_to_use = nil)
-    snapshot = snapshot_to_use ? snapshot_to_use : mtime_snapshot
+    snapshot = snapshot_to_use || mtime_snapshot
     forward_changes = snapshot.to_a - @last_snapshot.to_a
+    @changes = {}
 
     forward_changes.each do |file, mtime|
-      @updated_file = file
-      @event = @last_snapshot.fetch(@updated_file, false) ? :updated : :created
+      event = @last_snapshot.fetch(file, false) ? :updated : :created
+      @changes[file] = event
       @last_snapshot[file] = mtime
-      return true
     end
 
     backward_changes = @last_snapshot.to_a - snapshot.to_a
     forward_names = forward_changes.map(&:first)
     backward_changes.reject! { |f, _m| forward_names.include?(f) }
     backward_changes.each do |file, _mtime|
-      @updated_file = file
+      @changes[file] = :deleted
       @last_snapshot.delete(file)
-      @event = :deleted
-      return true
     end
-    false
+    @changes.any?
   end
 
   def last_found_filenames

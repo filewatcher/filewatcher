@@ -110,6 +110,24 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.true
   end
 
+  it 'should not detect file updates in delay' do
+    filename = 'test/fixtures/file1.txt'
+    open(filename, 'w') { |f| f.puts 'content1' }
+    filewatcher = FileWatcher.new(['test/fixtures'], interval: 0.1, delay: 0.5)
+    processed = []
+    thread = Thread.new(filewatcher, processed) do
+      filewatcher.watch { |changes| processed.concat(changes.keys) }
+    end
+    sleep 0.2 # thread needs a chance to start
+    processed.size.should.be.zero # update block should not have been called
+    open(filename, 'w') { |f| f.puts 'content3' }
+    sleep 0.2 # Give filewatcher time to respond
+    processed.size.should.equal 1 # update block should have been called
+    open(filename, 'w') { |f| f.puts 'content2' }
+    processed.size.should.equal 1 # update block should not have been called
+    thread.exit
+  end
+
   it 'should detect new files in subfolders' do
     FileUtils.mkdir_p subfolder
 
@@ -141,7 +159,7 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     Thread.new(filewatcher, processed) do
-      filewatcher.watch(0.1) { |f, _e| processed << f }
+      filewatcher.watch(0.1) { |changes| processed.concat(changes.keys) }
     end
     sleep 0.2 # thread needs a chance to start
     filewatcher.pause
@@ -168,7 +186,7 @@ describe FileWatcher do
     filewatcher.filesystem_updated?.should.be.false
     processed = []
     thread = Thread.new(filewatcher, processed) do
-      filewatcher.watch(0.1) { |f, _e| processed << f }
+      filewatcher.watch(0.1) { |changes| processed.concat(changes.keys) }
     end
     sleep 0.2 # thread needs a chance to start
     filewatcher.stop

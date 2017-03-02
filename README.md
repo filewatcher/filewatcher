@@ -5,11 +5,11 @@
 [![Dependency Status](https://gemnasium.com/thomasfl/filewatcher.png?travis)](https://gemnasium.com/thomasfl/filewatcher)
 [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
-Lightweight filewatcher weighing less than 200 LoC. No dependencies or platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates.
+Lightweight filewatcher weighing less than 350 LoC. No dependencies or platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be runned as daemon (background process).
 
-For example to search recursively for javascript files and run jshint when a file is updated, added, renamed or deleted:
+For example to search recursively for javascript files and run `jshint` when a file is updated, created, renamed or deleted:
 
-Linux/macOS:
+In Linux/macOS:
 
 ```
 $ filewatcher '**/*.js' 'jshint $FILENAME'
@@ -23,7 +23,7 @@ In Windows:
 
 ## Install
 
-Needs Ruby and Rubygems:
+Needs Ruby and RubyGems:
 
 ```
 $ [sudo] gem install filewatcher
@@ -31,8 +31,8 @@ $ [sudo] gem install filewatcher
 
 ## Command line utility
 
-Filewatcher scans the filesystem and execute shell commands when files are
-updated, added, renamed or deleted.
+Filewatcher scans the filesystem and execute a shell command when files are
+updated, created, renamed or deleted.
 
 ```
 Usage:
@@ -46,14 +46,14 @@ Where
 
 ## Examples
 
-Run the echo command when the file myfile is changed:
+Run the `echo` command when the file `myfile` is changed:
 
 ```
 $ filewatcher "myfile" "echo 'myfile has changed'"
 ```
 
-Run any javascript in the current directory when it is updated in Windows
-Powershell:
+Run any JavaScript in the current directory when it is updated in Windows
+PowerShell:
 
 ```
 > filewatcher *.js "node %FILENAME%"
@@ -65,9 +65,9 @@ In Linux/macOS:
 $ filewatcher *.js 'node $FILENAME'
 ```
 
-Place filenames or filenames in quotes to use ruby filename globbing instead
+Place filenames in quotes to use Ruby filename globbing instead
 of shell filename globbing. This will make filewatcher look for files in
-subdirectories too. To watch all javascript files in subdirectories in Windows:
+subdirectories too. To watch all JavaScript files in subdirectories in Windows:
 
 ```
 > filewatcher "**/*.js" "node %FILENAME%"
@@ -79,16 +79,24 @@ In Linux/macOS:
 $ filewatcher '**/*.js' 'node $FILENAME'
 ```
 
+By default, filewatcher executes the command only for the first changed file
+that found from filesystem check, but you can using the `--every/-E` option
+for running the command on each changed file.
+
+```
+$ filewatcher -E * 'echo file: $FILENAME'
+```
+
 Try to run the updated file as a script when it is updated by using the
---exec/-e option. Works with files with file extensions that looks like a
-python, ruby, perl, php, javascript or awk script.
+`--exec/-e` option. Works with files with file extensions that looks like a
+Python, Ruby, Perl, PHP, JavaScript or AWK script.
 
 ```
 $ filewatcher -e *.rb
 ```
 
 Print a list of all files matching \*.css first and then output the filename
-when a file is beeing updated by using the --list/-l option:
+when a file is beeing updated by using the `--list/-l` option:
 
 ```
 $ filewatcher -l '**/*.css' 'echo file: $FILENAME'
@@ -101,15 +109,24 @@ filesystem gets updated:
 $ filewatcher "src test" "ruby test/test_suite.rb"
 ```
 
+Add a delay before the next command execution:
+
+```
+$ filewatcher -d 1.0 * 'echo file: $FILENAME'
+```
+
 ## Restart long running commands
 
-The `--restart` option kills the command if it's still running when a filesystem change happens. Can be used to restart locally running webservers on updates, or kill long running tests and restart on updates. This option often makes filewatcher faster in general. To not wait for tests to finish:
+The `--restart/-r` option kills the command if it's still running when
+a filesystem change happens. Can be used to restart locally running webservers
+on updates, or kill long running tests and restart on updates. This option
+often makes filewatcher faster in general. To not wait for tests to finish:
 
 ```
 $ filewatcher --restart "**/*.rb" "rake test"
 ```
 
-The `--immediate` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
+The `--immediate/-I` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
 
 ```
 $ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
@@ -117,7 +134,7 @@ $ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
 
 ## Daemonizing filewatcher process
 
-The `--daemon` option starts filewatcher in the background as system daemon, so filewatcher will not be terminated by `Ctrl+C`, for example.
+The `--daemon/-D` option starts filewatcher in the background as system daemon, so filewatcher will not be terminated by `Ctrl+C`, for example.
 
 ## Available enviroment variables
 
@@ -148,6 +165,7 @@ Useful command line options:
         --list, -l:   Print name of matching files on startup
      --restart, -r:   Run command in separate fork and kill it on filesystem updates
    --immediate, -I:   Run the command before any filesystem updates
+       --every, -E:   Run the command for every updated file in one filesystem check
       --daemon, -D:   Run in the background as system daemon
      --spinner, -s:   Display an animated spinner while scanning
 ```
@@ -158,6 +176,7 @@ Other command line options:
      --version, -v:   Print version and exit
         --help, -h:   Show this message
 --interval, -i <f>:   Interval in seconds to scan filesystem, defaults to 0.5 seconds
+   --delay, -d <f>:   Delay in seconds to execute the command again, defaults to 0.0 seconds
         --exec, -e:   Execute file as a script when file is updated
  --include, -n <s>:   Include files (default: *)
  --exclude, -x <s>:   Exclude file(s) matching (default: "")
