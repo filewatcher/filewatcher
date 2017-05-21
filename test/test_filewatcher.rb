@@ -18,6 +18,16 @@ describe FileWatcher do
 
   after do
     FileUtils.rm_rf subfolder
+
+    %w[
+      test/fixtures/file3.txt
+      test/fixtures/file4.txt
+      test/fixtures/file5.txt
+      test/fixtures/file6.txt
+      test/fixtures/file7.txt
+    ].each do |file|
+      FileUtils.rm file, force: true
+    end
   end
 
   def includes_all(elements)
