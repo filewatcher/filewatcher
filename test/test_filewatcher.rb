@@ -224,12 +224,52 @@ describe FileWatcher do
       FileWatcher::VERSION.class.should.equal String
     end
   end
+end
 
-  describe 'executable' do
-    path = File.expand_path('../bin/filewatcher', File.dirname(__FILE__))
+describe 'FileWatcher executable' do
+  path = File.expand_path('../bin/filewatcher', File.dirname(__FILE__))
+  tmp_dir = File.expand_path('./tmp', File.dirname(__FILE__))
 
-    it 'should run' do
-      system("#{path} > /dev/null").should.be.true
-    end
+  after do
+    FileUtils.rm_rf tmp_dir
+  end
+
+  it 'should run' do
+    system("#{path} > /dev/null").should.be.true
+  end
+
+  it 'should set correct ENV variables' do
+    FileUtils.mkdir_p tmp_dir
+
+    pid = spawn(
+      "#{path} '#{tmp_dir}/foo*' 'printf \"" +
+        %w[
+          $FILENAME
+          $BASENAME
+          $EVENT
+          $DIRNAME
+          $ABSOLUTE_FILENAME
+          $RELATIVE_FILENAME
+        ].join(', ') +
+      "\" > #{tmp_dir}/env'"
+    )
+    Process.detach(pid)
+    sleep 2
+
+    FileUtils.touch "#{tmp_dir}/foo.txt"
+    sleep 2
+
+    File.read("#{tmp_dir}/env").should.equal(
+      %W[
+        #{tmp_dir}/foo.txt
+        foo.txt
+        created
+        #{tmp_dir}
+        #{tmp_dir}/foo.txt
+        test/tmp/foo.txt
+      ].join(', ')
+    )
+
+    Process.kill('HUP', pid)
   end
 end
