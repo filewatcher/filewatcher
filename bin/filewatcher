@@ -95,7 +95,7 @@ def build_env(filename, event)
     'EVENT' => event.to_s,
     'DIRNAME' => path.parent.realpath.to_s,
     'ABSOLUTE_FILENAME' => path.realpath.to_s,
-    'RELATIVE_FILENAME' => File.join('.', path)
+    'RELATIVE_FILENAME' => path.relative_path_from(Pathname.new(Dir.pwd)).to_s
   }
 end
 
