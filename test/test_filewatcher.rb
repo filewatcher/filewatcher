@@ -254,7 +254,7 @@ describe 'FileWatcher executable' do
       "\" > #{tmp_dir}/env'"
     )
     Process.detach(pid)
-    sleep 2
+    sleep 4
 
     FileUtils.touch "#{tmp_dir}/foo.txt"
     sleep 2
