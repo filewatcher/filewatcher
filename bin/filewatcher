@@ -87,15 +87,16 @@ if options[:exclude] != ''
 end
 
 def build_env(filename, event)
-  path = Pathname.new(filename)
-  ENV['FILEPATH'] = path.realpath.to_s if event != :deleted
+  path, current_dir = [filename, Dir.pwd].map { |file| Pathname.new(file) }
+  realpath = path.realpath
+  ENV['FILEPATH'] = realpath.to_s if event != :deleted
   {
     'FILENAME' => filename,
     'BASENAME' => path.basename.to_s,
     'EVENT' => event.to_s,
     'DIRNAME' => path.parent.realpath.to_s,
-    'ABSOLUTE_FILENAME' => path.realpath.to_s,
-    'RELATIVE_FILENAME' => path.relative_path_from(Pathname.new(Dir.pwd)).to_s
+    'ABSOLUTE_FILENAME' => realpath.to_s,
+    'RELATIVE_FILENAME' => realpath.relative_path_from(current_dir).to_s
   }
 end
 
