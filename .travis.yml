@@ -10,3 +10,7 @@ matrix:
     - rvm:
         - ruby-head
         - rbx-2
+
+notifications:
+  email:
+    on_success: change
