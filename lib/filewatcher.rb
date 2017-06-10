@@ -1,15 +1,14 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 # Simple file watcher. Detect changes in files and directories.
 #
 # Issues: Currently doesn't monitor changes in directorynames
-class FileWatcher
-  attr_accessor :filenames
-
-  VERSION = '0.5.4'.freeze
+class Filewatcher
+  attr_writer :interval
 
   def update_spinner(label)
     return unless @show_spinner
-    @spinner ||= %w(\\ | / -)
+    @spinner ||= %w[\\ | / -]
     print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
   end
 
@@ -18,29 +17,25 @@ class FileWatcher
     @unexpanded_excluded_filenames = options[:exclude]
     @keep_watching = false
     @pausing = false
-    @last_snapshot = mtime_snapshot
     @immediate = options[:immediate]
     @show_spinner = options[:spinner]
-    @interval = options[:interval]
-    @delay = options[:delay].to_f
+    @interval = options.fetch(:interval, 0.5)
   end
 
-  def watch(sleep = 0.5, &on_update)
+  def watch(&on_update)
     trap('SIGINT') { return }
-    @sleep = sleep
-    @sleep = @interval if @interval && @interval > 0
     @stored_update = on_update
     @keep_watching = true
-    yield({ '' => '' }) if @immediate
+    yield({}) if @immediate
     while @keep_watching
       @end_snapshot = mtime_snapshot if @pausing
       while @keep_watching && @pausing
         update_spinner('Pausing')
-        Kernel.sleep @sleep
+        sleep @interval
       end
       while @keep_watching && !filesystem_updated? && !@pausing
         update_spinner('Watching')
-        Kernel.sleep @sleep
+        sleep @interval
       end
       # test and clear @changes to prevent yielding the last
       # changes twice if @keep_watching has just been set to false
@@ -48,7 +43,6 @@ class FileWatcher
         yield @changes if @changes.any?
         @changes.clear
       end
-      Kernel.sleep @delay if @delay > 0
       thread.join
     end
     @end_snapshot = mtime_snapshot
@@ -59,7 +53,7 @@ class FileWatcher
     @pausing = true
     update_spinner('Initiating pause')
     # Ensure we wait long enough to enter pause loop in #watch
-    Kernel.sleep @sleep
+    sleep @interval
   end
 
   def resume
@@ -69,7 +63,7 @@ class FileWatcher
     @last_snapshot = mtime_snapshot # resume with fresh snapshot
     @pausing = false
     update_spinner('Resuming')
-    Kernel.sleep @sleep # Wait long enough to exit pause loop in #watch
+    sleep @interval # Wait long enough to exit pause loop in #watch
   end
 
   # Ends the watch, allowing any remaining changes to be finalized.
@@ -92,77 +86,60 @@ class FileWatcher
     @end_snapshot = nil
   end
 
+  def last_found_filenames
+    last_snapshot.keys
+  end
+
+  private
+
+  def last_snapshot
+    @last_snapshot ||= mtime_snapshot
+  end
+
   # Takes a snapshot of the current status of watched files.
   # (Allows avoidance of potential race condition during #finalize)
   def mtime_snapshot
     snapshot = {}
-    @filenames = expand_directories(@unexpanded_filenames)
+    filenames = expand_directories(@unexpanded_filenames)
 
-    if !@unexpanded_excluded_filenames.nil? &&
-       !@unexpanded_excluded_filenames.empty?
-      # Remove files in the exclude filenames list
-      @filtered_filenames = []
-      @excluded_filenames = expand_directories(@unexpanded_excluded_filenames)
-      @filenames.each do |filename|
-        unless @excluded_filenames.include?(filename)
-          @filtered_filenames << filename
-        end
-      end
-      @filenames = @filtered_filenames
-    end
+    # Remove files in the exclude filenames list
+    filenames -= expand_directories(@unexpanded_excluded_filenames)
 
-    @filenames.each do |filename|
-      mtime = File.exist?(filename) ? File.stat(filename).mtime : Time.new(0)
+    filenames.each do |filename|
+      mtime = File.exist?(filename) ? File.mtime(filename) : Time.new(0)
       snapshot[filename] = mtime
     end
     snapshot
   end
 
-  def filesystem_updated?(snapshot_to_use = nil)
-    snapshot = snapshot_to_use || mtime_snapshot
-    forward_changes = snapshot.to_a - @last_snapshot.to_a
+  def filesystem_updated?(snapshot = mtime_snapshot)
     @changes = {}
 
-    forward_changes.each do |file, mtime|
-      event = @last_snapshot.fetch(file, false) ? :updated : :created
-      @changes[file] = event
-      @last_snapshot[file] = mtime
+    (snapshot.to_a - last_snapshot.to_a).each do |file, _mtime|
+      @changes[file] = last_snapshot[file] ? :updated : :created
     end
 
-    backward_changes = @last_snapshot.to_a - snapshot.to_a
-    forward_names = forward_changes.map(&:first)
-    backward_changes.reject! { |f, _m| forward_names.include?(f) }
-    backward_changes.each do |file, _mtime|
+    (last_snapshot.to_a - snapshot.to_a).each do |file, _mtime|
       @changes[file] = :deleted
-      @last_snapshot.delete(file)
     end
+
+    @last_snapshot = snapshot
     @changes.any?
   end
 
-  def last_found_filenames
-    @last_snapshot.keys
-  end
-
   def expand_directories(patterns)
-    patterns = [patterns] unless patterns.is_a? Array
-    patterns.map { |it| Dir[fulldepth(expand_path(it))] }.flatten.uniq
-  end
-
-  private
-
-  def fulldepth(pattern)
-    if File.directory? pattern
-      "#{pattern}/**/*"
-    else
-      pattern
+    patterns = Array(patterns) unless patterns.is_a? Array
+    expanded_patterns = patterns.map do |pattern|
+      pattern = File.expand_path(pattern)
+      Dir[
+        File.directory?(pattern) ? File.join(pattern, '**', '*') : pattern
+      ]
     end
-  end
-
-  def expand_path(pattern)
-    if pattern.start_with?('~')
-      File.expand_path(pattern)
-    else
-      pattern
-    end
+    expanded_patterns.flatten!
+    expanded_patterns.uniq!
+    expanded_patterns
   end
 end
+
+# Require at end of file to not overwrite `Filewatcher` class
+require_relative 'filewatcher/version'
