@@ -1,3 +1,9 @@
+Style/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
 Metrics/BlockLength:
   Exclude:
     - test/**/*
+
+AllCops:
+  TargetRubyVersion: 2.2

@@ -32,7 +32,7 @@ $ [sudo] gem install filewatcher
 ## Usage warning
 
 JRuby doesn't provide milliseconds of `File.mtime`, as MRI does.
-So be careful with `--interval` and `--delay` less than 1 second.
+So be careful with `--interval` less than 1 second.
 
 [Issue](https://github.com/jruby/jruby/issues/4520)).
 
@@ -116,12 +116,6 @@ filesystem gets updated:
 $ filewatcher "src test" "ruby test/test_suite.rb"
 ```
 
-Add a delay before the next command execution:
-
-```
-$ filewatcher -d 1.0 * 'echo file: $FILENAME'
-```
-
 ## Restart long running commands
 
 The `--restart/-r` option kills the command if it's still running when
@@ -183,7 +177,6 @@ Other command line options:
      --version, -v:   Print version and exit
         --help, -h:   Show this message
 --interval, -i <f>:   Interval in seconds to scan filesystem, defaults to 0.5 seconds
-   --delay, -d <f>:   Delay in seconds to execute the command again, defaults to 0.0 seconds
         --exec, -e:   Execute file as a script when file is updated
  --include, -n <s>:   Include files (default: *)
  --exclude, -x <s>:   Exclude file(s) matching (default: "")
@@ -196,7 +189,7 @@ Watch a list of files and directories:
 ```ruby
 require 'filewatcher'
 
-FileWatcher.new(['lib/', 'Rakefile']).watch do |filename|
+Filewatcher.new(['lib/', 'Rakefile']).watch do |filename|
   puts "Changed #{filename}"
 end
 ```
@@ -204,7 +197,7 @@ end
 Watch a single directory, for changes in all files and subdirectories:
 
 ```ruby
-FileWatcher.new('lib/').watch do |filename|
+Filewatcher.new('lib/').watch do |filename|
   # ...
 end
 ```
@@ -212,7 +205,7 @@ end
 Notice that the previous is equivalent to the following:
 
 ```ruby
-FileWatcher.new('lib/**/*').watch do |filename|
+Filewatcher.new('lib/**/*').watch do |filename|
   # ...
 end
 ```
@@ -220,7 +213,7 @@ end
 Watch files and dirs in the given directory - and not in subdirectories:
 
 ```ruby
-FileWatcher.new('lib/*').watch do |filename|
+Filewatcher.new('lib/*').watch do |filename|
   # ...
 end
 ```
@@ -228,7 +221,7 @@ end
 Watch an absolute directory:
 
 ```ruby
-FileWatcher.new('/tmp/foo').watch do |filename|
+Filewatcher.new('/tmp/foo').watch do |filename|
   # ...
 end
 ```
@@ -236,7 +229,7 @@ end
 To detect if a file is updated, added or deleted:
 
 ```ruby
-FileWatcher.new(['README.rdoc']).watch do |filename, event|
+Filewatcher.new(['README.rdoc']).watch do |filename, event|
   puts "File #{event}: #{filename}"
 end
 ```
@@ -246,7 +239,7 @@ When a file is renamed it is detected as a new file followed by a file deletion.
 The API takes some of the same options as the command line interface. To watch all files recursively except files that matches \*.rb, display a spinner and only wait for 0.1 seconds between each scan:
 
 ```ruby
-FileWatcher.new('**/*.*', exclude: '**/*.rb', spinner: true, interval: 0.1)
+Filewatcher.new('**/*.*', exclude: '**/*.rb', spinner: true, interval: 0.1)
   .watch do |filename|
     puts filename
   end
@@ -265,7 +258,7 @@ filename globbing. See Ruby
 for syntax.
 
 ```ruby
-FileWatcher.new(['*.rb', '*.xml']).watch do |filename|
+Filewatcher.new(['*.rb', '*.xml']).watch do |filename|
   puts "Updated #{filename}"
 end
 ```
@@ -275,7 +268,7 @@ useful when the update block takes a while to process each file (eg. sending
 over the network)
 
 ```ruby
-filewatcher = FileWatcher.new(['*.rb'])
+filewatcher = Filewatcher.new(['*.rb'])
 thread = Thread.new(filewatcher) { |fw| fw.watch{ |f| puts "Updated #{f}" } }
 # ...
 filewatcher.pause       # block stops responding to filesystem changes
@@ -299,7 +292,7 @@ If basename, relative filename or absolute filename is necessary use the standar
 ```ruby
 require 'pathname'
 
-FileWatcher.new(['**/*.*']).watch do |filename|
+Filewatcher.new(['**/*.*']).watch do |filename|
   path = Pathname.new(filename)
   puys "Basename         : #{path.basename}"
   puts "Relative filename: #{File.join('.', path)}"

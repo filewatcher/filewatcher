@@ -1,0 +1,17 @@
+Filewatcher scans the filesystem and executes shell commands when files changes.
+
+Usage:
+   filewatcher [--restart] '<filenames or patterns>' '<shell command>'
+Where
+   filename: filename(s) to scan.
+   shell command: shell command to execute when file changes on disk.
+
+Examples:
+   filewatcher "myfile" "echo 'myfile has changed'"
+   filewatcher '*.rb' 'ruby $FILENAME'
+   filewatcher '**/*.rb' 'ruby $FILENAME' # Watch subdirectories
+
+Other available environment variables are BASENAME, ABSOLUTE_FILENAME,
+RELATIVE_FILENAME, EVENT and DIRNAME.
+
+Options:
