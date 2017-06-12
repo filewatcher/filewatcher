@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require_relative 'filewatcher/cycles'
+
 # Simple file watcher. Detect changes in files and directories.
 #
 # Issues: Currently doesn't monitor changes in directorynames
 class Filewatcher
+  include Filewatcher::Cycles
+
   attr_writer :interval
 
   def update_spinner(label)
@@ -24,27 +28,12 @@ class Filewatcher
 
   def watch(&on_update)
     trap('SIGINT') { return }
-    @stored_update = on_update
+    @on_update = on_update
     @keep_watching = true
     yield({}) if @immediate
-    while @keep_watching
-      @end_snapshot = mtime_snapshot if @pausing
-      while @keep_watching && @pausing
-        update_spinner('Pausing')
-        sleep @interval
-      end
-      while @keep_watching && !filesystem_updated? && !@pausing
-        update_spinner('Watching')
-        sleep @interval
-      end
-      # test and clear @changes to prevent yielding the last
-      # changes twice if @keep_watching has just been set to false
-      thread = Thread.new do
-        yield @changes if @changes.any?
-        @changes.clear
-      end
-      thread.join
-    end
+
+    main_cycle
+
     @end_snapshot = mtime_snapshot
     finalize(&on_update)
   end
@@ -77,9 +66,8 @@ class Filewatcher
   # Calls the update block repeatedly until all changes in the
   # current snapshot are dealt with
   def finalize(&on_update)
-    on_update = @stored_update unless block_given?
-    snapshot = @end_snapshot ? @end_snapshot : mtime_snapshot
-    while filesystem_updated?(snapshot)
+    on_update = @on_update unless block_given?
+    while filesystem_updated?(@end_snapshot || mtime_snapshot)
       update_spinner('Finalizing')
       on_update.call(@changes)
     end
