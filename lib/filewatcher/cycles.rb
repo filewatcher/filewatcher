@@ -3,6 +3,8 @@
 class Filewatcher
   # Module for all cycles in `Filewatcher#watch`
   module Cycles
+    private
+
     def main_cycle
       while @keep_watching
         @end_snapshot = mtime_snapshot if @pausing
