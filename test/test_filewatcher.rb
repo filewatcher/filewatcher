@@ -153,6 +153,28 @@ describe Filewatcher do
 
       wr.processed.should.be.any
     end
+
+    it 'should detect file access (read) with option' do
+      wr = WatchRun.new(
+        filewatcher: Filewatcher.new('**/*', access: true),
+        action: :access
+      )
+
+      wr.run
+
+      wr.processed.should.be.any
+    end
+
+    it 'should not detect file access (read) without access option' do
+      wr = WatchRun.new(
+        filewatcher: Filewatcher.new('**/*', access: false),
+        action: :access
+      )
+
+      wr.run
+
+      wr.processed.should.be.empty
+    end
   end
 
   describe '#stop' do

@@ -7,7 +7,7 @@ class Filewatcher
 
     def main_cycle
       while @keep_watching
-        @end_snapshot = mtime_snapshot if @pausing
+        @end_snapshot = current_snapshot if @pausing
 
         pausing_cycle
 

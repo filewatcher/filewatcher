@@ -137,6 +137,12 @@ $ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
 
 The `--daemon/-D` option starts filewatcher in the background as system daemon, so filewatcher will not be terminated by `Ctrl+C`, for example.
 
+## Watch for files access (read) events
+
+The `--access/-a` option will add to changes files,
+that have changed the `atime` property, with the `:readed` event,
+and the command (or block of code) will be executed on these events.
+
 ## Available enviroment variables
 
 The environment variable $FILENAME is available in the shell command argument.
@@ -154,7 +160,8 @@ BASENAME           File basename.
 FILENAME           Relative filename.
 ABSOLUTE_FILENAME  Asolute filename.
 RELATIVE_FILENAME  Same as FILENAME but starts with "./"
-EVENT              Event type. Is either 'updated', 'deleted' or 'created'.
+EVENT              Event type. Is either 'updated', 'deleted', 'created'
+                   or `readed` (with `access` option).
 DIRNAME            Absolute directory name.
 ```
 
@@ -166,6 +173,7 @@ Useful command line options:
         --list, -l:   Print name of matching files on startup
      --restart, -r:   Run command in separate fork and kill it on filesystem updates
    --immediate, -I:   Run the command before any filesystem updates
+      --access, -a:   Run the command for files that were accessed (readed)
        --every, -E:   Run the command for every updated file in one filesystem check
       --daemon, -D:   Run in the background as system daemon
      --spinner, -s:   Display an animated spinner while scanning
@@ -319,7 +327,7 @@ This project would not be where it is today without the generous help provided b
 
 *   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing
 
-*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many small fixes and improvements
+*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, `--access` option, and many fixes and improvements
 
 This gem was initially inspired by [Tom Lieber's blogg posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 

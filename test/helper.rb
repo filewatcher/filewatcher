@@ -51,9 +51,7 @@ class WatchRun
 
   def thread_initialize
     @watched ||= 0
-    Thread.new(
-      @filewatcher, @processed = []
-    ) do |filewatcher, processed|
+    Thread.new(@filewatcher, @processed = []) do |filewatcher, processed|
       filewatcher.watch do |changes|
         increment_watched
         processed.concat(changes.keys)
@@ -67,6 +65,7 @@ class WatchRun
 
   def make_changes
     return FileUtils.remove(@filename) if @action == :delete
+    return File.read(@filename) if @action == :access
     return FileUtils.mkdir_p(@filename) if @directory
     File.write(@filename, 'content2')
   end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'filewatcher/cycles'
+require_relative 'filewatcher/snapshot'
 
 # Simple file watcher. Detect changes in files and directories.
 #
@@ -22,6 +23,7 @@ class Filewatcher
     @keep_watching = false
     @pausing = false
     @immediate = options[:immediate]
+    @access = options[:access]
     @show_spinner = options[:spinner]
     @interval = options.fetch(:interval, 0.5)
   end
@@ -34,7 +36,7 @@ class Filewatcher
 
     main_cycle
 
-    @end_snapshot = mtime_snapshot
+    @end_snapshot = current_snapshot
     finalize(&on_update)
   end
 
@@ -49,7 +51,7 @@ class Filewatcher
     if !@keep_watching || !@pausing
       raise "Can't resume unless #watch and #pause were first called"
     end
-    @last_snapshot = mtime_snapshot # resume with fresh snapshot
+    @last_snapshot = current_snapshot # resume with fresh snapshot
     @pausing = false
     update_spinner('Resuming')
     sleep @interval # Wait long enough to exit pause loop in #watch
@@ -67,7 +69,7 @@ class Filewatcher
   # current snapshot are dealt with
   def finalize(&on_update)
     on_update = @on_update unless block_given?
-    while filesystem_updated?(@end_snapshot || mtime_snapshot)
+    while filesystem_updated?(@end_snapshot || current_snapshot)
       update_spinner('Finalizing')
       on_update.call(@changes)
     end
@@ -81,37 +83,27 @@ class Filewatcher
   private
 
   def last_snapshot
-    @last_snapshot ||= mtime_snapshot
+    @last_snapshot ||= current_snapshot
+  end
+
+  def watching_files
+    expand_directories(@unexpanded_filenames) -
+      expand_directories(@unexpanded_excluded_filenames)
   end
 
   # Takes a snapshot of the current status of watched files.
   # (Allows avoidance of potential race condition during #finalize)
-  def mtime_snapshot
-    snapshot = {}
-    filenames = expand_directories(@unexpanded_filenames)
-
-    # Remove files in the exclude filenames list
-    filenames -= expand_directories(@unexpanded_excluded_filenames)
-
-    filenames.each do |filename|
-      mtime = File.exist?(filename) ? File.mtime(filename) : Time.new(0)
-      snapshot[filename] = mtime
-    end
-    snapshot
+  def current_snapshot
+    Filewatcher::Snapshot.new(watching_files)
   end
 
-  def filesystem_updated?(snapshot = mtime_snapshot)
-    @changes = {}
-
-    (snapshot.to_a - last_snapshot.to_a).each do |file, _mtime|
-      @changes[file] = last_snapshot[file] ? :updated : :created
-    end
-
-    (last_snapshot.to_a - snapshot.to_a).each do |file, _mtime|
-      @changes[file] = :deleted
-    end
+  def filesystem_updated?(snapshot = current_snapshot)
+    @changes = snapshot - last_snapshot
 
     @last_snapshot = snapshot
+
+    @changes.reject! { |_filename, event| event == :readed } unless @access
+
     @changes.any?
   end
 
@@ -128,6 +120,3 @@ class Filewatcher
     expanded_patterns
   end
 end
-
-# Require at end of file to not overwrite `Filewatcher` class
-require_relative 'filewatcher/version'

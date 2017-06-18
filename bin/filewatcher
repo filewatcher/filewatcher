@@ -29,6 +29,8 @@ options = Trollop.options do
       type: :string, default: nil
   opt :interval, 'Interval to scan filesystem',
       short: 'i', type: :float, default: 0.5
+  opt :access, 'Watch for file access (read) events',
+      short: 'a', type: :boolean, default: false
   opt :spinner, 'Show an ascii spinner',
       short: 's', type: :boolean, default: false
 end
