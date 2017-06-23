@@ -31,10 +31,10 @@ $ [sudo] gem install filewatcher
 
 ## Usage warning
 
-JRuby doesn't provide milliseconds of `File.mtime`, as MRI does.
+JRuby with version < `9.1.9.0` doesn't provide milliseconds of `File.mtime`, as MRI does.
 So be careful with `--interval` less than 1 second.
 
-[Issue](https://github.com/jruby/jruby/issues/4520)).
+[Issue](https://github.com/jruby/jruby/issues/4520).
 
 ## Command line utility
 
