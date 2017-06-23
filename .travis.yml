@@ -5,6 +5,10 @@ rvm:
   - 2.4
   - jruby-9.1.9.0
 
+os:
+  - linux
+  - osx
+
 notifications:
   email:
     on_success: change
