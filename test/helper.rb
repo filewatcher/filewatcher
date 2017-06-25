@@ -96,7 +96,7 @@ class ShellWatchRun
         " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
     )
     Process.detach(@pid)
-    sleep 4
+    sleep 6
   end
 
   def run
@@ -115,7 +115,7 @@ class ShellWatchRun
 
   def make_changes
     FileUtils.touch "#{WatchRun::TMP_DIR}/foo.txt"
-    sleep 2
+    sleep 4
   end
 end
 
