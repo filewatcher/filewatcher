@@ -108,7 +108,7 @@ class ShellWatchRun
   end
 
   def stop
-    Process.kill('KILL', @pid)
+    Process.kill(Gem.win_platform? ? 'KILL' : 'HUP', @pid)
   end
 
   private
