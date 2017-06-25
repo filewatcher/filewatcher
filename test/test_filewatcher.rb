@@ -232,10 +232,7 @@ describe Filewatcher do
 
     it 'should set correct ENV variables' do
       swr = ShellWatchRun.new(
-        printing: %w[
-          $FILENAME $BASENAME $EVENT $DIRNAME $ABSOLUTE_FILENAME
-          $RELATIVE_FILENAME
-        ].join(', ')
+        dumper: :env
       )
 
       swr.run
@@ -256,7 +253,7 @@ describe Filewatcher do
     it 'should be executed immediately with corresponding option' do
       swr = ShellWatchRun.new(
         options: '--immediate',
-        printing: 'watched'
+        dumper: :watched
       )
 
       swr.start
@@ -269,7 +266,7 @@ describe Filewatcher do
     it 'should not be executed without immediate option and changes' do
       swr = ShellWatchRun.new(
         options: '',
-        printing: 'watched'
+        dumper: :watched
       )
 
       swr.start
