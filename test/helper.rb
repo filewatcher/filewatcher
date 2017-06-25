@@ -47,6 +47,7 @@ class WatchRun
   def stop
     FileUtils.rm_r(@filename) if File.exist?(@filename)
     @thread.exit
+    sleep 1
   end
 
   private
@@ -96,7 +97,7 @@ class ShellWatchRun
         " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
     )
     Process.detach(@pid)
-    sleep 6
+    sleep 10
   end
 
   def run
@@ -109,13 +110,14 @@ class ShellWatchRun
 
   def stop
     Process.kill('KILL', @pid)
+    sleep 4
   end
 
   private
 
   def make_changes
     FileUtils.touch "#{WatchRun::TMP_DIR}/foo.txt"
-    sleep 4
+    sleep 10
   end
 end
 
