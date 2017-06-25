@@ -226,7 +226,8 @@ describe Filewatcher do
     tmp_dir = WatchRun::TMP_DIR
 
     it 'should run' do
-      system("#{ShellWatchRun::EXECUTABLE} > /dev/null")
+      null_output = Gem.win_platform? ? 'NUL' : '/dev/null'
+      system("#{ShellWatchRun::EXECUTABLE} > #{null_output}")
         .should.be.true
     end
 
