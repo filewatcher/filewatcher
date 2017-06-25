@@ -30,14 +30,16 @@ class WatchRun
     File.write(@filename, 'content1') unless @action == :create
 
     @thread = thread_initialize
-    sleep @interval * 2 # thread needs a chance to start
+    sleep 1 # thread needs a chance to start
   end
 
   def run
     start
 
     make_changes
-    sleep @interval * 2 # thread needs a chance to catch changes
+    # Some OS, filesystems and Ruby interpretators
+    # doesn't catch milliseconds of `File.mtime`
+    sleep 1
 
     stop
   end
@@ -73,24 +75,25 @@ class WatchRun
 end
 
 class ShellWatchRun
-  EXECUTABLE = File.join(__dir__, '..', 'bin', 'filewatcher')
+  EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
+    "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}".freeze
 
   attr_reader :output
 
   def initialize(
     options: '',
-    printing: '',
+    dumper: :watched,
     output: File.join(WatchRun::TMP_DIR, 'env')
   )
     @options = options
-    @printing = printing
+    @dumper = dumper
     @output = output
   end
 
   def start
     @pid = spawn(
-      "#{EXECUTABLE} #{@options} '#{WatchRun::TMP_DIR}/foo*'" \
-      " 'printf \"#{@printing}\" > #{@output}'"
+      "#{EXECUTABLE} #{@options} \"#{WatchRun::TMP_DIR}/foo*\"" \
+        " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
     )
     Process.detach(@pid)
     sleep 4
@@ -105,7 +108,7 @@ class ShellWatchRun
   end
 
   def stop
-    Process.kill('HUP', @pid)
+    Process.kill('KILL', @pid)
   end
 
   private
@@ -118,4 +121,8 @@ end
 
 def include_all_files(elements)
   ->(it) { elements.all? { |element| it.include? File.expand_path(element) } }
+end
+
+def dump_to_env_file(content)
+  File.write File.join(WatchRun::TMP_DIR, 'env'), content
 end
