@@ -30,7 +30,7 @@ class WatchRun
     File.write(@filename, 'content1') unless @action == :create
 
     @thread = thread_initialize
-    sleep 1 # thread needs a chance to start
+    sleep 3 # thread needs a chance to start
   end
 
   def run
@@ -39,7 +39,7 @@ class WatchRun
     make_changes
     # Some OS, filesystems and Ruby interpretators
     # doesn't catch milliseconds of `File.mtime`
-    sleep 1
+    sleep 3
 
     stop
   end
@@ -47,7 +47,7 @@ class WatchRun
   def stop
     FileUtils.rm_r(@filename) if File.exist?(@filename)
     @thread.exit
-    sleep 1
+    sleep 3
   end
 
   private
@@ -97,7 +97,7 @@ class ShellWatchRun
         " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
     )
     Process.detach(@pid)
-    sleep 10
+    sleep 12
   end
 
   def run
@@ -110,14 +110,14 @@ class ShellWatchRun
 
   def stop
     Process.kill('KILL', @pid)
-    sleep 4
+    sleep 6
   end
 
   private
 
   def make_changes
     FileUtils.touch "#{WatchRun::TMP_DIR}/foo.txt"
-    sleep 10
+    sleep 12
   end
 end
 
