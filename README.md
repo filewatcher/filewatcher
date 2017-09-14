@@ -5,7 +5,7 @@
 [![Dependency Status](https://gemnasium.com/thomasfl/filewatcher.png?travis)](https://gemnasium.com/thomasfl/filewatcher)
 [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 
-Lightweight filewatcher weighing less than 350 LoC. No dependencies or platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be runned as daemon (background process).
+Lightweight filewatcher weighing less than 200 LoC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be runned as daemon (background process).
 
 For example to search recursively for javascript files and run `jshint` when a file is updated, created, renamed or deleted:
 
@@ -300,12 +300,10 @@ Filewatcher.new(['**/*.*']).watch do |filename|
 end
 ```
 
-The filewatcher library is a single file with 180 LOC (including comments)
-with no dependencies.
-
 ## Changelog
 
-*   0.5.3 Exclude files. More environment variables. Options in ruby api.
+*   0.5.4 Add --daemon option, fix issues with the --restart option.
+*   0.5.3 Exclude files. More environment variables. Options in Ruby API.
 *   0.5.2 Start, stop and finalize API.
 *   0.5.1 Kill and restart long running command with --restart option.
 
@@ -319,7 +317,7 @@ This project would not be where it is today without the generous help provided b
 
 *   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing
 
-*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many small fixes and improvements
+*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many fixes and improvements
 
 This gem was initially inspired by [Tom Lieber's blogg posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 
