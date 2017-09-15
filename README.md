@@ -189,15 +189,15 @@ Watch a list of files and directories:
 ```ruby
 require 'filewatcher'
 
-Filewatcher.new(['lib/', 'Rakefile']).watch do |filename|
-  puts "Changed #{filename}"
+Filewatcher.new(['lib/', 'Rakefile']).watch do |filename, event|
+  puts "#{filename} #{event}"
 end
 ```
 
 Watch a single directory, for changes in all files and subdirectories:
 
 ```ruby
-Filewatcher.new('lib/').watch do |filename|
+Filewatcher.new('lib/').watch do |filename, event|
   # ...
 end
 ```
@@ -205,7 +205,7 @@ end
 Notice that the previous is equivalent to the following:
 
 ```ruby
-Filewatcher.new('lib/**/*').watch do |filename|
+Filewatcher.new('lib/**/*').watch do |filename, event|
   # ...
 end
 ```
@@ -213,7 +213,7 @@ end
 Watch files and dirs in the given directory - and not in subdirectories:
 
 ```ruby
-Filewatcher.new('lib/*').watch do |filename|
+Filewatcher.new('lib/*').watch do |filename, event|
   # ...
 end
 ```
@@ -221,7 +221,7 @@ end
 Watch an absolute directory:
 
 ```ruby
-Filewatcher.new('/tmp/foo').watch do |filename|
+Filewatcher.new('/tmp/foo').watch do |filename, event|
   # ...
 end
 ```
@@ -240,7 +240,7 @@ The API takes some of the same options as the command line interface. To watch a
 
 ```ruby
 Filewatcher.new('**/*.*', exclude: '**/*.rb', spinner: true, interval: 0.1)
-  .watch do |filename|
+  .watch do |filename, event|
     puts filename
   end
 ```
@@ -292,7 +292,7 @@ If basename, relative filename or absolute filename is necessary use the standar
 ```ruby
 require 'pathname'
 
-Filewatcher.new(['**/*.*']).watch do |filename|
+Filewatcher.new(['**/*.*']).watch do |filename, event|
   path = Pathname.new(filename)
   puys "Basename         : #{path.basename}"
   puts "Relative filename: #{File.join('.', path)}"

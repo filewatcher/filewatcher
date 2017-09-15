@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'bacon'
+require 'bacon/custom_matchers_messages'
+
 begin
   require 'pry-byebug'
 rescue LoadError
@@ -10,20 +12,22 @@ end
 class WatchRun
   TMP_DIR = File.join(__dir__, 'tmp')
 
-  attr_reader :filewatcher, :thread, :watched, :processed
+  attr_reader :filename, :filewatcher, :thread, :watched, :processed
 
   def initialize(
-    filename: File.join(TMP_DIR, 'tmp_file.txt'),
+    filename: 'tmp_file.txt',
     directory: false,
-    filewatcher: Filewatcher.new(File.join(TMP_DIR, '**', '*')),
-    action: :update,
-    interval: 0.1
+    every: false,
+    filewatcher: Filewatcher.new(
+      File.join(TMP_DIR, '**', '*'), interval: 0.1, every: every
+    ),
+    action: :update
   )
-    @filename = filename
+    @filename =
+      filename.start_with?('/', '~') ? filename : File.join(TMP_DIR, filename)
     @directory = directory
     @filewatcher = filewatcher
     @action = action
-    @filewatcher.interval = @interval = interval
   end
 
   def start
@@ -57,9 +61,9 @@ class WatchRun
     Thread.new(
       @filewatcher, @processed = []
     ) do |filewatcher, processed|
-      filewatcher.watch do |changes|
+      filewatcher.watch do |filename, event|
         increment_watched
-        processed.concat(changes.keys)
+        processed.push([filename, event])
       end
     end
   end
@@ -121,8 +125,8 @@ class ShellWatchRun
   end
 end
 
-def include_all_files(elements)
-  ->(it) { elements.all? { |element| it.include? File.expand_path(element) } }
+custom_matcher :include_all_files do |obj, elements|
+  elements.all? { |element| obj.include? File.expand_path(element) }
 end
 
 def dump_to_env_file(content)
