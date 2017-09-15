@@ -24,13 +24,14 @@ class Filewatcher
     @immediate = options[:immediate]
     @show_spinner = options[:spinner]
     @interval = options.fetch(:interval, 0.5)
+    @every = options[:every]
   end
 
   def watch(&on_update)
     trap('SIGINT') { return }
     @on_update = on_update
     @keep_watching = true
-    yield({}) if @immediate
+    yield('', '') if @immediate
 
     main_cycle
 
@@ -69,7 +70,7 @@ class Filewatcher
     on_update = @on_update unless block_given?
     while filesystem_updated?(@end_snapshot || mtime_snapshot)
       update_spinner('Finalizing')
-      on_update.call(@changes)
+      trigger_changes(on_update)
     end
     @end_snapshot = nil
   end
@@ -103,11 +104,13 @@ class Filewatcher
   def filesystem_updated?(snapshot = mtime_snapshot)
     @changes = {}
 
+    # rubocop:disable Perfomance/HashEachMethods
+    ## https://github.com/bbatsov/rubocop/issues/4732
     (snapshot.to_a - last_snapshot.to_a).each do |file, _mtime|
       @changes[file] = last_snapshot[file] ? :updated : :created
     end
 
-    (last_snapshot.to_a - snapshot.to_a).each do |file, _mtime|
+    (last_snapshot.keys - snapshot.keys).each do |file|
       @changes[file] = :deleted
     end
 

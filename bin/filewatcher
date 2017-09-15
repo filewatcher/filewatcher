@@ -78,29 +78,25 @@ begin
 
   Process.daemon(true, true) if options[:daemon]
 
-  fw.watch do |changes|
-    changes = changes.first(1) unless options[:every]
-    changes = { '' => '' } if changes.empty? # immediate option
-    changes.each do |filename, event|
-      cmd =
-        if options[:exec] && File.exist?(filename)
-          Filewatcher::Runner.new(filename).command
-        elsif ARGV.length > 1
-          ARGV[-1]
-        end
+  fw.watch do |filename, event|
+    cmd =
+      if options[:exec] && File.exist?(filename)
+        Filewatcher::Runner.new(filename).command
+      elsif ARGV.length > 1
+        ARGV[-1]
+      end
 
-      next puts "file #{event}: #{filename}" unless cmd
+    next puts "file #{event}: #{filename}" unless cmd
 
-      env = Filewatcher::Env.new(filename, event).to_h
-      if options[:restart]
-        child_pid = restart(child_pid, env, cmd)
-      else
-        begin
-          Process.spawn(env, cmd)
-          Process.wait
-        rescue SystemExit, Interrupt
-          exit(0)
-        end
+    env = Filewatcher::Env.new(filename, event).to_h
+    if options[:restart]
+      child_pid = restart(child_pid, env, cmd)
+    else
+      begin
+        Process.spawn(env, cmd)
+        Process.wait
+      rescue SystemExit, Interrupt
+        exit(0)
       end
     end
   end

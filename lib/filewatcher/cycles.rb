@@ -33,9 +33,12 @@ class Filewatcher
       end
     end
 
-    def trigger_changes
+    def trigger_changes(on_update = @on_update)
       thread = Thread.new do
-        @on_update.call(@changes) if @changes.any?
+        changes = @every ? @changes : @changes.first(1)
+        changes.each do |filename, event|
+          on_update.call(filename, event)
+        end
         @changes.clear
       end
       thread.join

@@ -35,7 +35,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :updated]]
+      )
     end
 
     it 'should handle globs' do
@@ -45,7 +47,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :updated]]
+      )
     end
 
     it 'should handle explicit relative paths with globs' do
@@ -55,7 +59,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :updated]]
+      )
     end
 
     it 'should handle explicit relative paths' do
@@ -65,18 +71,24 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :updated]]
+      )
     end
 
     it 'should handle tilde expansion' do
+      filename = File.expand_path('~/file_watcher_1.txt')
+
       wr = WatchRun.new(
-        filename: File.expand_path('~/file_watcher_1.txt'),
+        filename: filename,
         filewatcher: Filewatcher.new('~/file_watcher_1.txt')
       )
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[filename, :updated]]
+      )
     end
 
     it 'should immediately run with corresponding option' do
@@ -87,7 +99,7 @@ describe Filewatcher do
       wr.start
       wr.stop
 
-      wr.processed.should.be.empty
+      wr.processed.should.equal [['', '']]
       wr.watched.should.be > 0
     end
 
@@ -110,7 +122,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :deleted]]
+      )
     end
 
     it 'should detect file additions' do
@@ -118,7 +132,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :created]]
+      )
     end
 
     it 'should detect file updates' do
@@ -126,22 +142,30 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :updated]]
+      )
     end
 
     it 'should detect new files in subfolders' do
-      FileUtils.mkdir_p(subfolder = 'test/tmp/new_sub_folder')
+      FileUtils.mkdir_p subfolder = File.expand_path('test/tmp/new_sub_folder')
 
       wr = WatchRun.new(
         filename: File.join(subfolder, 'file.txt'),
-        action: :create
+        action: :create,
+        every: true
       )
       wr.run
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [
+          [subfolder, :updated],
+          [wr.filename, :created]
+        ]
+      )
     end
 
     it 'should detect new subfolders' do
-      subfolder = 'test/tmp/new_sub_folder'
+      subfolder = 'new_sub_folder'
 
       wr = WatchRun.new(
         filename: subfolder,
@@ -151,7 +175,9 @@ describe Filewatcher do
 
       wr.run
 
-      wr.processed.should.be.any
+      wr.processed.should.equal(
+        [[wr.filename, :created]]
+      )
     end
   end
 
@@ -170,7 +196,7 @@ describe Filewatcher do
 
   describe '#pause, #resume' do
     it 'should work' do
-      wr = WatchRun.new(action: :create)
+      wr = WatchRun.new(action: :create, every: true)
 
       wr.start
 
@@ -198,13 +224,13 @@ describe Filewatcher do
 
       wr.filewatcher.stop
       wr.stop
-      wr.processed.should include_all_files(added_files)
+      wr.processed.map(&:first).should include_all_files(added_files)
     end
   end
 
   describe '#finalize' do
     it 'should process all remaining changes' do
-      wr = WatchRun.new(action: :create)
+      wr = WatchRun.new(action: :create, every: true)
 
       wr.start
 
@@ -218,7 +244,7 @@ describe Filewatcher do
 
       wr.filewatcher.finalize
 
-      wr.processed.should include_all_files(added_files)
+      wr.processed.map(&:first).should include_all_files(added_files)
     end
   end
 
