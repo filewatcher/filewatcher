@@ -302,6 +302,7 @@ end
 
 ## Changelog
 
+*   1.0.0 Many refactorings, tests improvements, add `--every` option
 *   0.5.4 Add --daemon option, fix issues with the --restart option.
 *   0.5.3 Exclude files. More environment variables. Options in Ruby API.
 *   0.5.2 Start, stop and finalize API.
