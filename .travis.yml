@@ -2,8 +2,7 @@ language: ruby
 rvm:
   - 2.2
   - 2.3
-  - 2.4.0 # 0 patch-version is workaround for Travis CI macOS builds:
-          # https://github.com/travis-ci/travis-ci/issues/7848
+  - 2.4
   - jruby-9.1.9.0
 
 os:
