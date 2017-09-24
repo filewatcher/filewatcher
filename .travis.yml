@@ -9,6 +9,12 @@ os:
   - linux
   - osx
 
+matrix:
+  allow_failures:
+    - os: osx
+    - rvm: jruby-9.1.9.0
+  fast_finish: true
+
 notifications:
   email:
     on_success: change
