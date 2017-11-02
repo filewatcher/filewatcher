@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency     'trollop', '~> 2.1', '>= 2.1.2'
   s.add_development_dependency 'rake', '~> 12.0'
   s.add_development_dependency 'bacon', '~> 1.2'
+  s.add_development_dependency 'rubocop', '~> 0.51'
 end
