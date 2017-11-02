@@ -51,10 +51,6 @@ class WatchRun
     else
       File.write(@filename, 'content2')
     end
-
-    # Some OS, filesystems and Ruby interpretators
-    # doesn't catch milliseconds of `File.mtime`
-    sleep 3
   end
 end
 
@@ -75,16 +71,33 @@ class RubyWatchRun < WatchRun
   def start
     super
     @thread = thread_initialize
-    sleep 3 # thread needs a chance to start
+    # thread needs a chance to start
+    wait 3 do
+      filewatcher.keep_watching
+    end
   end
 
   def stop
+    thread.exit
+
+    wait 3 do
+      thread.stop?
+    end
+
     super
-    @thread.exit
-    sleep 3
   end
 
   private
+
+  def make_changes
+    super
+
+    # Some OS, filesystems and Ruby interpretators
+    # doesn't catch milliseconds of `File.mtime`
+    wait 3 do
+      processed.any?
+    end
+  end
 
   def thread_initialize
     @watched ||= 0
@@ -101,48 +114,87 @@ class RubyWatchRun < WatchRun
   def increment_watched
     @watched += 1
   end
+
+  def wait(seconds)
+    max_count = seconds / filewatcher.interval
+    count = 0
+    while count < max_count && !yield
+      sleep filewatcher.interval
+      count += 1
+    end
+  end
 end
 
 class ShellWatchRun < WatchRun
   EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
     "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}".freeze
 
-  attr_reader :output
+  ENV_FILE = File.join(TMP_DIR, 'env')
 
   def initialize(
-    options: '',
+    options: {},
     dumper: :watched,
-    output: File.join(TMP_DIR, 'env'),
     **args
   )
     super(**args)
     @options = options
+    @options[:interval] ||= 0.1
+    @options_string =
+      @options.map { |key, value| "--#{key}=#{value}" }.join(' ')
     @dumper = dumper
-    @output = output
   end
 
   def start
     super
 
     @pid = spawn(
-      "#{EXECUTABLE} #{@options} \"#{@filename}\"" \
+      "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
         " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
     )
+
     Process.detach(@pid)
-    sleep 12
+
+    wait 12 do
+      pid_state == 'S' && (!@options[:immediate] || File.exist?(ENV_FILE))
+    end
+
+    # a little more time
+    sleep 1
   end
 
   def stop
     super
+
     Process.kill('KILL', @pid)
-    sleep 6
+
+    wait 12 do
+      pid_state.empty?
+    end
+
+    # a little more time
+    sleep 1
   end
 
   private
 
   def make_changes
     super
-    sleep 9 # + 3 from base class
+    wait 12 do
+      File.exist?(ENV_FILE)
+    end
+  end
+
+  def pid_state
+    `ps -ho state -p #{@pid}`.chomp
+  end
+
+  def wait(seconds)
+    max_count = seconds / @options[:interval]
+    count = 0
+    while count < max_count && !yield
+      sleep @options[:interval]
+      count += 1
+    end
   end
 end
 
@@ -151,5 +203,5 @@ custom_matcher :include_all_files do |obj, elements|
 end
 
 def dump_to_env_file(content)
-  File.write File.join(WatchRun::TMP_DIR, 'env'), content
+  File.write File.join(ShellWatchRun::ENV_FILE), content
 end

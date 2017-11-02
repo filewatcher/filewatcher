@@ -268,7 +268,7 @@ describe Filewatcher do
 
       swr.run
 
-      File.read(swr.output)
+      File.read(ShellWatchRun::ENV_FILE)
         .should.equal(
           %W[
             #{tmp_dir}/#{filename}
@@ -283,27 +283,27 @@ describe Filewatcher do
 
     it 'should be executed immediately with corresponding option' do
       swr = ShellWatchRun.new(
-        options: '--immediate',
+        options: { immediate: true },
         dumper: :watched
       )
 
       swr.start
       swr.stop
 
-      File.exist?(swr.output).should.be.true
-      File.read(swr.output).should.equal 'watched'
+      File.exist?(ShellWatchRun::ENV_FILE).should.be.true
+      File.read(ShellWatchRun::ENV_FILE).should.equal 'watched'
     end
 
     it 'should not be executed without immediate option and changes' do
       swr = ShellWatchRun.new(
-        options: '',
+        options: {},
         dumper: :watched
       )
 
       swr.start
       swr.stop
 
-      File.exist?(swr.output).should.be.false
+      File.exist?(ShellWatchRun::ENV_FILE).should.be.false
     end
   end
 end
