@@ -29,7 +29,7 @@ class Filewatcher
   end
 
   def watch(&on_update)
-    trap('SIGINT') { return }
+    %w[HUP INT TERM].each { |signal| trap(signal) { exit } }
     @on_update = on_update
     @keep_watching = true
     yield('', '') if @immediate

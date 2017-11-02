@@ -10,6 +10,13 @@ describe Filewatcher do
 
   after do
     FileUtils.rm_r WatchRun::TMP_DIR
+
+    interval = 0.1
+    wait = 5
+    count = 0
+    while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
+      sleep interval
+    end
   end
 
   describe '#initialize' do
