@@ -129,6 +129,8 @@ class ShellWatchRun < WatchRun
   EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
     "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}".freeze
 
+  SLEEP_MULTIPLIER = RUBY_PLATFORM == 'java' ? 5 : 1
+
   ENV_FILE = File.join(TMP_DIR, 'env')
 
   def initialize(
@@ -149,7 +151,8 @@ class ShellWatchRun < WatchRun
 
     @pid = spawn(
       "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
-        " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\""
+        " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\"",
+      pgroup: true
     )
 
     Process.detach(@pid)
@@ -159,18 +162,21 @@ class ShellWatchRun < WatchRun
     end
 
     # a little more time
-    sleep 1
+    sleep 1 * SLEEP_MULTIPLIER
   end
 
   def stop
-    Process.kill('KILL', @pid)
+    ## Problems: https://github.com/thomasfl/filewatcher/pull/83
+    ## Solution: https://stackoverflow.com/a/45032252/2630849
+    Process.kill('TERM', -Process.getpgid(@pid))
+    Process.waitall
 
     wait 12 do
       pid_state.empty?
     end
 
     # a little more time
-    sleep 1
+    sleep 1 * SLEEP_MULTIPLIER
 
     super
   end
@@ -186,7 +192,9 @@ class ShellWatchRun < WatchRun
   end
 
   def pid_state
-    `ps -ho state -p #{@pid}`.chomp
+    ## For macOS output:
+    ## https://travis-ci.org/thomasfl/filewatcher/jobs/304433538
+    `ps -ho state -p #{@pid}`.sub('STAT', '').strip
   end
 
   def wait(seconds)
