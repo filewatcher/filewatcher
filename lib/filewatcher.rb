@@ -8,7 +8,8 @@ require_relative 'filewatcher/cycles'
 class Filewatcher
   include Filewatcher::Cycles
 
-  attr_writer :interval
+  attr_accessor :interval
+  attr_reader :keep_watching
 
   def update_spinner(label)
     return unless @show_spinner
