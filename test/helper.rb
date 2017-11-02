@@ -163,8 +163,6 @@ class ShellWatchRun < WatchRun
   end
 
   def stop
-    super
-
     Process.kill('KILL', @pid)
 
     wait 12 do
@@ -173,12 +171,15 @@ class ShellWatchRun < WatchRun
 
     # a little more time
     sleep 1
+
+    super
   end
 
   private
 
   def make_changes
     super
+
     wait 12 do
       File.exist?(ENV_FILE)
     end

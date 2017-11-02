@@ -257,7 +257,7 @@ describe Filewatcher do
         .should.be.true
     end
 
-    it 'should set correct ENV variables' do
+    it 'should set correct ENV variables for file creation' do
       filename = 'foo.txt'
 
       swr = ShellWatchRun.new(
@@ -274,6 +274,30 @@ describe Filewatcher do
             #{tmp_dir}/#{filename}
             #{filename}
             created
+            #{tmp_dir}
+            #{tmp_dir}/#{filename}
+            test/tmp/#{filename}
+          ].join(', ')
+        )
+    end
+
+    it 'should set correct ENV variables for file deletion' do
+      filename = 'foo.txt'
+
+      swr = ShellWatchRun.new(
+        filename: filename,
+        action: :delete,
+        dumper: :env
+      )
+
+      swr.run
+
+      File.read(ShellWatchRun::ENV_FILE)
+        .should.equal(
+          %W[
+            #{tmp_dir}/#{filename}
+            #{filename}
+            deleted
             #{tmp_dir}
             #{tmp_dir}/#{filename}
             test/tmp/#{filename}
