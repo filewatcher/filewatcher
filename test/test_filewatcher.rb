@@ -14,7 +14,7 @@ describe Filewatcher do
 
   describe '#initialize' do
     it 'should exclude selected file patterns' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new(
           File.expand_path('test/tmp/**/*'),
           exclude: File.expand_path('test/tmp/**/*.txt')
@@ -27,7 +27,7 @@ describe Filewatcher do
     end
 
     it 'should handle absolute paths with globs' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new(
           File.expand_path('test/tmp/**/*')
         )
@@ -41,7 +41,7 @@ describe Filewatcher do
     end
 
     it 'should handle globs' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new('test/tmp/**/*')
       )
 
@@ -53,7 +53,7 @@ describe Filewatcher do
     end
 
     it 'should handle explicit relative paths with globs' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new('./test/tmp/**/*')
       )
 
@@ -65,7 +65,7 @@ describe Filewatcher do
     end
 
     it 'should handle explicit relative paths' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new('./test/tmp')
       )
 
@@ -79,7 +79,7 @@ describe Filewatcher do
     it 'should handle tilde expansion' do
       filename = File.expand_path('~/file_watcher_1.txt')
 
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filename: filename,
         filewatcher: Filewatcher.new('~/file_watcher_1.txt')
       )
@@ -92,7 +92,7 @@ describe Filewatcher do
     end
 
     it 'should immediately run with corresponding option' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new('**/*', immediate: true)
       )
 
@@ -104,7 +104,7 @@ describe Filewatcher do
     end
 
     it 'should not be executed without immediate option and changes' do
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filewatcher: Filewatcher.new('**/*', immediate: false)
       )
 
@@ -118,7 +118,7 @@ describe Filewatcher do
 
   describe '#watch' do
     it 'should detect file deletions' do
-      wr = WatchRun.new(action: :delete)
+      wr = RubyWatchRun.new(action: :delete)
 
       wr.run
 
@@ -128,7 +128,7 @@ describe Filewatcher do
     end
 
     it 'should detect file additions' do
-      wr = WatchRun.new(action: :create)
+      wr = RubyWatchRun.new(action: :create)
 
       wr.run
 
@@ -138,7 +138,7 @@ describe Filewatcher do
     end
 
     it 'should detect file updates' do
-      wr = WatchRun.new(action: :update)
+      wr = RubyWatchRun.new(action: :update)
 
       wr.run
 
@@ -150,7 +150,7 @@ describe Filewatcher do
     it 'should detect new files in subfolders' do
       FileUtils.mkdir_p subfolder = File.expand_path('test/tmp/new_sub_folder')
 
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filename: File.join(subfolder, 'file.txt'),
         action: :create,
         every: true
@@ -167,7 +167,7 @@ describe Filewatcher do
     it 'should detect new subfolders' do
       subfolder = 'new_sub_folder'
 
-      wr = WatchRun.new(
+      wr = RubyWatchRun.new(
         filename: subfolder,
         directory: true,
         action: :create
@@ -183,7 +183,7 @@ describe Filewatcher do
 
   describe '#stop' do
     it 'should work' do
-      wr = WatchRun.new
+      wr = RubyWatchRun.new
 
       wr.start
 
@@ -196,7 +196,7 @@ describe Filewatcher do
 
   describe '#pause, #resume' do
     it 'should work' do
-      wr = WatchRun.new(action: :create, every: true)
+      wr = RubyWatchRun.new(action: :create, every: true)
 
       wr.start
 
@@ -230,7 +230,7 @@ describe Filewatcher do
 
   describe '#finalize' do
     it 'should process all remaining changes' do
-      wr = WatchRun.new(action: :create, every: true)
+      wr = RubyWatchRun.new(action: :create, every: true)
 
       wr.start
 
@@ -249,7 +249,7 @@ describe Filewatcher do
   end
 
   describe 'executable' do
-    tmp_dir = WatchRun::TMP_DIR
+    tmp_dir = ShellWatchRun::TMP_DIR
 
     it 'should run' do
       null_output = Gem.win_platform? ? 'NUL' : '/dev/null'
@@ -258,7 +258,11 @@ describe Filewatcher do
     end
 
     it 'should set correct ENV variables' do
+      filename = 'foo.txt'
+
       swr = ShellWatchRun.new(
+        filename: filename,
+        action: :create,
         dumper: :env
       )
 
@@ -267,12 +271,12 @@ describe Filewatcher do
       File.read(swr.output)
         .should.equal(
           %W[
-            #{tmp_dir}/foo.txt
-            foo.txt
+            #{tmp_dir}/#{filename}
+            #{filename}
             created
             #{tmp_dir}
-            #{tmp_dir}/foo.txt
-            test/tmp/foo.txt
+            #{tmp_dir}/#{filename}
+            test/tmp/#{filename}
           ].join(', ')
         )
     end
