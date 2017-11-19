@@ -15,6 +15,11 @@ matrix:
     - rvm: jruby-9.1.9.0
   fast_finish: true
 
+cache:
+  - bundler
+  - directories:
+    - /home/travis/.rvm/
+
 notifications:
   email:
     on_success: change
