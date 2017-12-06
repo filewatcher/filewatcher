@@ -29,7 +29,9 @@ class Filewatcher
   end
 
   def watch(&on_update)
-    %w[HUP INT TERM].each { |signal| trap(signal) { exit } }
+    ## The set of available signals depends on the OS
+    ## Windows doesn't support `HUP` signal, for example
+    (%w[HUP INT TERM] & Signal.list.keys).each { |signal| trap(signal) { exit } }
     @on_update = on_update
     @keep_watching = true
     yield('', '') if @immediate
