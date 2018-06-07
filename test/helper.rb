@@ -149,11 +149,7 @@ class ShellWatchRun < WatchRun
   def start
     super
 
-    @pid = spawn(
-      "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
-        " \"ruby #{File.join(__dir__, 'dumpers', "#{@dumper}_dumper.rb")}\"",
-      pgroup: true
-    )
+    @pid = spawn_filewatcher
 
     Process.detach(@pid)
 
@@ -182,6 +178,14 @@ class ShellWatchRun < WatchRun
   end
 
   private
+
+  def spawn_filewatcher
+    spawn(
+      "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
+        " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\"",
+      pgroup: true
+    )
+  end
 
   def make_changes
     super
