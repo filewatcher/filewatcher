@@ -6,7 +6,6 @@ require_relative '../lib/filewatcher/env'
 require_relative '../lib/filewatcher/runner'
 require_relative '../lib/filewatcher/version'
 require 'trollop'
-require 'thread'
 
 options = Trollop.options do
   version "filewatcher, version #{Filewatcher::VERSION} by Thomas Flemming 2016"
