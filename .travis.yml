@@ -13,7 +13,3 @@ cache:
   - bundler
   - directories:
     - /home/travis/.rvm/
-
-notifications:
-  email:
-    on_success: change
