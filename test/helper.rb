@@ -55,6 +55,8 @@ class WatchRun
 end
 
 class RubyWatchRun < WatchRun
+  SLEEP_MULTIPLIER = Gem::Platform.local.os == 'darwin' ? 5 : 1
+
   attr_reader :filewatcher, :thread, :watched, :processed
 
   def initialize(
@@ -72,17 +74,23 @@ class RubyWatchRun < WatchRun
     super
     @thread = thread_initialize
     # thread needs a chance to start
-    wait 3 do
+    wait 12 do
       filewatcher.keep_watching
     end
+
+    # a little more time
+    sleep 1 * SLEEP_MULTIPLIER
   end
 
   def stop
     thread.exit
 
-    wait 3 do
+    wait 12 do
       thread.stop?
     end
+
+    # a little more time
+    sleep 1 * SLEEP_MULTIPLIER
 
     super
   end
@@ -94,7 +102,7 @@ class RubyWatchRun < WatchRun
 
     # Some OS, filesystems and Ruby interpretators
     # doesn't catch milliseconds of `File.mtime`
-    wait 3 do
+    wait 12 do
       processed.any?
     end
   end
