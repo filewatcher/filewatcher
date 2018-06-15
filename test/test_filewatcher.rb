@@ -212,13 +212,15 @@ describe Filewatcher do
       (1..4).each do |n|
         File.write("test/tmp/file#{n}.txt", "content#{n}")
       end
-      sleep 0.2 # Give filewatcher time to respond
+      # Give filewatcher time to respond
+      sleep 1 * RubyWatchRun::SLEEP_MULTIPLIER
 
       # update block should not have been called
       wr.processed.should.be.empty
 
       wr.filewatcher.resume
-      sleep 0.2 # Give filewatcher time to respond
+      # Give filewatcher time to respond
+      sleep 1 * RubyWatchRun::SLEEP_MULTIPLIER
 
       # update block still should not have been called
       wr.processed.should.be.empty
@@ -227,7 +229,8 @@ describe Filewatcher do
         File.write(file = "test/tmp/file#{n}.txt", "content#{n}")
         file
       end
-      sleep 0.2 # Give filewatcher time to respond
+      # Give filewatcher time to respond
+      sleep 1 * RubyWatchRun::SLEEP_MULTIPLIER
 
       wr.filewatcher.stop
       wr.stop
