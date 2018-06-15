@@ -20,7 +20,7 @@ class WatchRun
     action: :update
   )
     @filename =
-      filename.start_with?('/', '~') ? filename : File.join(TMP_DIR, filename)
+      filename =~ %r{^(/|~|[A-Z]:)} ? filename : File.join(TMP_DIR, filename)
     @directory = directory
     @action = action
   end
@@ -170,10 +170,7 @@ class ShellWatchRun < WatchRun
   end
 
   def stop
-    ## Problems: https://github.com/thomasfl/filewatcher/pull/83
-    ## Solution: https://stackoverflow.com/a/45032252/2630849
-    Process.kill('TERM', -Process.getpgid(@pid))
-    Process.waitall
+    kill_filewatcher
 
     wait 12 do
       pid_state.empty?
@@ -187,11 +184,13 @@ class ShellWatchRun < WatchRun
 
   private
 
+  SPAWN_OPTIONS = Gem.win_platform? ? {} : { pgroup: true }
+
   def spawn_filewatcher
     spawn(
       "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
         " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\"",
-      pgroup: true
+      **SPAWN_OPTIONS
     )
   end
 
@@ -200,6 +199,17 @@ class ShellWatchRun < WatchRun
 
     wait 12 do
       File.exist?(ENV_FILE)
+    end
+  end
+
+  def kill_filewatcher
+    if Gem.win_platform?
+      Process.kill('KILL', @pid)
+    else
+      ## Problems: https://github.com/thomasfl/filewatcher/pull/83
+      ## Solution: https://stackoverflow.com/a/45032252/2630849
+      Process.kill('TERM', -Process.getpgid(@pid))
+      Process.waitall
     end
   end
 

@@ -3,10 +3,15 @@ environment:
     - RUBY_VERSION: 22-x64
     - RUBY_VERSION: 23-x64
     - RUBY_VERSION: 24-x64
+    - RUBY_VERSION: 25-x64
 
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  - bundle config --local path vendor/bundle
   - bundle install
+
+cache:
+  - vendor/bundle
 
 build: off
 
