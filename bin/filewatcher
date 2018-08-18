@@ -56,7 +56,7 @@ def restart(child_pid, env, cmd)
 rescue Errno::ESRCH
   nil # already killed
 ensure
-  Process.spawn(env, cmd)
+  return Process.spawn(env, cmd)
 end
 
 if options[:exclude].to_s != ''
