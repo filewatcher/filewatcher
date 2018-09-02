@@ -5,9 +5,10 @@ require_relative '../lib/filewatcher'
 require_relative '../lib/filewatcher/env'
 require_relative '../lib/filewatcher/runner'
 require_relative '../lib/filewatcher/version'
-require 'trollop'
 
-options = Trollop.options do
+require 'optimist'
+
+options = Optimist.options do
   version "filewatcher, version #{Filewatcher::VERSION} by Thomas Flemming 2016"
   banner File.read File.join(__dir__, 'banner.txt')
 
@@ -32,7 +33,7 @@ options = Trollop.options do
       short: 's', type: :boolean, default: false
 end
 
-Trollop.die Trollop.educate if ARGV.empty?
+Optimist.die Optimist.educate if ARGV.empty?
 
 files = ARGV[0..-2]
 
