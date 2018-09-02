@@ -49,14 +49,14 @@ end
 files = split_files_void_escaped_whitespace(files)
 child_pid = nil
 
-def restart(child_pid, env, cmd)
-  raise Errno::ESRCH unless child_pid
-  Process.kill(9, child_pid)
-  Process.wait(child_pid)
-rescue Errno::ESRCH
-  nil # already killed
-ensure
-  return Process.spawn(env, cmd)
+def restart(pid, env, cmd)
+  begin
+    Process.kill(9, pid)
+    Process.wait(pid)
+  rescue Errno::ESRCH
+    nil # already killed
+  end
+  Process.spawn(env, cmd)
 end
 
 if options[:exclude].to_s != ''
