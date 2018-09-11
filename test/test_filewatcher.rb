@@ -339,5 +339,16 @@ describe Filewatcher do
 
       File.exist?(ShellWatchRun::ENV_FILE).should.be.false
     end
+
+    it 'should work with restart option' do
+      swr = ShellWatchRun.new(
+        options: { restart: true }
+      )
+
+      swr.run
+
+      File.exist?(ShellWatchRun::ENV_FILE).should.be.true
+      File.read(ShellWatchRun::ENV_FILE).should.equal 'watched'
+    end
   end
 end
