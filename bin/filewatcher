@@ -52,6 +52,7 @@ child_pid = nil
 
 def restart(pid, env, cmd)
   begin
+    raise Errno::ESRCH unless pid
     Process.kill(9, pid)
     Process.wait(pid)
   rescue Errno::ESRCH
