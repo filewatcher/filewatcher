@@ -318,11 +318,11 @@ This project would not be where it is today without the generous help provided b
 
 *   [Penn Taylor](https://github.com/penntaylor): Spinner displayed in the terminal and Start, pause, resume, stop, and finalize a running watch.
 
-*   [Franco Leonardo Bulgarelli](https://github.com/flbulgarelli): Support for absolute and globbed paths
+*   [Franco Leonardo Bulgarelli](https://github.com/flbulgarelli): Support for absolute and globbed paths.
 
-*   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing
+*   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing.
 
-*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many fixes and improvements
+*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many fixes and improvements.
 
 This gem was initially inspired by [Tom Lieber's blogg posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 
