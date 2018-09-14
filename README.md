@@ -337,4 +337,4 @@ This gem was initially inspired by [Tom Lieber's blogg posting](http://alltom.co
 
 ## Copyright
 
-Copyright (c) 2011 - 2017 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2010 - 2018 Thomas Flemming. See LICENSE for details.
