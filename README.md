@@ -312,6 +312,8 @@ end
 
 This project would not be where it is today without the generous help provided by people reporting issues and these contributors:
 
+*   [Thomas Flemming](https://github.com/thomasfl): Original author. Restart option. Exported variables.
+
 *   [Penn Taylor](https://github.com/penntaylor): Spinner displayed in the terminal and Start, pause, resume, stop, and finalize a running watch.
 
 *   [Franco Leonardo Bulgarelli](https://github.com/flbulgarelli): Support for absolute and globbed paths
