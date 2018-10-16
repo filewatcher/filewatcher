@@ -234,7 +234,19 @@ Filewatcher.new(['README.rdoc']).watch do |filename, event|
 end
 ```
 
-When a file is renamed it is detected as a new file followed by a file deletion.
+When a file is renamed and `every` option is enabled, it is detected as
+a new file followed by a file deletion:
+
+```ruby
+Filewatcher.new(['lib/'], every: true).watch do |filename, event|
+  puts "File #{event}: #{filename}"
+end
+
+# Rename from `old_test.rb` to `new_test.rb` will print:
+
+# File created: /absolute/path/lib/new_test.rb
+# File deleted: /absolute/path/lib/old_test.rb
+```
 
 The API takes some of the same options as the command line interface. To watch all files recursively except files that matches \*.rb, display a spinner and only wait for 0.1 seconds between each scan:
 
