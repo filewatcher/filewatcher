@@ -1,7 +1,7 @@
 # Filewatcher
 
 [![Gem Version](https://badge.fury.io/rb/filewatcher.svg)](http://badge.fury.io/rb/filewatcher)
-[![Build Status](https://secure.travis-ci.org/thomasfl/filewatcher.png?branch=master)](http://travis-ci.org/thomasfl/filewatcher)
+[![Build Status](https://api.cirrus-ci.com/github/filewatcher/filewatcher.svg)](https://cirrus-ci.com/github/filewatcher/filewatcher)
 [![Depfu](https://badges.depfu.com/badges/68e34db402d0a15d49f5a4e5a26a503f/overview.svg)](https://depfu.com/github/filewatcher/filewatcher?project_id=5811)
 [![Code Climate](https://codeclimate.com/github/thomasfl/filewatcher.png)](https://codeclimate.com/github/thomasfl/filewatcher)
 

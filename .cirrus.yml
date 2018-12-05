@@ -1,0 +1,72 @@
+unix_bundle_cache: &unix_bundle_cache
+  bundle_cache:
+    folder: /usr/local/bundle
+    fingerprint_script:
+      - echo $CIRRUS_TASK_NAME:$CIRRUS_OS
+      - ruby -v
+      - cat Gemfile
+      - cat *.gemspec
+    populate_script: bundle install
+
+task:
+  matrix:
+    - name: Test (Linux)
+      container:
+        matrix:
+          image: ruby:2.3
+          image: ruby:2.4
+          image: ruby:2.5
+          image: jruby:latest
+      install_script:
+        ## For `ps`: https://cirrus-ci.com/task/4518391826612224
+        - apt-get update && apt-get install -y procps
+        - gem install bundler
+      <<: *unix_bundle_cache
+
+    - name: Test (macOS)
+      osx_instance:
+        image: mojave-base
+      env:
+        PATH: "/usr/local/opt/ruby/bin:$PATH"
+      install_script:
+        - ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        - brew install ruby
+        ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
+        - gem install bundler --force
+      <<: *unix_bundle_cache
+
+    # - name: Test (Windows)
+    #   windows_container:
+    #     image: cirrusci/windowsservercore:2019
+    #     os_version: 2019
+    #   # windows_container:
+    #   #   image: vinogradoff/windows-ruby
+    #   #   os_version: 2016
+    #   env:
+    #     RUBY_VERSION: 2.6.1-1
+    #     PATH: $PATH;C:\Ruby\bin
+    #   install_script:
+    #     - mkdir C:\tmp
+    #     - bitsadmin.exe
+    #         /transfer "Download Ruby"
+    #         https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-%RUBY_VERSION%/rubyinstaller-devkit-%RUBY_VERSION%-x64.exe
+    #         C:\tmp\rubyinstaller.exe
+    #
+    #     - C:\tmp\rubyinstaller.exe
+    #         /silent
+    #         /dir="C:\Ruby"
+    #         /tasks="assocfiles,modpath"
+    #     - gem install bundler
+    #     - dir C:\Ruby
+    #     - rmdir C:\tmp /s /q
+    #   bundle_cache:
+    #     folder: /usr/local/bundle
+    #     fingerprint_script: >
+    #       - echo $CIRRUS_TASK_NAME:$CIRRUS_OS
+    #       - dir C:\Ruby\
+    #       - ruby -v
+    #       - type Gemfile
+    #       - type *.gemspec
+    #     populate_script: bundle install
+
+  test_script: bundle exec rake
