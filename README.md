@@ -152,7 +152,7 @@ Environment variables available from the command string:
 ```
 BASENAME           File basename.
 FILENAME           Relative filename.
-ABSOLUTE_FILENAME  Asolute filename.
+ABSOLUTE_FILENAME  Absolute filename.
 RELATIVE_FILENAME  Same as FILENAME but starts with "./"
 EVENT              Event type. Is either 'updated', 'deleted' or 'created'.
 DIRNAME            Absolute directory name.
