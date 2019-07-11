@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require 'bacon'
-require 'bacon/custom_matchers_messages'
+require 'logger'
 
 begin
   require 'pry-byebug'
@@ -9,23 +8,23 @@ rescue LoadError
   nil
 end
 
+LOGGER = Logger.new($stdout, level: :debug)
+
 class WatchRun
   TMP_DIR = File.join(__dir__, 'tmp')
 
   attr_reader :filename
 
-  def initialize(
-    filename: 'tmp_file.txt',
-    directory: false,
-    action: :update
-  )
+  def initialize(filename:, action:, directory:)
     @filename =
       filename =~ %r{^(/|~|[A-Z]:)} ? filename : File.join(TMP_DIR, filename)
     @directory = directory
     @action = action
+    LOGGER.debug "action = #{action}"
   end
 
   def start
+    LOGGER.debug 'start'
     File.write(@filename, 'content1') unless @action == :create
   end
 
@@ -38,12 +37,14 @@ class WatchRun
   end
 
   def stop
+    LOGGER.debug 'stop'
     FileUtils.rm_r(@filename) if File.exist?(@filename)
   end
 
   private
 
   def make_changes
+    LOGGER.debug "make changes, @filename = #{@filename}"
     if @action == :delete
       FileUtils.remove(@filename)
     elsif @directory
@@ -52,20 +53,28 @@ class WatchRun
       File.write(@filename, 'content2')
     end
   end
+
+  MIN_WAIT_SECONDS = 1
+
+  def wait(seconds, interval)
+    interval *= 1.5 if ENV['CI']
+    # interval *= 1.5 if RUBY_PLATFORM == 'java'
+    # interval *= 1.5 if Gem::Platform.local.os == 'darwin'
+    seconds ||= [interval * 2, MIN_WAIT_SECONDS].max
+    max_count = seconds / interval
+    count = 0
+    while count < max_count && !(block_given? && yield)
+      LOGGER.debug "sleep interval #{interval}"
+      sleep interval
+      count += 1
+    end
+  end
 end
 
 class RubyWatchRun < WatchRun
-  SLEEP_MULTIPLIER = Gem::Platform.local.os == 'darwin' ? 5 : 1
-
   attr_reader :filewatcher, :thread, :watched, :processed
 
-  def initialize(
-    every: false,
-    filewatcher: Filewatcher.new(
-      File.join(TMP_DIR, '**', '*'), interval: 0.1, every: every
-    ),
-    **args
-  )
+  def initialize(filewatcher:, **args)
     super(**args)
     @filewatcher = filewatcher
   end
@@ -74,25 +83,26 @@ class RubyWatchRun < WatchRun
     super
     @thread = thread_initialize
     # thread needs a chance to start
-    wait 12 do
-      filewatcher.keep_watching
+    wait 0.2
+    wait do
+      keep_watching = filewatcher.keep_watching
+      LOGGER.debug "keep_watching = #{keep_watching}"
+      keep_watching
     end
-
-    # a little more time
-    sleep 1 * SLEEP_MULTIPLIER
   end
 
   def stop
     thread.exit
 
-    wait 12 do
+    wait do
       thread.stop?
     end
 
-    # a little more time
-    sleep 1 * SLEEP_MULTIPLIER
-
     super
+  end
+
+  def wait(seconds = nil)
+    super seconds, filewatcher.interval
   end
 
   private
@@ -102,17 +112,18 @@ class RubyWatchRun < WatchRun
 
     # Some OS, filesystems and Ruby interpretators
     # doesn't catch milliseconds of `File.mtime`
-    wait 12 do
+    wait do
+      LOGGER.debug "processed = #{processed}"
       processed.any?
     end
   end
 
   def thread_initialize
     @watched ||= 0
-    Thread.new(
-      @filewatcher, @processed = []
-    ) do |filewatcher, processed|
+    Thread.new(@filewatcher, @processed = []) do |filewatcher, processed|
+      LOGGER.debug 'filewatcher watch'
       filewatcher.watch do |filename, event|
+        LOGGER.debug "watch: filename = #{filename}, event = #{event}"
         increment_watched
         processed.push([filename, event])
       end
@@ -122,36 +133,23 @@ class RubyWatchRun < WatchRun
   def increment_watched
     @watched += 1
   end
-
-  def wait(seconds)
-    max_count = seconds / filewatcher.interval
-    count = 0
-    while count < max_count && !yield
-      sleep filewatcher.interval
-      count += 1
-    end
-  end
 end
 
 class ShellWatchRun < WatchRun
   EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
     "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}".freeze
 
-  SLEEP_MULTIPLIER = RUBY_PLATFORM == 'java' ? 5 : 1
-
   ENV_FILE = File.join(TMP_DIR, 'env')
 
-  def initialize(
-    options: {},
-    dumper: :watched,
-    **args
-  )
+  def initialize(options:, dumper:, **args)
     super(**args)
     @options = options
     @options[:interval] ||= 0.1
     @options_string =
       @options.map { |key, value| "--#{key}=#{value}" }.join(' ')
+    LOGGER.debug "options = #{@options_string}"
     @dumper = dumper
+    LOGGER.debug "dumper = #{@dumper}"
   end
 
   def start
@@ -161,23 +159,21 @@ class ShellWatchRun < WatchRun
 
     Process.detach(@pid)
 
-    wait 12 do
+    wait 0.2
+
+    wait do
+      LOGGER.debug "pid state = #{pid_state}"
+      LOGGER.debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       pid_state == 'S' && (!@options[:immediate] || File.exist?(ENV_FILE))
     end
-
-    # a little more time
-    sleep 1 * SLEEP_MULTIPLIER
   end
 
   def stop
     kill_filewatcher
 
-    wait 12 do
+    wait do
       pid_state.empty?
     end
-
-    # a little more time
-    sleep 1 * SLEEP_MULTIPLIER
 
     super
   end
@@ -187,17 +183,17 @@ class ShellWatchRun < WatchRun
   SPAWN_OPTIONS = Gem.win_platform? ? {} : { pgroup: true }
 
   def spawn_filewatcher
-    spawn(
-      "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
-        " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\"",
-      **SPAWN_OPTIONS
-    )
+    spawn_command = "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
+      " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\""
+    LOGGER.debug "spawn_command = #{spawn_command}"
+    spawn spawn_command, **SPAWN_OPTIONS
   end
 
   def make_changes
     super
 
-    wait 12 do
+    wait do
+      LOGGER.debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       File.exist?(ENV_FILE)
     end
   end
@@ -211,6 +207,7 @@ class ShellWatchRun < WatchRun
       Process.kill('TERM', -Process.getpgid(@pid))
       Process.waitall
     end
+    wait
   end
 
   def pid_state
@@ -219,20 +216,20 @@ class ShellWatchRun < WatchRun
     `ps -ho state -p #{@pid}`.sub('STAT', '').strip
   end
 
-  def wait(seconds)
-    max_count = seconds / @options[:interval]
-    count = 0
-    while count < max_count && !yield
-      sleep @options[:interval]
-      count += 1
-    end
+  def wait(seconds = nil)
+    super seconds, @options[:interval]
   end
-end
-
-custom_matcher :include_all_files do |obj, elements|
-  elements.all? { |element| obj.include? File.expand_path(element) }
 end
 
 def dump_to_env_file(content)
   File.write File.join(ShellWatchRun::ENV_FILE), content
+end
+
+## For case when required from dumpers
+if Object.const_defined?(:RSpec)
+  RSpec::Matchers.define :include_all_files do |expected|
+    match do |actual|
+      expected.all? { |file| actual.include? File.expand_path(file) }
+    end
+  end
 end
