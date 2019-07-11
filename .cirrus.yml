@@ -72,4 +72,4 @@ task:
     #       - type *.gemspec
     #     populate_script: bundle install
 
-  test_script: bundle exec rake
+  test_script: bundle exec rake --trace

@@ -1,6 +1,9 @@
-task default: :test
+begin
+	require 'rspec/core/rake_task'
 
-desc 'Run tests'
-task :test do
-  sh 'bacon --require ./test/helper -a'
+	RSpec::Core::RakeTask.new(:spec)
+
+	task default: :spec
+rescue LoadError
+	puts 'No RSpec available'
 end

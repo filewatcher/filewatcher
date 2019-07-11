@@ -3,7 +3,7 @@ Style/MultilineMethodCallIndentation:
 
 Metrics/BlockLength:
   Exclude:
-    - test/**/*
+    - spec/**/*
 
 AllCops:
   TargetRubyVersion: 2.2

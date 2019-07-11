@@ -22,9 +22,7 @@ Gem::Specification.new do |s|
   s.licenses = ['MIT']
 
   s.add_runtime_dependency     'optimist', '~> 3.0'
-
-  s.add_development_dependency 'bacon', '~> 1.2'
-  s.add_development_dependency 'bacon-custom_matchers_messages', '~> 0.1'
   s.add_development_dependency 'rake', '~> 12.0'
+  s.add_development_dependency 'rspec', '~> 3.8'
   s.add_development_dependency 'rubocop', '~> 0.57'
 end
