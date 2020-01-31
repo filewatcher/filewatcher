@@ -33,6 +33,8 @@ class WatchRun
 
     make_changes
 
+    wait 0.5
+
     stop
   end
 
@@ -59,7 +61,7 @@ class WatchRun
   def wait(seconds, interval)
     interval *= 1.5 if ENV['CI']
     # interval *= 1.5 if RUBY_PLATFORM == 'java'
-    # interval *= 1.5 if Gem::Platform.local.os == 'darwin'
+    interval *= 1.5 if Gem::Platform.local.os == 'darwin'
     seconds ||= [interval * 2, MIN_WAIT_SECONDS].max
     max_count = seconds / interval
     count = 0
@@ -83,7 +85,7 @@ class RubyWatchRun < WatchRun
     super
     @thread = thread_initialize
     # thread needs a chance to start
-    wait 0.2
+    wait 0.5
     wait do
       keep_watching = filewatcher.keep_watching
       LOGGER.debug "keep_watching = #{keep_watching}"
@@ -159,7 +161,7 @@ class ShellWatchRun < WatchRun
 
     Process.detach(@pid)
 
-    wait 0.2
+    wait 0.5
 
     wait do
       LOGGER.debug "pid state = #{pid_state}"
