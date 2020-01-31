@@ -13,10 +13,13 @@ task:
     - name: Test (Linux)
       container:
         matrix:
-          image: ruby:2.3
           image: ruby:2.4
           image: ruby:2.5
-          image: jruby:latest
+          image: ruby:2.6
+          image: ruby:2.7
+          ## https://github.com/jruby/jruby/issues/5798
+          ## https://github.com/jruby/jruby/issues/5894
+          # image: jruby:latest
       install_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         - apt-get update && apt-get install -y procps
@@ -25,7 +28,7 @@ task:
 
     - name: Test (macOS)
       osx_instance:
-        image: mojave-base
+        image: catalina-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
       install_script:
