@@ -12,7 +12,7 @@ describe Filewatcher do
     LOGGER.debug "FileUtils.rm_r #{WatchRun::TMP_DIR}"
     FileUtils.rm_r WatchRun::TMP_DIR
 
-    interval = 0.1
+    interval = 0.2
     wait = 5
     count = 0
     while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
@@ -28,7 +28,7 @@ describe Filewatcher do
   let(:filewatcher) do
     Filewatcher.new(
       File.join(WatchRun::TMP_DIR, '**', '*'),
-      interval: 0.1, every: every, immediate: immediate
+      interval: 0.2, every: every, immediate: immediate
     )
   end
 

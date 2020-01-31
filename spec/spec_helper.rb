@@ -146,7 +146,7 @@ class ShellWatchRun < WatchRun
   def initialize(options:, dumper:, **args)
     super(**args)
     @options = options
-    @options[:interval] ||= 0.1
+    @options[:interval] ||= 0.2
     @options_string =
       @options.map { |key, value| "--#{key}=#{value}" }.join(' ')
     LOGGER.debug "options = #{@options_string}"
