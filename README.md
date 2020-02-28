@@ -306,7 +306,7 @@ require 'pathname'
 
 Filewatcher.new(['**/*.*']).watch do |filename, event|
   path = Pathname.new(filename)
-  puys "Basename         : #{path.basename}"
+  puts "Basename         : #{path.basename}"
   puts "Relative filename: #{File.join('.', path)}"
   puts "Absolute filename: #{path.realpath}"
 end
