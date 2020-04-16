@@ -169,12 +169,12 @@ class RubyWatchRun < WatchRun
   def setup_filewatcher
     debug 'setup_filewatcher'
     debug filewatcher.inspect
-    filewatcher.watch do |filename, event|
+    filewatcher.watch do |changes|
       debug filewatcher.inspect
       @mutex.synchronize do
-        debug "watch callback: filename = #{filename}, event = #{event}"
+        debug "watch callback: changes = #{changes.inspect}"
         increment_watched
-        @processed.push([filename, event])
+        @processed.push(changes)
         # debug 'pushed to processed'
       end
     end
