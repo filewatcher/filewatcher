@@ -29,7 +29,6 @@ class Filewatcher
     @immediate = options[:immediate]
     @show_spinner = options[:spinner]
     @interval = options.fetch(:interval, 0.5)
-    @every = options[:every]
     @logger = options.fetch(:logger, Logger.new($stdout))
   end
 
@@ -42,7 +41,7 @@ class Filewatcher
 
     @on_update = on_update
     @keep_watching = true
-    yield('', '') if @immediate
+    yield({ '' => '' }) if @immediate
 
     main_cycle
 
