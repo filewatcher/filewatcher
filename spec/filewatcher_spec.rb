@@ -42,7 +42,7 @@ describe Filewatcher do
     )
   end
 
-  let(:processed_files) { watch_run.processed.map(&:first) }
+  let(:processed_files) { watch_run.processed.map(&:keys) }
 
   describe '#initialize' do
     describe 'regular run' do
@@ -66,25 +66,25 @@ describe Filewatcher do
           )
         end
 
-        it { is_expected.to eq [[watch_run.filename, :updated]] }
+        it { is_expected.to eq [{ watch_run.filename => :updated }] }
       end
 
       context 'with globs' do
         let(:filewatcher) { initialize_filewatcher('spec/tmp/**/*') }
 
-        it { is_expected.to eq [[watch_run.filename, :updated]] }
+        it { is_expected.to eq [{ watch_run.filename => :updated }] }
       end
 
       context 'with explicit relative paths with globs' do
         let(:filewatcher) { initialize_filewatcher('./spec/tmp/**/*') }
 
-        it { is_expected.to eq [[watch_run.filename, :updated]] }
+        it { is_expected.to eq [{ watch_run.filename => :updated }] }
       end
 
       context 'with explicit relative paths' do
         let(:filewatcher) { initialize_filewatcher('./spec/tmp') }
 
-        it { is_expected.to eq [[watch_run.filename, :updated]] }
+        it { is_expected.to eq [{ watch_run.filename => :updated }] }
       end
 
       context 'with tilde expansion' do
@@ -92,7 +92,7 @@ describe Filewatcher do
 
         let(:filewatcher) { initialize_filewatcher('~/file_watcher_1.txt') }
 
-        it { is_expected.to eq [[filename, :updated]] }
+        it { is_expected.to eq [{ filename => :updated }] }
       end
     end
 
@@ -105,7 +105,7 @@ describe Filewatcher do
       context 'when is `true`' do
         let(:immediate) { true }
 
-        it { is_expected.to eq [['', '']] }
+        it { is_expected.to eq [{ '' => '' }] }
 
         describe 'when watched' do
           subject { watch_run.watched }
@@ -138,19 +138,19 @@ describe Filewatcher do
     describe 'detecting file deletions' do
       let(:action) { :delete }
 
-      it { is_expected.to eq [[watch_run.filename, :deleted]] }
+      it { is_expected.to eq [{ watch_run.filename => :deleted }] }
     end
 
     context 'when there are file additions' do
       let(:action) { :create }
 
-      it { is_expected.to eq [[watch_run.filename, :created]] }
+      it { is_expected.to eq [{ watch_run.filename => :created }] }
     end
 
     context 'when there are file updates' do
       let(:action) { :update }
 
-      it { is_expected.to eq [[watch_run.filename, :updated]] }
+      it { is_expected.to eq [{ watch_run.filename => :updated }] }
     end
 
     context 'when there are new files in subdirectories' do
@@ -162,7 +162,7 @@ describe Filewatcher do
 
       it do
         expect(processed).to eq [
-          [subdirectory, :updated], [watch_run.filename, :created]
+          { subdirectory => :updated, watch_run.filename => :created }
         ]
       end
     end
@@ -172,7 +172,7 @@ describe Filewatcher do
       let(:directory) { true }
       let(:action) { :create }
 
-      it { is_expected.to eq [[watch_run.filename, :created]] }
+      it { is_expected.to eq [{ watch_run.filename => :created }] }
     end
   end
 
