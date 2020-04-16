@@ -38,10 +38,7 @@ class Filewatcher
 
     def trigger_changes(on_update = @on_update)
       debug __method__
-      changes = @every ? @changes : @changes.first(1)
-      changes.each do |filename, event|
-        on_update.call(filename, event)
-      end
+      on_update.call(@changes.dup)
       @changes.clear
       debug '@changes cleared'
     end
