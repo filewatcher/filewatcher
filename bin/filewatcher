@@ -54,7 +54,7 @@ def restart(pid, env, cmd)
   begin
     raise Errno::ESRCH unless pid
 
-    Process.kill(9, pid)
+    Process.kill('TERM', pid)
     Process.wait(pid)
   rescue Errno::ESRCH
     nil # already killed
