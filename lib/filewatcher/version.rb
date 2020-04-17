@@ -3,5 +3,5 @@
 require_relative '../filewatcher'
 
 class Filewatcher
-  VERSION = '1.1.1'.freeze
+  VERSION = '1.1.1'
 end

@@ -17,7 +17,9 @@ class WatchRun
 
   def initialize(filename:, action:, directory:)
     @filename =
-      filename =~ %r{^(/|~|[A-Z]:)} ? filename : File.join(TMP_DIR, filename)
+      if filename.match? %r{^(/|~|[A-Z]:)} then filename
+      else File.join(TMP_DIR, filename)
+      end
     @directory = directory
     @action = action
     LOGGER.debug "action = #{action}"
@@ -63,12 +65,11 @@ class WatchRun
     # interval *= 1.5 if RUBY_PLATFORM == 'java'
     interval *= 1.5 if Gem::Platform.local.os == 'darwin'
     seconds ||= [interval * 2, MIN_WAIT_SECONDS].max
-    max_count = seconds / interval
-    count = 0
-    while count < max_count && !(block_given? && yield)
+    (seconds / interval).ceil.times do
+      break if block_given? && yield
+
       LOGGER.debug "sleep interval #{interval}"
       sleep interval
-      count += 1
     end
   end
 end
@@ -139,7 +140,7 @@ end
 
 class ShellWatchRun < WatchRun
   EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
-    "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}".freeze
+    "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}"
 
   ENV_FILE = File.join(TMP_DIR, 'env')
 

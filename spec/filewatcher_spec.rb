@@ -4,6 +4,8 @@ require 'fileutils'
 require_relative '../lib/filewatcher'
 
 describe Filewatcher do
+  subject(:processed) { watch_run.processed }
+
   before do
     FileUtils.mkdir_p WatchRun::TMP_DIR
   end
@@ -26,7 +28,7 @@ describe Filewatcher do
   let(:every) { false }
   let(:immediate) { false }
   let(:filewatcher) do
-    Filewatcher.new(
+    described_class.new(
       File.join(WatchRun::TMP_DIR, '**', '*'),
       interval: 0.2, every: every, immediate: immediate
     )
@@ -39,18 +41,15 @@ describe Filewatcher do
     )
   end
 
-  let(:processed) { watch_run.processed }
   let(:processed_files) { watch_run.processed.map(&:first) }
-
-  subject { processed }
 
   describe '#initialize' do
     describe 'regular run' do
       before { watch_run.run }
 
-      context 'exclude selected file patterns' do
+      context 'with excluding selected file patterns' do
         let(:filewatcher) do
-          Filewatcher.new(
+          described_class.new(
             File.expand_path('spec/tmp/**/*'),
             exclude: File.expand_path('spec/tmp/**/*.txt')
           )
@@ -59,9 +58,9 @@ describe Filewatcher do
         it { is_expected.to be_empty }
       end
 
-      context 'absolute paths with globs' do
+      context 'with absolute paths including globs' do
         let(:filewatcher) do
-          Filewatcher.new(
+          described_class.new(
             File.expand_path('spec/tmp/**/*')
           )
         end
@@ -69,28 +68,28 @@ describe Filewatcher do
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
-      context 'globs' do
-        let(:filewatcher) { Filewatcher.new('spec/tmp/**/*') }
+      context 'with globs' do
+        let(:filewatcher) { described_class.new('spec/tmp/**/*') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
-      context 'explicit relative paths with globs' do
-        let(:filewatcher) { Filewatcher.new('./spec/tmp/**/*') }
+      context 'with explicit relative paths with globs' do
+        let(:filewatcher) { described_class.new('./spec/tmp/**/*') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
-      context 'explicit relative paths' do
-        let(:filewatcher) { Filewatcher.new('./spec/tmp') }
+      context 'with explicit relative paths' do
+        let(:filewatcher) { described_class.new('./spec/tmp') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
-      context 'tilde expansion' do
+      context 'with tilde expansion' do
         let(:filename) { File.expand_path('~/file_watcher_1.txt') }
 
-        let(:filewatcher) { Filewatcher.new('~/file_watcher_1.txt') }
+        let(:filewatcher) { described_class.new('~/file_watcher_1.txt') }
 
         it { is_expected.to eq [[filename, :updated]] }
       end
@@ -102,24 +101,24 @@ describe Filewatcher do
         watch_run.stop
       end
 
-      context 'is `true`' do
+      context 'when is `true`' do
         let(:immediate) { true }
 
         it { is_expected.to eq [['', '']] }
 
-        describe 'watched' do
+        describe 'when watched' do
           subject { watch_run.watched }
 
           it { is_expected.to be > 0 }
         end
       end
 
-      context 'is `false`' do
+      context 'when is `false`' do
         let(:immediate) { false }
 
         it { is_expected.to be_empty }
 
-        describe 'watched' do
+        describe 'when watched' do
           subject { watch_run.watched }
 
           it { is_expected.to eq 0 }
@@ -141,19 +140,19 @@ describe Filewatcher do
       it { is_expected.to eq [[watch_run.filename, :deleted]] }
     end
 
-    context 'detecting file additions' do
+    context 'when there are file additions' do
       let(:action) { :create }
 
       it { is_expected.to eq [[watch_run.filename, :created]] }
     end
 
-    context 'detecting file updates' do
+    context 'when there are file updates' do
       let(:action) { :update }
 
       it { is_expected.to eq [[watch_run.filename, :updated]] }
     end
 
-    context 'detecting new files in subfolders' do
+    context 'when there are new files in subfolders' do
       let(:subfolder) { File.expand_path('spec/tmp/new_sub_folder') }
 
       let(:filename) { File.join(subfolder, 'file.txt') }
@@ -161,13 +160,13 @@ describe Filewatcher do
       let(:every) { true }
 
       it do
-        is_expected.to eq [
+        expect(processed).to eq [
           [subfolder, :updated], [watch_run.filename, :created]
         ]
       end
     end
 
-    context 'detecting new subfolders' do
+    context 'when there are new subfolders' do
       let(:filename) { 'new_sub_folder' }
       let(:directory) { true }
       let(:action) { :create }
@@ -177,12 +176,12 @@ describe Filewatcher do
   end
 
   describe '#stop' do
+    subject { watch_run.thread.join }
+
     before do
       watch_run.start
       watch_run.filewatcher.stop
     end
-
-    subject { watch_run.thread.join }
 
     it { is_expected.to eq watch_run.thread }
   end
@@ -201,7 +200,7 @@ describe Filewatcher do
     result
   end
 
-  shared_context 'paused' do
+  shared_context 'when paused' do
     let(:action) { :create }
     let(:every) { true }
 
@@ -215,28 +214,32 @@ describe Filewatcher do
   end
 
   describe '#pause' do
-    include_context 'paused'
+    include_context 'when paused'
 
     # update block should not have been called
     it { is_expected.to be_empty }
   end
 
   describe '#resume' do
-    include_context 'paused'
+    include_context 'when paused'
 
     before do
       LOGGER.debug 'filewatcher.resume'
       watch_run.filewatcher.resume
     end
 
-    context 'changes while paused' do
+    describe 'changes while paused' do
       # update block still should not have been called
       it { is_expected.to be_empty }
     end
 
-    context 'changes after resumed' do
+    describe 'changes after resumed' do
+      subject { processed_files }
+
+      let(:added_files) { write_tmp_files 5..7 }
+
       before do
-        @added_files = write_tmp_files 5..7
+        added_files
 
         watch_run.wait
 
@@ -244,29 +247,27 @@ describe Filewatcher do
         watch_run.stop
       end
 
-      subject { processed_files }
-
-      it { is_expected.to include_all_files @added_files }
+      it { is_expected.to include_all_files added_files }
     end
   end
 
   describe '#finalize' do
+    subject { processed_files }
+
     let(:action) { :create }
     let(:every) { true }
+
+    let(:added_files) { write_tmp_files 1..4 }
 
     before do
       watch_run.start
       watch_run.filewatcher.stop
       watch_run.thread.join
-    end
 
-    let!(:added_files) { write_tmp_files 1..4 }
+      added_files
 
-    before do
       watch_run.filewatcher.finalize
     end
-
-    subject { processed_files }
 
     it { is_expected.to include_all_files added_files }
   end
@@ -293,6 +294,8 @@ describe Filewatcher do
     end
 
     describe 'ENV variables' do
+      subject(:env_file_content) { File.read(ShellWatchRun::ENV_FILE) }
+
       let(:filename) { 'foo.txt' }
       let(:dumper) { :env }
 
@@ -300,13 +303,11 @@ describe Filewatcher do
         watch_run.run
       end
 
-      subject { File.read(ShellWatchRun::ENV_FILE) }
-
-      context 'file creation' do
+      context 'when file created' do
         let(:action) { :create }
 
         it do
-          is_expected.to eq %W[
+          expect(env_file_content).to eq %W[
             #{tmp_dir}/#{filename}
             #{filename}
             created
@@ -317,11 +318,11 @@ describe Filewatcher do
         end
       end
 
-      context 'file deletion' do
+      context 'when file deleted' do
         let(:action) { :delete }
 
         it do
-          is_expected.to eq %W[
+          expect(env_file_content).to eq %W[
             #{tmp_dir}/#{filename}
             #{filename}
             deleted
@@ -333,7 +334,7 @@ describe Filewatcher do
       end
     end
 
-    shared_context 'start and stop' do
+    shared_context 'when started and stopped' do
       before do
         watch_run.start
         watch_run.stop
@@ -358,10 +359,10 @@ describe Filewatcher do
 
     describe '`:immediate` option' do
       let(:options) { { immediate: true } }
-
-      include_context 'start and stop'
-
       let(:expected_existance) { true }
+
+      include_context 'when started and stopped'
+
       include_examples 'ENV file existance'
 
       include_examples 'ENV file content'
@@ -369,21 +370,21 @@ describe Filewatcher do
 
     context 'without immediate option and changes' do
       let(:options) { {} }
-
-      include_context 'start and stop'
-
       let(:expected_existance) { false }
+
+      include_context 'when started and stopped'
+
       include_examples 'ENV file existance'
     end
 
     describe '`:restart` option' do
       let(:options) { { restart: true } }
+      let(:expected_existance) { true }
 
       before do
         watch_run.run
       end
 
-      let(:expected_existance) { true }
       include_examples 'ENV file existance'
 
       include_examples 'ENV file content'
