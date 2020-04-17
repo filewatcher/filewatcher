@@ -11,9 +11,6 @@ unix_bundle_cache: &unix_bundle_cache
 rubocop_task:
   container:
     image: ruby:latest
-      ## https://github.com/jruby/jruby/issues/5798
-      ## https://github.com/jruby/jruby/issues/5894
-      # image: jruby:latest
   install_script:
     - gem install bundler
   <<: *unix_bundle_cache
@@ -30,9 +27,7 @@ task:
           image: ruby:2.5
           image: ruby:2.6
           image: ruby:2.7
-          ## https://github.com/jruby/jruby/issues/5798
-          ## https://github.com/jruby/jruby/issues/5894
-          # image: jruby:latest
+          image: jruby:latest
       install_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         - apt-get update && apt-get install -y procps
@@ -85,4 +80,4 @@ task:
     #       - type *.gemspec
     #     populate_script: bundle install
 
-  test_script: bundle exec rake --trace
+  test_script: bundle exec rspec

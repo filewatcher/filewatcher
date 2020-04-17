@@ -35,7 +35,7 @@ class WatchRun
 
     make_changes
 
-    wait 0.5
+    wait seconds: 2
 
     stop
   end
@@ -48,7 +48,7 @@ class WatchRun
   private
 
   def make_changes
-    debug "make changes, @filename = #{@filename}"
+    debug "make changes, @action = #{@action}, @filename = #{@filename}"
     if @action == :delete
       FileUtils.remove(@filename)
     elsif @directory
@@ -58,18 +58,28 @@ class WatchRun
     end
   end
 
-  MIN_WAIT_SECONDS = 1
+  ENVIRONMENT_COEFFICIENTS = {
+    -> { ENV['CI'] } => 4,
+    -> { RUBY_PLATFORM == 'java' } => 3,
+    -> { Gem::Platform.local.os == 'darwin' } => 2
+  }.freeze
 
-  def wait(seconds, interval)
-    interval *= 1.5 if ENV['CI']
-    # interval *= 1.5 if RUBY_PLATFORM == 'java'
-    interval *= 1.5 if Gem::Platform.local.os == 'darwin'
-    seconds ||= [interval * 2, MIN_WAIT_SECONDS].max
-    (seconds / interval).ceil.times do
-      break if block_given? && yield
+  def wait(seconds:, interval:)
+    seconds ||= 1
+    ENVIRONMENT_COEFFICIENTS.each do |condition, coefficient|
+      interval *= coefficient if condition.call
+      seconds *= coefficient if condition.call
+    end
+    if block_given?
+      (seconds / interval).ceil.times do
+        break if yield
 
-      debug "sleep interval #{interval}"
-      sleep interval
+        debug "sleep interval #{interval}"
+        sleep interval
+      end
+    else
+      debug "sleep without intervals #{interval}"
+      sleep seconds
     end
   end
 
@@ -92,7 +102,7 @@ class RubyWatchRun < WatchRun
     super
     @thread = thread_initialize
     # thread needs a chance to start
-    wait 0.5
+    wait seconds: 0.5
     wait do
       keep_watching = filewatcher.keep_watching
       debug "keep_watching = #{keep_watching}"
@@ -110,8 +120,8 @@ class RubyWatchRun < WatchRun
     super
   end
 
-  def wait(seconds = nil)
-    super seconds, filewatcher.interval
+  def wait(seconds: nil)
+    super seconds: seconds, interval: filewatcher.interval
   end
 
   private
@@ -138,11 +148,9 @@ class RubyWatchRun < WatchRun
 
   def setup_filewatcher
     debug 'filewatcher watch'
+    debug filewatcher.inspect
     filewatcher.watch do |filename, event|
-      %i[last_snapshot changes].each do |ivar_name|
-        ivar = filewatcher.instance_variable_get :"@#{ivar_name}"
-        debug "#{ivar_name} = #{ivar}"
-      end
+      debug filewatcher.inspect
       @mutex.synchronize do
         debug "watch: filename = #{filename}, event = #{event}"
         increment_watched
@@ -177,15 +185,13 @@ class ShellWatchRun < WatchRun
   def start
     super
 
-    @pid = spawn_filewatcher
+    spawn_filewatcher
 
-    Process.detach(@pid)
-
-    wait 0.5
+    wait seconds: 1
 
     wait do
       debug "pid state = #{pid_state}"
-      debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
+      debug "#{__method__}: File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       pid_state == 'S' && (!@options[:immediate] || File.exist?(ENV_FILE))
     end
   end
@@ -208,19 +214,24 @@ class ShellWatchRun < WatchRun
     spawn_command = "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
       " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\""
     debug "spawn_command = #{spawn_command}"
-    spawn spawn_command, **SPAWN_OPTIONS
+    @pid = spawn spawn_command, **SPAWN_OPTIONS
+
+    debug "@pid = #{@pid}"
+
+    debug Process.detach(@pid)
   end
 
   def make_changes
     super
 
     wait do
-      debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
+      debug "#{__method__}: File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       File.exist?(ENV_FILE)
     end
   end
 
   def kill_filewatcher
+    debug __method__
     if Gem.win_platform?
       Process.kill('KILL', @pid)
     else
@@ -238,8 +249,8 @@ class ShellWatchRun < WatchRun
     `ps -ho state -p #{@pid}`.sub('STAT', '').strip
   end
 
-  def wait(seconds = nil)
-    super seconds, @options[:interval]
+  def wait(seconds: nil)
+    super seconds: seconds, interval: @options[:interval]
   end
 end
 
