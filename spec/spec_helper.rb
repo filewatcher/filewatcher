@@ -22,11 +22,11 @@ class WatchRun
       end
     @directory = directory
     @action = action
-    LOGGER.debug "action = #{action}"
+    debug "action = #{action}"
   end
 
   def start
-    LOGGER.debug 'start'
+    debug 'start'
     File.write(@filename, 'content1') unless @action == :create
   end
 
@@ -41,14 +41,14 @@ class WatchRun
   end
 
   def stop
-    LOGGER.debug 'stop'
+    debug 'stop'
     FileUtils.rm_r(@filename) if File.exist?(@filename)
   end
 
   private
 
   def make_changes
-    LOGGER.debug "make changes, @filename = #{@filename}"
+    debug "make changes, @filename = #{@filename}"
     if @action == :delete
       FileUtils.remove(@filename)
     elsif @directory
@@ -68,9 +68,13 @@ class WatchRun
     (seconds / interval).ceil.times do
       break if block_given? && yield
 
-      LOGGER.debug "sleep interval #{interval}"
+      debug "sleep interval #{interval}"
       sleep interval
     end
+  end
+
+  def debug(string)
+    LOGGER.debug "Thread ##{Thread.current.object_id} #{string}"
   end
 end
 
@@ -80,6 +84,8 @@ class RubyWatchRun < WatchRun
   def initialize(filewatcher:, **args)
     super(**args)
     @filewatcher = filewatcher
+
+    @mutex = Mutex.new
   end
 
   def start
@@ -89,7 +95,7 @@ class RubyWatchRun < WatchRun
     wait 0.5
     wait do
       keep_watching = filewatcher.keep_watching
-      LOGGER.debug "keep_watching = #{keep_watching}"
+      debug "keep_watching = #{keep_watching}"
       keep_watching
     end
   end
@@ -116,19 +122,27 @@ class RubyWatchRun < WatchRun
     # Some OS, filesystems and Ruby interpretators
     # doesn't catch milliseconds of `File.mtime`
     wait do
-      LOGGER.debug "processed = #{processed}"
-      processed.any?
+      @mutex.synchronize do
+        debug "processed = #{processed}"
+        processed.any?
+      end
     end
   end
 
   def thread_initialize
     @watched ||= 0
-    Thread.new(@filewatcher, @processed = []) do |filewatcher, processed|
-      LOGGER.debug 'filewatcher watch'
-      filewatcher.watch do |filename, event|
-        LOGGER.debug "watch: filename = #{filename}, event = #{event}"
+    @processed = []
+    Thread.new { setup_filewatcher }
+  end
+
+  def setup_filewatcher
+    debug 'filewatcher watch'
+    filewatcher.watch do |filename, event|
+      @mutex.synchronize do
+        debug "watch: filename = #{filename}, event = #{event}"
         increment_watched
-        processed.push([filename, event])
+        @processed.push([filename, event])
+        debug 'pushed to processed'
       end
     end
   end
@@ -150,9 +164,9 @@ class ShellWatchRun < WatchRun
     @options[:interval] ||= 0.2
     @options_string =
       @options.map { |key, value| "--#{key}=#{value}" }.join(' ')
-    LOGGER.debug "options = #{@options_string}"
+    debug "options = #{@options_string}"
     @dumper = dumper
-    LOGGER.debug "dumper = #{@dumper}"
+    debug "dumper = #{@dumper}"
   end
 
   def start
@@ -165,8 +179,8 @@ class ShellWatchRun < WatchRun
     wait 0.5
 
     wait do
-      LOGGER.debug "pid state = #{pid_state}"
-      LOGGER.debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
+      debug "pid state = #{pid_state}"
+      debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       pid_state == 'S' && (!@options[:immediate] || File.exist?(ENV_FILE))
     end
   end
@@ -188,7 +202,7 @@ class ShellWatchRun < WatchRun
   def spawn_filewatcher
     spawn_command = "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
       " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\""
-    LOGGER.debug "spawn_command = #{spawn_command}"
+    debug "spawn_command = #{spawn_command}"
     spawn spawn_command, **SPAWN_OPTIONS
   end
 
@@ -196,7 +210,7 @@ class ShellWatchRun < WatchRun
     super
 
     wait do
-      LOGGER.debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
+      debug "File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
       File.exist?(ENV_FILE)
     end
   end
