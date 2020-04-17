@@ -1,9 +1,32 @@
+require:
+  - rubocop-performance
+  - rubocop-rspec
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 Style/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+Style/ExponentialNotation:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
 
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
 
 AllCops:
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.4
+
+RSpec/NestedGroups:
+  Max: 5

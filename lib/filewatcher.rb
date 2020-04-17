@@ -13,6 +13,7 @@ class Filewatcher
 
   def update_spinner(label)
     return unless @show_spinner
+
     @spinner ||= %w[\\ | / -]
     print "#{' ' * 30}\r#{label}  #{@spinner.rotate!.first}\r"
   end
@@ -56,6 +57,7 @@ class Filewatcher
     if !@keep_watching || !@pausing
       raise "Can't resume unless #watch and #pause were first called"
     end
+
     @last_snapshot = mtime_snapshot # resume with fresh snapshot
     @pausing = false
     update_spinner('Resuming')

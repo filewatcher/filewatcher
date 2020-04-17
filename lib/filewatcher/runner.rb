@@ -6,11 +6,11 @@ class Filewatcher
     ## Define runners for `--exec` option
     RUNNERS = {
       python: %w[py],
-      node:   %w[js],
-      ruby:   %w[rb],
-      perl:   %w[pl],
-      awk:    %w[awk],
-      php:    %w[php phtml php4 php3 php5 phps]
+      node: %w[js],
+      ruby: %w[rb],
+      perl: %w[pl],
+      awk: %w[awk],
+      php: %w[php phtml php4 php3 php5 phps]
     }.freeze
 
     def initialize(filename)
@@ -25,7 +25,8 @@ class Filewatcher
     private
 
     def runner
-      return @runner if defined?(@runner)
+      return @runner if defined? @runner
+
       @runner, _exts = RUNNERS.find { |_cmd, exts| exts.include? @ext }
       @runner
     end

@@ -8,7 +8,20 @@ unix_bundle_cache: &unix_bundle_cache
       - cat *.gemspec
     populate_script: bundle install
 
+rubocop_task:
+  container:
+    image: ruby:latest
+      ## https://github.com/jruby/jruby/issues/5798
+      ## https://github.com/jruby/jruby/issues/5894
+      # image: jruby:latest
+  install_script:
+    - gem install bundler
+  <<: *unix_bundle_cache
+  lint_script: bundle exec rubocop
+
 task:
+  depends_on:
+    - rubocop
   matrix:
     - name: Test (Linux)
       container:
