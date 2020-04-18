@@ -124,6 +124,7 @@ class RubyWatchRun < WatchRun
     wait do
       @mutex.synchronize do
         debug "processed = #{processed}"
+        debug "processed.any? = #{processed.any?}"
         processed.any?
       end
     end
@@ -138,6 +139,10 @@ class RubyWatchRun < WatchRun
   def setup_filewatcher
     debug 'filewatcher watch'
     filewatcher.watch do |filename, event|
+      %i[last_snapshot changes].each do |ivar_name|
+        ivar = filewatcher.instance_variable_get :"@#{ivar_name}"
+        debug "#{ivar_name} = #{ivar}"
+      end
       @mutex.synchronize do
         debug "watch: filename = #{filename}, event = #{event}"
         increment_watched
