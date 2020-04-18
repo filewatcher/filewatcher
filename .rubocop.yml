@@ -25,6 +25,11 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*
 
+# TODO: Remove after debug
+Metrics/MethodLength:
+  Exclude:
+    - spec/**/*
+
 AllCops:
   TargetRubyVersion: 2.4
 
