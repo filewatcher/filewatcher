@@ -42,7 +42,7 @@ describe Filewatcher do
     )
   end
 
-  let(:processed_files) { watch_run.processed.map(&:keys) }
+  let(:processed_files) { watch_run.processed.flat_map(&:keys) }
 
   describe '#initialize' do
     describe 'regular run' do

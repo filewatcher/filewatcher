@@ -38,7 +38,7 @@ class Filewatcher
 
     def trigger_changes(on_update = @on_update)
       debug __method__
-      on_update.call(@changes.dup)
+      on_update.call(@changes.dup) unless @changes.empty?
       @changes.clear
       debug '@changes cleared'
     end
