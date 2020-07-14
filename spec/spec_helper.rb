@@ -61,26 +61,34 @@ class WatchRun
   ENVIRONMENT_COEFFICIENTS = {
     -> { ENV['CI'] } => 4,
     -> { RUBY_PLATFORM == 'java' } => 3,
-    -> { Gem::Platform.local.os == 'darwin' } => 2
+    -> { Gem::Platform.local.os == 'darwin' } => 3
   }.freeze
 
-  def wait(seconds:, interval:)
+  def wait(seconds:, interval:, &block)
     seconds ||= 1
     ENVIRONMENT_COEFFICIENTS.each do |condition, coefficient|
       interval *= coefficient if condition.call
       seconds *= coefficient if condition.call
     end
     if block_given?
-      (seconds / interval).ceil.times do
-        break if yield
-
-        debug "sleep interval #{interval}"
-        sleep interval
-      end
+      wait_with_block seconds, interval, &block
     else
-      debug "sleep without intervals #{interval}"
-      sleep seconds
+      wait_without_block seconds
     end
+  end
+
+  def wait_with_block(seconds, interval, &_block)
+    (seconds / interval).ceil.times do
+      break if yield
+
+      debug "sleep interval #{interval}"
+      sleep interval
+    end
+  end
+
+  def wait_without_block(seconds)
+    debug "sleep without intervals #{seconds}"
+    sleep seconds
   end
 
   def debug(string)
@@ -102,7 +110,7 @@ class RubyWatchRun < WatchRun
     super
     @thread = thread_initialize
     # thread needs a chance to start
-    wait seconds: 0.5
+    wait seconds: 1
     wait do
       keep_watching = filewatcher.keep_watching
       debug "keep_watching = #{keep_watching}"
@@ -155,7 +163,7 @@ class RubyWatchRun < WatchRun
         debug "watch: filename = #{filename}, event = #{event}"
         increment_watched
         @processed.push([filename, event])
-        debug 'pushed to processed'
+        # debug 'pushed to processed'
       end
     end
   end

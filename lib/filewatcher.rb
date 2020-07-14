@@ -54,9 +54,7 @@ class Filewatcher
   end
 
   def resume
-    if !@keep_watching || !@pausing
-      raise "Can't resume unless #watch and #pause were first called"
-    end
+    raise "Can't resume unless #watch and #pause were first called" if !@keep_watching || !@pausing
 
     @last_snapshot = mtime_snapshot # resume with fresh snapshot
     @pausing = false

@@ -17,9 +17,7 @@ describe Filewatcher do
     interval = 0.2
     wait = 5
     count = 0
-    while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
-      sleep interval
-    end
+    sleep interval while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
   end
 
   let(:filename) { 'tmp_file.txt' }
@@ -192,12 +190,10 @@ describe Filewatcher do
     directory = 'spec/tmp'
     FileUtils.mkdir_p directory
 
-    result = range.to_a.map do |n|
+    range.to_a.map do |n|
       File.write(file = "#{directory}/file#{n}.txt", "content#{n}")
       file
     end
-
-    result
   end
 
   shared_context 'when paused' do

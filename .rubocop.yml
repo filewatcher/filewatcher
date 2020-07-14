@@ -2,36 +2,33 @@ require:
   - rubocop-performance
   - rubocop-rspec
 
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Style/MultilineMethodCallIndentation:
+Layout/LineLength:
+  Max: 100
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
-Style/ExponentialNotation:
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-Lint/StructNewOverride:
-  Enabled: true
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+Layout/FirstParameterIndentation:
+  EnforcedStyle: consistent
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+Layout/MultilineArrayBraceLayout:
+  EnforcedStyle: new_line
+Layout/MultilineHashBraceLayout:
+  EnforcedStyle: new_line
 
 Metrics/BlockLength:
   Exclude:
-    - spec/**/*
-
-# TODO: Remove after debug
-Metrics/MethodLength:
-  Exclude:
-    - spec/**/*
+    - '*.gemspec'
+    - spec/**/*.rb
 
 AllCops:
   TargetRubyVersion: 2.4
+  NewCops: enable
 
 RSpec/NestedGroups:
   Max: 5
