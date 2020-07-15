@@ -2,26 +2,48 @@ unix_bundle_cache: &unix_bundle_cache
   bundle_cache:
     folder: /usr/local/bundle
     fingerprint_script:
-      - echo $CIRRUS_TASK_NAME:$CIRRUS_OS
+      - echo $CIRRUS_OS
       - ruby -v
       - cat Gemfile
       - cat *.gemspec
-    populate_script: bundle install
+
+remark_task:
+  container:
+    image: node
+  node_modules_cache:
+    folder: node_modules
+    fingerprint_script:
+      - echo $CIRRUS_OS
+      - node -v
+      - cat package.json
+  install_script: npm install
+  lint_script: npm run remark
+  only_if: ($CIRRUS_BRANCH == 'master') ||
+    changesInclude(
+      '.cirrus.yml', '.gitignore', 'package.json', '.remarkrc.yaml', '**.md'
+    )
 
 rubocop_task:
   container:
     image: ruby:latest
   install_script:
     - gem install bundler
+    - bundle update
   <<: *unix_bundle_cache
   lint_script: bundle exec rubocop
+  only_if: ($CIRRUS_BRANCH == 'master') ||
+    changesInclude(
+      '.cirrus.yml', '.gitignore', 'Gemfile', 'Rakefile', '.rubocop.yml', '*.gemspec', '**.rb',
+      'bin/**'
+    )
 
-task:
+test_task:
+  name: Test on $CIRRUS_OS
   depends_on:
+    - remark
     - rubocop
   matrix:
-    - name: Test (Linux)
-      container:
+    - container:
         matrix:
           image: ruby:2.4
           image: ruby:2.5
@@ -32,10 +54,10 @@ task:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         - apt-get update && apt-get install -y procps
         - gem install bundler
+        - bundle update
       <<: *unix_bundle_cache
 
-    - name: Test (macOS)
-      osx_instance:
+    - osx_instance:
         image: catalina-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
@@ -44,10 +66,10 @@ task:
         - brew install ruby
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
+        - bundle update
       <<: *unix_bundle_cache
 
-    # - name: Test (Windows)
-    #   windows_container:
+    # - windows_container:
     #     image: cirrusci/windowsservercore:2019
     #     os_version: 2019
     #   # windows_container:
@@ -81,3 +103,9 @@ task:
     #     populate_script: bundle install
 
   test_script: bundle exec rspec
+
+  only_if: ($CIRRUS_BRANCH == 'master') ||
+    changesInclude(
+      '.cirrus.yml', '.gitignore', 'Gemfile', 'Rakefile', '.rspec', '*.gemspec', 'lib/**', 'bin/**',
+      'spec/**'
+    )
