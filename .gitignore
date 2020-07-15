@@ -1,7 +1,8 @@
-*.swp
-pkg/
-*~
-.DS_Store
+*.gem
+
 Gemfile.lock
 .ruby-version
-*.gem
+
+node_modules/
+package-lock.json
+yarn.lock
