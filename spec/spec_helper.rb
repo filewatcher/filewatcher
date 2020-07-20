@@ -70,10 +70,14 @@ class WatchRun
     wait seconds: 1
   end
 
-  def run
+  def run(make_changes_times: 1)
     start
 
-    make_changes
+    make_changes_times.times do
+      make_changes
+
+      wait seconds: 2
+    end
 
     stop
   end
@@ -191,8 +195,8 @@ class ShellWatchRun < WatchRun
 
   DUMP_FILE = File.join(TMP_DIR, 'dump')
 
-  def initialize(options:, dumper:, **args)
-    super(**args)
+  def initialize(options:, dumper:, dumper_args:, **rest_args)
+    super(**rest_args)
     @options = options
     @options[:interval] ||= 0.2
     @options_string =
@@ -200,6 +204,7 @@ class ShellWatchRun < WatchRun
     debug "options = #{@options_string}"
     @dumper = dumper
     debug "dumper = #{@dumper}"
+    @dumper_args = dumper_args.join(' ')
   end
 
   def start
@@ -232,7 +237,7 @@ class ShellWatchRun < WatchRun
 
   def spawn_filewatcher
     spawn_command = "#{EXECUTABLE} #{@options_string} \"#{@filename}\"" \
-      " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb")}\""
+      " \"ruby #{File.join(__dir__, "dumpers/#{@dumper}_dumper.rb #{@dumper_args}")}\""
     debug "spawn_command = #{spawn_command}"
     @pid = spawn spawn_command, **SPAWN_OPTIONS
 
@@ -244,7 +249,7 @@ class ShellWatchRun < WatchRun
   def make_changes
     super
 
-    wait do
+    wait seconds: 1 do
       debug "#{__method__}: File.exist?(DUMP_FILE) = #{File.exist?(DUMP_FILE)}"
       File.exist?(DUMP_FILE)
     end

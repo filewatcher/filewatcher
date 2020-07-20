@@ -20,6 +20,8 @@ options = Optimist.options do
       short: 'D', type: :boolean, default: false
   opt :restart, 'Restart process when file system is updated',
       short: 'r', type: :boolean, default: false
+  opt :restart_signal, 'Termination signal for `restart` option',
+      type: :string, default: 'TERM'
   opt :list, 'Print name of files being watched'
   opt :exec, 'Execute file as a script when file is updated',
       short: 'e', type: :boolean, default: false
@@ -50,11 +52,11 @@ end
 files = split_files_void_escaped_whitespace(files)
 child_pid = nil
 
-def restart(pid, env, cmd)
+def restart(pid, restart_signal, env, cmd)
   begin
     raise Errno::ESRCH unless pid
 
-    Process.kill(9, pid)
+    Process.kill(restart_signal, pid)
     Process.wait(pid)
   rescue Errno::ESRCH
     nil # already killed
@@ -95,7 +97,7 @@ begin
 
       env = Filewatcher::Env.new(filename, event).to_h
       if options[:restart]
-        child_pid = restart(child_pid, env, cmd)
+        child_pid = restart(child_pid, options[:restart_signal], env, cmd)
       else
         begin
           Process.spawn(env, cmd)
