@@ -127,7 +127,7 @@ describe Filewatcher do
 
   describe '#watch' do
     before do
-      FileUtils.mkdir_p subfolder if defined? subfolder
+      FileUtils.mkdir_p subdirectory if defined? subdirectory
 
       watch_run.run
     end
@@ -150,22 +150,22 @@ describe Filewatcher do
       it { is_expected.to eq [[watch_run.filename, :updated]] }
     end
 
-    context 'when there are new files in subfolders' do
-      let(:subfolder) { File.expand_path('spec/tmp/new_sub_folder') }
+    context 'when there are new files in subdirectories' do
+      let(:subdirectory) { File.expand_path('spec/tmp/new_sub_directory') }
 
-      let(:filename) { File.join(subfolder, 'file.txt') }
+      let(:filename) { File.join(subdirectory, 'file.txt') }
       let(:action) { :create }
       let(:every) { true }
 
       it do
         expect(processed).to eq [
-          [subfolder, :updated], [watch_run.filename, :created]
+          [subdirectory, :updated], [watch_run.filename, :created]
         ]
       end
     end
 
-    context 'when there are new subfolders' do
-      let(:filename) { 'new_sub_folder' }
+    context 'when there are new subdirectories' do
+      let(:filename) { 'new_sub_directory' }
       let(:directory) { true }
       let(:action) { :create }
 
