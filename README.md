@@ -6,9 +6,9 @@
 [![Code Climate](https://codeclimate.com/github/filewatcher/filewatcher.png)](https://codeclimate.com/github/filewatcher/filewatcher)
 [![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
 
-Lightweight filewatcher weighing less than 200 LoC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the filesystem by polling. Has no config files. When running filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be runned as daemon (background process).
+Lightweight file watcher weighing less than 200 LOC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the file system by polling. Has no config files. When running Filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be ran as daemon (background process).
 
-For example to search recursively for javascript files and run `jshint` when a file is updated, created, renamed or deleted:
+For example to search recursively for JavaScript files and run `jshint` when a file is updated, created, renamed or deleted:
 
 In Linux/macOS:
 
@@ -39,7 +39,7 @@ So be careful with `--interval` less than 1 second.
 
 ## Command line utility
 
-Filewatcher scans the filesystem and execute a shell command when files are
+Filewatcher scans the file system and execute a shell command when files are
 updated, created, renamed or deleted.
 
 ```
@@ -74,7 +74,7 @@ $ filewatcher *.js 'node $FILENAME'
 ```
 
 Place filenames in quotes to use Ruby filename globbing instead
-of shell filename globbing. This will make filewatcher look for files in
+of shell filename globbing. This will make Filewatcher look for files in
 subdirectories too. To watch all JavaScript files in subdirectories in Windows:
 
 ```
@@ -87,8 +87,8 @@ In Linux/macOS:
 $ filewatcher '**/*.js' 'node $FILENAME'
 ```
 
-By default, filewatcher executes the command only for the first changed file
-that found from filesystem check, but you can using the `--every/-E` option
+By default, Filewatcher executes the command only for the first changed file
+that found from file system check, but you can using the `--every/-E` option
 for running the command on each changed file.
 
 ```
@@ -104,14 +104,13 @@ $ filewatcher -e *.rb
 ```
 
 Print a list of all files matching \*.css first and then output the filename
-when a file is beeing updated by using the `--list/-l` option:
+when a file is being updated by using the `--list/-l` option:
 
 ```
 $ filewatcher -l '**/*.css' 'echo file: $FILENAME'
 ```
 
-Watch the "src" and "test" folders recursively, and run test when the
-filesystem gets updated:
+Watch the "src" and "test" folders recursively, and run test when the file system gets updated:
 
 ```
 $ filewatcher "src test" "ruby test/test_suite.rb"
@@ -120,29 +119,29 @@ $ filewatcher "src test" "ruby test/test_suite.rb"
 ## Restart long running commands
 
 The `--restart/-r` option kills the command if it's still running when
-a filesystem change happens. Can be used to restart locally running webservers
+a file system change happens. Can be used to restart locally running web servers
 on updates, or kill long running tests and restart on updates. This option
-often makes filewatcher faster in general. To not wait for tests to finish:
+often makes Filewatcher faster in general. To not wait for tests to finish:
 
 ```
 $ filewatcher --restart "**/*.rb" "rake test"
 ```
 
-The `--immediate/-I` option starts the command on startup without waiting for filesystem updates. To start a webserver and have it automatically restart when html files are updated:
+The `--immediate/-I` option starts the command on startup without waiting for file system updates. To start a web server and have it automatically restart when HTML files are updated:
 
 ```
 $ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
 ```
 
-## Daemonizing filewatcher process
+## Daemonizing Filewatcher process
 
-The `--daemon/-D` option starts filewatcher in the background as system daemon, so filewatcher will not be terminated by `Ctrl+C`, for example.
+The `--daemon/-D` option starts Filewatcher in the background as system daemon, so Filewatcher will not be terminated by `Ctrl+C`, for example.
 
-## Available enviroment variables
+## Available environment variables
 
 The environment variable $FILENAME is available in the shell command argument.
-On unix like systems the command has to be enclosed in single quotes. To run
-node whenever a javascript file is updated:
+On UNIX like systems the command has to be enclosed in single quotes. To run
+node whenever a JavaScript file is updated:
 
 ```
 $ filewatcher *.js 'node $FILENAME'
@@ -211,7 +210,7 @@ Filewatcher.new('lib/**/*').watch do |filename, event|
 end
 ```
 
-Watch files and dirs in the given directory - and not in subdirectories:
+Watch files and directories in the given directory - and not in subdirectories:
 
 ```ruby
 Filewatcher.new('lib/*').watch do |filename, event|
@@ -277,7 +276,7 @@ end
 ```
 
 Start, pause, resume, stop, and finalize a running watch. This is particularly
-useful when the update block takes a while to process each file (eg. sending
+useful when the update block takes a while to process each file (e.g. sending
 over the network)
 
 ```ruby
@@ -337,7 +336,7 @@ This project would not be where it is today without the generous help provided b
 
 *   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many fixes and improvements.
 
-This gem was initially inspired by [Tom Lieber's blogg posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
+This gem was initially inspired by [Tom Lieber's blog posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 
 ## Note on Patches/Pull Requests
 
