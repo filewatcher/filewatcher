@@ -61,7 +61,7 @@ class WatchRun
   ENVIRONMENT_COEFFICIENTS = {
     -> { ENV['CI'] } => 4,
     -> { RUBY_PLATFORM == 'java' } => 3,
-    -> { Gem::Platform.local.os == 'darwin' } => 4
+    -> { Gem::Platform.local.os == 'darwin' } => 5
   }.freeze
 
   def wait(seconds:, interval:, &block)
