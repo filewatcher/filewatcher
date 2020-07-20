@@ -177,7 +177,7 @@ class ShellWatchRun < WatchRun
   EXECUTABLE = "#{'ruby ' if Gem.win_platform?}" \
     "#{File.realpath File.join(__dir__, '..', 'bin', 'filewatcher')}"
 
-  ENV_FILE = File.join(TMP_DIR, 'env')
+  DUMP_FILE = File.join(TMP_DIR, 'dump')
 
   def initialize(options:, dumper:, **args)
     super(**args)
@@ -199,8 +199,8 @@ class ShellWatchRun < WatchRun
 
     wait do
       debug "pid state = #{pid_state}"
-      debug "#{__method__}: File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
-      pid_state == 'S' && (!@options[:immediate] || File.exist?(ENV_FILE))
+      debug "#{__method__}: File.exist?(DUMP_FILE) = #{File.exist?(DUMP_FILE)}"
+      pid_state == 'S' && (!@options[:immediate] || File.exist?(DUMP_FILE))
     end
   end
 
@@ -233,8 +233,8 @@ class ShellWatchRun < WatchRun
     super
 
     wait do
-      debug "#{__method__}: File.exist?(ENV_FILE) = #{File.exist?(ENV_FILE)}"
-      File.exist?(ENV_FILE)
+      debug "#{__method__}: File.exist?(DUMP_FILE) = #{File.exist?(DUMP_FILE)}"
+      File.exist?(DUMP_FILE)
     end
   end
 
@@ -262,8 +262,8 @@ class ShellWatchRun < WatchRun
   end
 end
 
-def dump_to_env_file(content)
-  File.write File.join(ShellWatchRun::ENV_FILE), content
+def dump_to_file(content)
+  File.write File.join(ShellWatchRun::DUMP_FILE), content
 end
 
 ## For case when required from dumpers

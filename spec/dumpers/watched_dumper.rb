@@ -2,4 +2,4 @@
 
 require_relative '../spec_helper'
 
-dump_to_env_file 'watched'
+dump_to_file 'watched'

@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-dump_to_env_file(
+dump_to_file(
   %w[
     FILENAME BASENAME EVENT DIRNAME ABSOLUTE_FILENAME
     RELATIVE_FILENAME

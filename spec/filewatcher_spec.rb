@@ -283,6 +283,26 @@ describe Filewatcher do
       )
     end
 
+    let(:dump_file_content) { File.read(ShellWatchRun::DUMP_FILE) }
+    let(:expected_dump_file_existence) { true }
+    let(:expected_dump_file_content) { 'watched' }
+
+    shared_examples 'dump file existence' do
+      describe 'file existence' do
+        subject { File.exist?(ShellWatchRun::DUMP_FILE) }
+
+        it { is_expected.to be expected_dump_file_existence }
+      end
+    end
+
+    shared_examples 'dump file content' do
+      describe 'file content' do
+        subject { dump_file_content }
+
+        it { is_expected.to eq expected_dump_file_content }
+      end
+    end
+
     describe 'just run' do
       subject { system("#{ShellWatchRun::EXECUTABLE} > #{null_output}") }
 
@@ -290,8 +310,6 @@ describe Filewatcher do
     end
 
     describe 'ENV variables' do
-      subject(:env_file_content) { File.read(ShellWatchRun::ENV_FILE) }
-
       let(:filename) { 'foo.txt' }
       let(:dumper) { :env }
 
@@ -302,8 +320,8 @@ describe Filewatcher do
       context 'when file created' do
         let(:action) { :create }
 
-        it do
-          expect(env_file_content).to eq %W[
+        let(:expected_dump_file_content) do
+          %W[
             #{tmp_dir}/#{filename}
             #{filename}
             created
@@ -312,13 +330,17 @@ describe Filewatcher do
             spec/tmp/#{filename}
           ].join(', ')
         end
+
+        include_examples 'dump file existence'
+
+        include_examples 'dump file content'
       end
 
       context 'when file deleted' do
         let(:action) { :delete }
 
-        it do
-          expect(env_file_content).to eq %W[
+        let(:expected_dump_file_content) do
+          %W[
             #{tmp_dir}/#{filename}
             #{filename}
             deleted
@@ -327,6 +349,10 @@ describe Filewatcher do
             spec/tmp/#{filename}
           ].join(', ')
         end
+
+        include_examples 'dump file existence'
+
+        include_examples 'dump file content'
       end
     end
 
@@ -337,53 +363,35 @@ describe Filewatcher do
       end
     end
 
-    shared_examples 'ENV file existance' do
-      describe 'file existance' do
-        subject { File.exist?(ShellWatchRun::ENV_FILE) }
-
-        it { is_expected.to be expected_existance }
-      end
-    end
-
-    shared_examples 'ENV file content' do
-      describe 'file content' do
-        subject { File.read(ShellWatchRun::ENV_FILE) }
-
-        it { is_expected.to eq 'watched' }
-      end
-    end
-
     describe '`:immediate` option' do
       let(:options) { { immediate: true } }
-      let(:expected_existance) { true }
 
       include_context 'when started and stopped'
 
-      include_examples 'ENV file existance'
+      include_examples 'dump file existence'
 
-      include_examples 'ENV file content'
+      include_examples 'dump file content'
     end
 
     context 'without immediate option and changes' do
       let(:options) { {} }
-      let(:expected_existance) { false }
+      let(:expected_dump_file_existence) { false }
 
       include_context 'when started and stopped'
 
-      include_examples 'ENV file existance'
+      include_examples 'dump file existence'
     end
 
     describe '`:restart` option' do
       let(:options) { { restart: true } }
-      let(:expected_existance) { true }
 
       before do
         watch_run.run
       end
 
-      include_examples 'ENV file existance'
+      include_examples 'dump file existence'
 
-      include_examples 'ENV file content'
+      include_examples 'dump file content'
     end
   end
 end
