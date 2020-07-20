@@ -9,7 +9,7 @@ describe Filewatcher::Env do
   let(:event) { :updated }
 
   describe '#initialize' do
-    it { expect { initialization }.not_to raise_error ArgumentError }
+    it { expect { initialization }.not_to raise_error }
   end
 
   describe '#to_h' do
