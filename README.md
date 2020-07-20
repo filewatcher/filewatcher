@@ -127,6 +127,13 @@ often makes Filewatcher faster in general. To not wait for tests to finish:
 $ filewatcher --restart "**/*.rb" "rake test"
 ```
 
+By default, it sends `TERM` signal, but you can change it to what you want
+via `--restart-signal` option:
+
+```
+$ filewatcher --restart --restart-signal=KILL "**/*.rb" "rake test"
+```
+
 The `--immediate/-I` option starts the command on startup without waiting for file system updates. To start a web server and have it automatically restart when HTML files are updated:
 
 ```
