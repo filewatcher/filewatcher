@@ -6,7 +6,7 @@
 [![Code Climate](https://codeclimate.com/github/filewatcher/filewatcher.png)](https://codeclimate.com/github/filewatcher/filewatcher)
 [![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
 
-Lightweight file watcher weighing less than 200 LOC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the file system by polling. Has no config files. When running Filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be ran as daemon (background process).
+Lightweight file watcher weighing about 200 LOC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the file system by polling. Has no config files. When running Filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be ran as daemon (background process).
 
 For example to search recursively for JavaScript files and run `jshint` when a file is updated, created, renamed or deleted:
 

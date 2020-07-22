@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
+require 'logger'
 require_relative 'filewatcher/cycles'
+require_relative 'filewatcher/snapshots'
 
 # Simple file watcher. Detect changes in files and directories.
 #
 # Issues: Currently doesn't monitor changes in directorynames
 class Filewatcher
   include Filewatcher::Cycles
+  include Filewatcher::Snapshots
 
   attr_accessor :interval
   attr_reader :keep_watching
@@ -27,6 +30,7 @@ class Filewatcher
     @show_spinner = options[:spinner]
     @interval = options.fetch(:interval, 0.5)
     @every = options[:every]
+    @logger = options.fetch(:logger, Logger.new($stdout))
   end
 
   def watch(&on_update)
@@ -81,46 +85,7 @@ class Filewatcher
     @end_snapshot = nil
   end
 
-  def last_found_filenames
-    last_snapshot.keys
-  end
-
   private
-
-  def last_snapshot
-    @last_snapshot ||= mtime_snapshot
-  end
-
-  # Takes a snapshot of the current status of watched files.
-  # (Allows avoidance of potential race condition during #finalize)
-  def mtime_snapshot
-    snapshot = {}
-    filenames = expand_directories(@unexpanded_filenames)
-
-    # Remove files in the exclude filenames list
-    filenames -= expand_directories(@unexpanded_excluded_filenames)
-
-    filenames.each do |filename|
-      mtime = File.exist?(filename) ? File.mtime(filename) : Time.new(0)
-      snapshot[filename] = mtime
-    end
-    snapshot
-  end
-
-  def filesystem_updated?(snapshot = mtime_snapshot)
-    @changes = {}
-
-    (snapshot.to_a - last_snapshot.to_a).each do |file, _mtime|
-      @changes[file] = last_snapshot[file] ? :updated : :created
-    end
-
-    (last_snapshot.keys - snapshot.keys).each do |file|
-      @changes[file] = :deleted
-    end
-
-    @last_snapshot = snapshot
-    @changes.any?
-  end
 
   def expand_directories(patterns)
     patterns = Array(patterns) unless patterns.is_a? Array

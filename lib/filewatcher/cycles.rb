@@ -29,16 +29,19 @@ class Filewatcher
     def watching_cycle
       while @keep_watching && !filesystem_updated? && !@pausing
         update_spinner('Watching')
+        @logger.debug "#{__method__} sleep #{@interval}"
         sleep @interval
       end
     end
 
     def trigger_changes(on_update = @on_update)
+      @logger.debug __method__
       changes = @every ? @changes : @changes.first(1)
       changes.each do |filename, event|
         on_update.call(filename, event)
       end
       @changes.clear
+      @logger.debug '@changes cleared'
     end
   end
 end

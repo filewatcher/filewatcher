@@ -20,13 +20,17 @@ describe Filewatcher do
     sleep interval while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
   end
 
+  def initialize_filewatcher(path, options = {})
+    described_class.new(path, options.merge(logger: LOGGER))
+  end
+
   let(:filename) { 'tmp_file.txt' }
   let(:action) { :update }
   let(:directory) { false }
   let(:every) { false }
   let(:immediate) { false }
   let(:filewatcher) do
-    described_class.new(
+    initialize_filewatcher(
       File.join(WatchRun::TMP_DIR, '**', '*'),
       interval: 0.2, every: every, immediate: immediate
     )
@@ -47,7 +51,7 @@ describe Filewatcher do
 
       context 'with excluding selected file patterns' do
         let(:filewatcher) do
-          described_class.new(
+          initialize_filewatcher(
             File.expand_path('spec/tmp/**/*'),
             exclude: File.expand_path('spec/tmp/**/*.txt')
           )
@@ -58,7 +62,7 @@ describe Filewatcher do
 
       context 'with absolute paths including globs' do
         let(:filewatcher) do
-          described_class.new(
+          initialize_filewatcher(
             File.expand_path('spec/tmp/**/*')
           )
         end
@@ -67,19 +71,19 @@ describe Filewatcher do
       end
 
       context 'with globs' do
-        let(:filewatcher) { described_class.new('spec/tmp/**/*') }
+        let(:filewatcher) { initialize_filewatcher('spec/tmp/**/*') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
       context 'with explicit relative paths with globs' do
-        let(:filewatcher) { described_class.new('./spec/tmp/**/*') }
+        let(:filewatcher) { initialize_filewatcher('./spec/tmp/**/*') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
 
       context 'with explicit relative paths' do
-        let(:filewatcher) { described_class.new('./spec/tmp') }
+        let(:filewatcher) { initialize_filewatcher('./spec/tmp') }
 
         it { is_expected.to eq [[watch_run.filename, :updated]] }
       end
@@ -87,7 +91,7 @@ describe Filewatcher do
       context 'with tilde expansion' do
         let(:filename) { File.expand_path('~/file_watcher_1.txt') }
 
-        let(:filewatcher) { described_class.new('~/file_watcher_1.txt') }
+        let(:filewatcher) { initialize_filewatcher('~/file_watcher_1.txt') }
 
         it { is_expected.to eq [[filename, :updated]] }
       end

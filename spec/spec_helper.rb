@@ -59,16 +59,18 @@ class WatchRun
   end
 
   ENVIRONMENT_COEFFICIENTS = {
-    -> { ENV['CI'] } => 4,
+    -> { ENV['CI'] } => 1,
     -> { RUBY_PLATFORM == 'java' } => 3,
-    -> { Gem::Platform.local.os == 'darwin' } => 5
+    ## https://cirrus-ci.com/build/6442339705028608
+    -> { RUBY_PLATFORM == 'java' && ENV['CI'] && is_a?(ShellWatchRun) } => 2,
+    -> { Gem::Platform.local.os == 'darwin' } => 1
   }.freeze
 
   def wait(seconds:, interval:, &block)
     seconds ||= 1
     ENVIRONMENT_COEFFICIENTS.each do |condition, coefficient|
-      interval *= coefficient if condition.call
-      seconds *= coefficient if condition.call
+      interval *= coefficient if instance_exec(&condition)
+      seconds *= coefficient if instance_exec(&condition)
     end
     if block_given?
       wait_with_block seconds, interval, &block
@@ -155,12 +157,12 @@ class RubyWatchRun < WatchRun
   end
 
   def setup_filewatcher
-    debug 'filewatcher watch'
+    debug 'setup_filewatcher'
     debug filewatcher.inspect
     filewatcher.watch do |filename, event|
       debug filewatcher.inspect
       @mutex.synchronize do
-        debug "watch: filename = #{filename}, event = #{event}"
+        debug "watch callback: filename = #{filename}, event = #{event}"
         increment_watched
         @processed.push([filename, event])
         # debug 'pushed to processed'
