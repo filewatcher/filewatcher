@@ -26,10 +26,10 @@ remark_task:
 rubocop_task:
   container:
     image: ruby:latest
+  <<: *unix_bundle_cache
   install_script:
     - gem install bundler
     - bundle update
-  <<: *unix_bundle_cache
   lint_script: bundle exec rubocop
   only_if: ($CIRRUS_BRANCH == 'master') ||
     changesInclude(
@@ -50,24 +50,24 @@ test_task:
           image: ruby:2.6
           image: ruby:2.7
           image: jruby:latest
+      <<: *unix_bundle_cache
       install_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         - apt-get update && apt-get install -y procps
         - gem install bundler
         - bundle update
-      <<: *unix_bundle_cache
 
     - osx_instance:
         image: catalina-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
+      <<: *unix_bundle_cache
       install_script:
         - ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         - brew install ruby
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
         - bundle update
-      <<: *unix_bundle_cache
 
     # - windows_container:
     #     image: cirrusci/windowsservercore:2019
