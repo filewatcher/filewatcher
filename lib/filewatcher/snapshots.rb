@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'snapshot'
+
 # Helpers in Filewatcher class itself
 class Filewatcher
   class << self
@@ -15,24 +17,19 @@ class Filewatcher
   # Module for snapshot logic inside Filewatcher
   module Snapshots
     def found_filenames
-      mtime_snapshot.keys
+      current_snapshot.keys
     end
 
     private
 
+    def watching_files
+      expand_directories(@unexpanded_filenames) - expand_directories(@unexpanded_excluded_filenames)
+    end
+
     # Takes a snapshot of the current status of watched files.
     # (Allows avoidance of potential race condition during #finalize)
-    def mtime_snapshot
-      snapshot = {}
-      filenames = expand_directories(@unexpanded_filenames)
-
-      # Remove files in the exclude filenames list
-      filenames -= expand_directories(@unexpanded_excluded_filenames)
-
-      filenames.each do |filename|
-        snapshot[filename] = file_mtime(filename)
-      end
-      snapshot
+    def current_snapshot
+      Filewatcher::Snapshot.new(watching_files)
     end
 
     def file_mtime(filename)
@@ -40,24 +37,19 @@ class Filewatcher
 
       result = File.mtime(filename)
       if @logger.level <= Logger::DEBUG
-        @logger.debug "File.mtime = #{result.strftime('%F %T.%9N')}"
-        @logger.debug "stat #{filename}: #{self.class.system_stat(filename)}"
+        debug "File.mtime = #{result.strftime('%F %T.%9N')}"
+        debug "stat #{filename}: #{self.class.system_stat(filename)}"
       end
       result
     end
 
-    def file_system_updated?(snapshot = mtime_snapshot)
-      @changes = {}
+    def file_system_updated?(snapshot = current_snapshot)
+      debug __method__
 
-      (snapshot.to_a - @last_snapshot.to_a).each do |file, _mtime|
-        @changes[file] = @last_snapshot[file] ? :updated : :created
-      end
-
-      (@last_snapshot.keys - snapshot.keys).each do |file|
-        @changes[file] = :deleted
-      end
+      @changes = snapshot - @last_snapshot
 
       @last_snapshot = snapshot
+
       @changes.any?
     end
   end

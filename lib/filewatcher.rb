@@ -46,7 +46,7 @@ class Filewatcher
 
     main_cycle
 
-    @end_snapshot = mtime_snapshot
+    @end_snapshot = current_snapshot
     finalize(&on_update)
   end
 
@@ -60,7 +60,7 @@ class Filewatcher
   def resume
     raise "Can't resume unless #watch and #pause were first called" if !@keep_watching || !@pausing
 
-    @last_snapshot = mtime_snapshot # resume with fresh snapshot
+    @last_snapshot = current_snapshot # resume with fresh snapshot
     @pausing = false
     update_spinner('Resuming')
     sleep @interval # Wait long enough to exit pause loop in #watch
@@ -78,7 +78,7 @@ class Filewatcher
   # current snapshot are dealt with
   def finalize(&on_update)
     on_update = @on_update unless block_given?
-    while file_system_updated?(@end_snapshot || mtime_snapshot)
+    while file_system_updated?(@end_snapshot || current_snapshot)
       update_spinner('Finalizing')
       trigger_changes(on_update)
     end
@@ -98,6 +98,10 @@ class Filewatcher
     expanded_patterns.flatten!
     expanded_patterns.uniq!
     expanded_patterns
+  end
+
+  def debug(data)
+    @logger.debug "Thread ##{Thread.current.object_id} #{data}"
   end
 end
 
