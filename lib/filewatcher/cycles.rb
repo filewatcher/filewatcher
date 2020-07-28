@@ -7,7 +7,7 @@ class Filewatcher
 
     def main_cycle
       while @keep_watching
-        @end_snapshot = mtime_snapshot if @pausing
+        @end_snapshot = current_snapshot if @pausing
 
         pausing_cycle
 
@@ -27,24 +27,23 @@ class Filewatcher
     end
 
     def watching_cycle
-      @logger.debug __method__
-      @last_snapshot ||= mtime_snapshot
+      @last_snapshot ||= current_snapshot
       loop do
         update_spinner('Watching')
-        @logger.debug "#{__method__} sleep #{@interval}"
+        debug "#{__method__} sleep #{@interval}"
         sleep @interval
         break if !@keep_watching || file_system_updated? || @pausing
       end
     end
 
     def trigger_changes(on_update = @on_update)
-      @logger.debug __method__
+      debug __method__
       changes = @every ? @changes : @changes.first(1)
       changes.each do |filename, event|
         on_update.call(filename, event)
       end
       @changes.clear
-      @logger.debug '@changes cleared'
+      debug '@changes cleared'
     end
   end
 end
