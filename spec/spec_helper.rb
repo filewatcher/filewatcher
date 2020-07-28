@@ -66,14 +66,14 @@ class WatchRun
   def start
     debug 'start'
     File.write(@filename, 'content1') unless @action == :create
+
+    wait seconds: 1
   end
 
   def run
     start
 
     make_changes
-
-    wait seconds: 1
 
     stop
   end
@@ -87,6 +87,7 @@ class WatchRun
 
   def make_changes
     debug "make changes, @action = #{@action}, @filename = #{@filename}"
+
     if @action == :delete
       FileUtils.remove(@filename)
     elsif @directory
@@ -94,6 +95,8 @@ class WatchRun
     else
       File.write(@filename, 'content2')
     end
+
+    wait seconds: 1
   end
 end
 
