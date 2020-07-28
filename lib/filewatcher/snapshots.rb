@@ -32,7 +32,7 @@ class Filewatcher
       return Time.new(0) unless File.exist?(filename)
 
       result = File.mtime(filename)
-      @logger.debug "File.mtime = #{result}"
+      @logger.debug "File.mtime = #{result.inspect}"
       @logger.debug "stat #{filename}:"
       system "stat #{filename}"
       result
