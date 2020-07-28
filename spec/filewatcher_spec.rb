@@ -193,10 +193,14 @@ describe Filewatcher do
     directory = 'spec/tmp'
     FileUtils.mkdir_p directory
 
-    range.to_a.map do |n|
+    result = range.to_a.map do |n|
       File.write(file = "#{directory}/file#{n}.txt", "content#{n}")
       file
     end
+
+    wait seconds: 1
+
+    result
   end
 
   shared_context 'when paused' do
