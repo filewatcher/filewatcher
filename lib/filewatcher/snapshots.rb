@@ -43,7 +43,7 @@ class Filewatcher
       end
     end
 
-    def filesystem_updated?(snapshot = mtime_snapshot)
+    def file_system_updated?(snapshot = mtime_snapshot)
       @changes = {}
 
       (snapshot.to_a - @last_snapshot.to_a).each do |file, _mtime|

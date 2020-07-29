@@ -33,7 +33,7 @@ class Filewatcher
         update_spinner('Watching')
         @logger.debug "#{__method__} sleep #{@interval}"
         sleep @interval
-        break if !@keep_watching || filesystem_updated? || @pausing
+        break if !@keep_watching || file_system_updated? || @pausing
       end
     end
 

@@ -78,7 +78,7 @@ class Filewatcher
   # current snapshot are dealt with
   def finalize(&on_update)
     on_update = @on_update unless block_given?
-    while filesystem_updated?(@end_snapshot || mtime_snapshot)
+    while file_system_updated?(@end_snapshot || mtime_snapshot)
       update_spinner('Finalizing')
       trigger_changes(on_update)
     end
