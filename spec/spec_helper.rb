@@ -93,7 +93,9 @@ class WatchRun
     elsif @directory
       FileUtils.mkdir_p(@filename)
     else
-      File.write(@filename, 'content2')
+      ## There is no `File.write` because of strange difference in parallel `File.mtime`
+      ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
+      system "echo 'content2' > #{@filename}"
       debug_file_mtime
     end
 
