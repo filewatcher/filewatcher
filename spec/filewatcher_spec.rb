@@ -370,7 +370,7 @@ describe Filewatcher do
       end
     end
 
-    describe '`:immediate` option' do
+    describe '`--immediate` option' do
       let(:options) { { immediate: true } }
 
       include_context 'when started and stopped'
@@ -389,7 +389,7 @@ describe Filewatcher do
       include_examples 'dump file existence'
     end
 
-    describe '`:restart` option' do
+    describe '`--restart` option' do
       let(:options) { { restart: true } }
 
       before do
