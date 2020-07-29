@@ -27,10 +27,13 @@ class Filewatcher
     end
 
     def watching_cycle
-      while @keep_watching && !filesystem_updated? && !@pausing
+      @logger.debug __method__
+      @last_snapshot ||= mtime_snapshot
+      loop do
         update_spinner('Watching')
         @logger.debug "#{__method__} sleep #{@interval}"
         sleep @interval
+        break if !@keep_watching || filesystem_updated? || @pausing
       end
     end
 
