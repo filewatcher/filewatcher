@@ -94,11 +94,15 @@ class WatchRun
       FileUtils.mkdir_p(@filename)
     else
       File.write(@filename, 'content2')
+      debug_file_mtime
     end
 
-    debug "stat #{filename}: #{Filewatcher.system_stat(filename)}"
-
     wait seconds: 1
+  end
+
+  def debug_file_mtime
+    debug "stat #{@filename}: #{Filewatcher.system_stat(@filename)}"
+    debug "File.mtime = #{File.mtime(@filename).strftime('%F %T.%9N')}"
   end
 end
 
