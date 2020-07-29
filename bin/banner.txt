@@ -1,4 +1,4 @@
-Filewatcher scans the filesystem and executes shell commands when files changes.
+Filewatcher scans the file system and executes shell commands when files changes.
 
 Usage:
    filewatcher [--restart] '<filenames or patterns>' '<shell command>'

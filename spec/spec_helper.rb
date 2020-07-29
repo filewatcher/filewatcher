@@ -141,7 +141,7 @@ class RubyWatchRun < WatchRun
   def make_changes
     super
 
-    # Some OS, filesystems and Ruby interpretators
+    # Some OS, file systems and Ruby interpretators
     # doesn't catch milliseconds of `File.mtime`
     wait do
       @mutex.synchronize do

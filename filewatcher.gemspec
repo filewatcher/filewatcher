@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors       = ['Thomas Flemming']
   s.email         = ['thomas.flemming@gmail.com']
   s.homepage      = 'http://github.com/thomasfl/filewatcher'
-  s.summary       = 'Lighweight filewatcher.'
-  s.description   = 'Detect changes in filesystem. Works anywhere.'
+  s.summary       = 'Lightweight filewatcher.'
+  s.description   = 'Detect changes in file system. Works anywhere.'
 
   s.files = Dir[File.join('{bin,lib}', '**', '{*,.*}')]
   s.executables   = ['filewatcher']

@@ -164,9 +164,9 @@ Useful command line options:
 
 ```
         --list, -l:   Print name of matching files on startup
-     --restart, -r:   Run command in separate fork and kill it on filesystem updates
-   --immediate, -I:   Run the command before any filesystem updates
-       --every, -E:   Run the command for every updated file in one filesystem check
+     --restart, -r:   Run command in separate fork and kill it on file system updates
+   --immediate, -I:   Run the command before any file system updates
+       --every, -E:   Run the command for every updated file in one file system check
       --daemon, -D:   Run in the background as system daemon
      --spinner, -s:   Display an animated spinner while scanning
 ```
@@ -176,7 +176,7 @@ Other command line options:
 ```
      --version, -v:   Print version and exit
         --help, -h:   Show this message
---interval, -i <f>:   Interval in seconds to scan filesystem, defaults to 0.5 seconds
+--interval, -i <f>:   Interval in seconds to scan file system, defaults to 0.5 seconds
         --exec, -e:   Execute file as a script when file is updated
  --include, -n <s>:   Include files (default: *)
  --exclude, -x <s>:   Exclude file(s) matching (default: "")
@@ -283,19 +283,19 @@ over the network)
 filewatcher = Filewatcher.new(['*.rb'])
 thread = Thread.new(filewatcher) { |fw| fw.watch{ |f| puts "Updated #{f}" } }
 # ...
-filewatcher.pause       # block stops responding to filesystem changes
-filewatcher.finalize    # Ensure all filesystem changes made prior to
+filewatcher.pause       # block stops responding to file system changes
+filewatcher.finalize    # Ensure all file system changes made prior to
                         # pausing are handled.
 # ...
 filewatcher.resume      # block begins responding again, but is not given
                         # changes made between #pause_watch and
                         # #resume_watch
 # ...
-filewatcher.end         # block stops responding to filesystem changes
-                        # and takes a final snapshot of the filesystem
+filewatcher.end         # block stops responding to file system changes
+                        # and takes a final snapshot of the file system
 thread.join
 
-filewatcher.finalize    # Ensure all filesystem changes made prior to
+filewatcher.finalize    # Ensure all file system changes made prior to
                         # ending the watch are handled.
 ```
 

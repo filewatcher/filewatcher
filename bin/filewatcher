@@ -14,11 +14,11 @@ options = Optimist.options do
 
   opt :immediate, 'Immediately execute a command',
       short: 'I', type: :boolean, default: false
-  opt :every, 'Run command for every updated file in one filesystem check',
+  opt :every, 'Run command for every updated file in one file system check',
       short: 'E', type: :boolean, default: false
   opt :daemon, 'Run in the background as system daemon',
       short: 'D', type: :boolean, default: false
-  opt :restart, 'Restart process when filesystem is updated',
+  opt :restart, 'Restart process when file system is updated',
       short: 'r', type: :boolean, default: false
   opt :list, 'Print name of files being watched'
   opt :exec, 'Execute file as a script when file is updated',
@@ -27,9 +27,9 @@ options = Optimist.options do
       type: :string, default: File.join('**', '*')
   opt :exclude, 'Exclude file(s) matching',
       type: :string, default: nil
-  opt :interval, 'Interval to scan filesystem',
+  opt :interval, 'Interval to scan file system',
       short: 'i', type: :float, default: 0.5
-  opt :spinner, 'Show an ascii spinner',
+  opt :spinner, 'Show an ASCII spinner',
       short: 's', type: :boolean, default: false
 end
 
