@@ -10,6 +10,44 @@ end
 
 LOGGER = Logger.new($stdout, level: :debug)
 
+ENVIRONMENT_SPECS_COEFFICIENTS = {
+  -> { ENV['CI'] } => 1,
+  -> { RUBY_PLATFORM == 'java' } => 3,
+  ## https://cirrus-ci.com/build/6442339705028608
+  -> { RUBY_PLATFORM == 'java' && ENV['CI'] && is_a?(ShellWatchRun) } => 2,
+  -> { Gem::Platform.local.os == 'darwin' } => 1
+}.freeze
+
+def wait(seconds: 1, interval: 1, &block)
+  ENVIRONMENT_SPECS_COEFFICIENTS.each do |condition, coefficient|
+    interval *= coefficient if instance_exec(&condition)
+    seconds *= coefficient if instance_exec(&condition)
+  end
+  if block_given?
+    wait_with_block seconds, interval, &block
+  else
+    wait_without_block seconds
+  end
+end
+
+def wait_with_block(seconds, interval, &_block)
+  (seconds / interval).ceil.times do
+    break if yield
+
+    debug "sleep interval #{interval}"
+    sleep interval
+  end
+end
+
+def wait_without_block(seconds)
+  debug "sleep without intervals #{seconds}"
+  sleep seconds
+end
+
+def debug(string)
+  LOGGER.debug "Thread ##{Thread.current.object_id} #{string}"
+end
+
 class WatchRun
   TMP_DIR = File.join(__dir__, 'tmp')
 
@@ -57,45 +95,6 @@ class WatchRun
       File.write(@filename, 'content2')
     end
   end
-
-  ENVIRONMENT_COEFFICIENTS = {
-    -> { ENV['CI'] } => 1,
-    -> { RUBY_PLATFORM == 'java' } => 3,
-    ## https://cirrus-ci.com/build/6442339705028608
-    -> { RUBY_PLATFORM == 'java' && ENV['CI'] && is_a?(ShellWatchRun) } => 2,
-    -> { Gem::Platform.local.os == 'darwin' } => 1
-  }.freeze
-
-  def wait(seconds:, interval:, &block)
-    seconds ||= 1
-    ENVIRONMENT_COEFFICIENTS.each do |condition, coefficient|
-      interval *= coefficient if instance_exec(&condition)
-      seconds *= coefficient if instance_exec(&condition)
-    end
-    if block_given?
-      wait_with_block seconds, interval, &block
-    else
-      wait_without_block seconds
-    end
-  end
-
-  def wait_with_block(seconds, interval, &_block)
-    (seconds / interval).ceil.times do
-      break if yield
-
-      debug "sleep interval #{interval}"
-      sleep interval
-    end
-  end
-
-  def wait_without_block(seconds)
-    debug "sleep without intervals #{seconds}"
-    sleep seconds
-  end
-
-  def debug(string)
-    LOGGER.debug "Thread ##{Thread.current.object_id} #{string}"
-  end
 end
 
 class RubyWatchRun < WatchRun
@@ -130,7 +129,7 @@ class RubyWatchRun < WatchRun
     super
   end
 
-  def wait(seconds: nil)
+  def wait(seconds: 1)
     super seconds: seconds, interval: filewatcher.interval
   end
 
@@ -259,7 +258,7 @@ class ShellWatchRun < WatchRun
     `ps -ho state -p #{@pid}`.sub('STAT', '').strip
   end
 
-  def wait(seconds: nil)
+  def wait(seconds: 1)
     super seconds: seconds, interval: @options[:interval]
   end
 end

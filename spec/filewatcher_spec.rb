@@ -14,10 +14,9 @@ describe Filewatcher do
     LOGGER.debug "FileUtils.rm_r #{WatchRun::TMP_DIR}"
     FileUtils.rm_r WatchRun::TMP_DIR
 
-    interval = 0.2
-    wait = 5
-    count = 0
-    sleep interval while File.exist?(WatchRun::TMP_DIR) && count < (wait / interval)
+    wait seconds: 5, interval: 0.2 do
+      !File.exist?(WatchRun::TMP_DIR)
+    end
   end
 
   def initialize_filewatcher(path, options = {})
