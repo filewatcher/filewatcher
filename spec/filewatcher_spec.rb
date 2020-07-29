@@ -227,6 +227,10 @@ describe Filewatcher do
       watch_run.filewatcher.resume
     end
 
+    after do
+      watch_run.stop
+    end
+
     describe 'changes while paused' do
       # update block still should not have been called
       it { is_expected.to be_empty }
