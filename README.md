@@ -334,7 +334,7 @@ This project would not be where it is today without the generous help provided b
 
 *   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing.
 
-*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, many fixes and improvements.
+*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, tests improvements, code style improvements, many other fixes and improvements.
 
 This gem was initially inspired by [Tom Lieber's blog posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 
