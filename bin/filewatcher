@@ -73,7 +73,7 @@ begin
 
   if options[:list]
     puts 'Watching:'
-    fw.last_found_filenames.each do |filename|
+    fw.found_filenames.each do |filename|
       puts " #{filename}"
     end
   end

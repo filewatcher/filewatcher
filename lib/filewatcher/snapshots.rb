@@ -3,15 +3,11 @@
 class Filewatcher
   # Module for snapshot logic inside Filewatcher
   module Snapshots
-    def last_found_filenames
-      last_snapshot.keys
+    def found_filenames
+      mtime_snapshot.keys
     end
 
     private
-
-    def last_snapshot
-      @last_snapshot ||= mtime_snapshot
-    end
 
     # Takes a snapshot of the current status of watched files.
     # (Allows avoidance of potential race condition during #finalize)
@@ -50,11 +46,11 @@ class Filewatcher
     def filesystem_updated?(snapshot = mtime_snapshot)
       @changes = {}
 
-      (snapshot.to_a - last_snapshot.to_a).each do |file, _mtime|
-        @changes[file] = last_snapshot[file] ? :updated : :created
+      (snapshot.to_a - @last_snapshot.to_a).each do |file, _mtime|
+        @changes[file] = @last_snapshot[file] ? :updated : :created
       end
 
-      (last_snapshot.keys - snapshot.keys).each do |file|
+      (@last_snapshot.keys - snapshot.keys).each do |file|
         @changes[file] = :deleted
       end
 
