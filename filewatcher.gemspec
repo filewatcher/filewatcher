@@ -2,12 +2,10 @@
 
 require_relative 'lib/filewatcher'
 require_relative 'lib/filewatcher/version'
-require 'date'
 
 Gem::Specification.new do |s|
   s.name          = 'filewatcher'
   s.version       = Filewatcher::VERSION
-  s.date          = Date.today.to_s
 
   s.authors       = ['Thomas Flemming']
   s.email         = ['thomas.flemming@gmail.com']
