@@ -40,7 +40,7 @@ class Filewatcher
 
       result = File.mtime(filename)
       if @logger.level <= Logger::DEBUG
-        @logger.debug "File.mtime = #{result.inspect}"
+        @logger.debug "File.mtime = #{result.strftime('%F %T.%9N')}"
         @logger.debug "stat #{filename}: #{self.class.system_stat(filename)}"
       end
       result
