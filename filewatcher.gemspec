@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.name          = 'filewatcher'
   s.version       = Filewatcher::VERSION
 
-  s.authors       = ['Thomas Flemming']
-  s.email         = ['thomas.flemming@gmail.com']
+  s.authors       = ['Thomas Flemming', 'Alexander Popov']
+  s.email         = ['thomas.flemming@gmail.com', 'alex.wayfer@gmail.com']
   s.homepage      = 'http://github.com/filewatcher/filewatcher'
   s.summary       = 'Lightweight filewatcher.'
   s.description   = 'Detect changes in file system. Works anywhere.'
