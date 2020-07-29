@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.authors       = ['Thomas Flemming']
   s.email         = ['thomas.flemming@gmail.com']
-  s.homepage      = 'http://github.com/thomasfl/filewatcher'
+  s.homepage      = 'http://github.com/filewatcher/filewatcher'
   s.summary       = 'Lightweight filewatcher.'
   s.description   = 'Detect changes in file system. Works anywhere.'
 
