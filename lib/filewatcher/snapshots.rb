@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
+# Helpers in Filewatcher class itself
 class Filewatcher
+  class << self
+    def system_stat(filename)
+      case Gem::Platform.local.os
+      when 'linux' then `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
+      when 'darwin' then `stat #{filename}`
+      else 'Unknown OS for system `stat`'
+      end
+    end
+  end
+
   # Module for snapshot logic inside Filewatcher
   module Snapshots
     def found_filenames
@@ -30,17 +41,9 @@ class Filewatcher
       result = File.mtime(filename)
       if @logger.level <= Logger::DEBUG
         @logger.debug "File.mtime = #{result.inspect}"
-        @logger.debug "stat #{filename}: #{system_stat(filename)}"
+        @logger.debug "stat #{filename}: #{self.class.system_stat(filename)}"
       end
       result
-    end
-
-    def system_stat(filename)
-      case Gem::Platform.local.os
-      when 'linux' then `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
-      when 'darwin' then `stat #{filename}`
-      else 'Unknown OS for system `stat`'
-      end
     end
 
     def file_system_updated?(snapshot = mtime_snapshot)

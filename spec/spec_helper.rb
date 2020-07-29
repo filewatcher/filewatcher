@@ -96,6 +96,8 @@ class WatchRun
       File.write(@filename, 'content2')
     end
 
+    debug "stat #{filename}: #{Filewatcher.system_stat(filename)}"
+
     wait seconds: 1
   end
 end
