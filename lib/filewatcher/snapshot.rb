@@ -50,6 +50,14 @@ class Filewatcher
           :updated
         end
       end
+
+      def inspect
+        <<~OUTPUT
+          #<Filewatcher::Snapshot::SnapshotFile:#{object_id}
+            @filename=#{@filename.inspect}, mtime=#{mtime.strftime('%F %T.%9N').inspect}
+          >
+        OUTPUT
+      end
     end
 
     private_constant :SnapshotFile
