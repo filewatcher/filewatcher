@@ -208,8 +208,11 @@ describe Filewatcher do
 
     before do
       watch_run.start
+
       LOGGER.debug 'filewatcher.pause'
       watch_run.filewatcher.pause
+
+      wait seconds: 1
 
       write_tmp_files 1..4
     end
