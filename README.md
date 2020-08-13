@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/filewatcher.svg)](http://badge.fury.io/rb/filewatcher)
 [![Build Status](https://api.cirrus-ci.com/github/filewatcher/filewatcher.svg)](https://cirrus-ci.com/github/filewatcher/filewatcher)
+[![Codecov](https://codecov.io/gh/filewatcher/filewatcher/branch/master/graph/badge.svg)](https://codecov.io/gh/filewatcher/filewatcher)
 [![Depfu](https://badges.depfu.com/badges/68e34db402d0a15d49f5a4e5a26a503f/overview.svg)](https://depfu.com/github/filewatcher/filewatcher?project_id=5811)
 [![Code Climate](https://codeclimate.com/github/filewatcher/filewatcher.png)](https://codeclimate.com/github/filewatcher/filewatcher)
 [![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
