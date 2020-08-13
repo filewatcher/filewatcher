@@ -53,7 +53,8 @@ test_task:
       <<: *unix_bundle_cache
       install_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
-        - apt-get update && apt-get install -y procps
+        ## For `git`: https://cirrus-ci.com/task/6481022910988288?command=test#L1759
+        - apt-get update && apt-get install -y procps git
         - gem install bundler
         - bundle update
 
@@ -101,6 +102,9 @@ test_task:
     #       - type Gemfile
     #       - type *.gemspec
     #     populate_script: bundle install
+
+  environment:
+    CODECOV_TOKEN: ENCRYPTED[9e9a017610883a646df003ae290b6cd3306cd44a3f545dedd258d12e6e41788a66149b9a8f80c62923d225eef6f9190d]
 
   test_script: bundle exec rspec
 
