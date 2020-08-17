@@ -28,10 +28,11 @@ describe Filewatcher do
   let(:directory) { false }
   let(:every) { false }
   let(:immediate) { false }
+  let(:interval) { 0.2 }
   let(:filewatcher) do
     initialize_filewatcher(
       File.join(WatchRun::TMP_DIR, '**', '*'),
-      interval: 0.2, every: every, immediate: immediate
+      interval: interval, every: every, immediate: immediate
     )
   end
 
@@ -159,6 +160,8 @@ describe Filewatcher do
       let(:filename) { File.join(subdirectory, 'file.txt') }
       let(:action) { :create }
       let(:every) { true }
+      ## https://github.com/filewatcher/filewatcher/pull/115#issuecomment-674581595
+      let(:interval) { 0.4 }
 
       it do
         expect(processed).to eq [
