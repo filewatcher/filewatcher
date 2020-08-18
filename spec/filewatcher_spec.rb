@@ -322,7 +322,7 @@ describe Filewatcher do
     end
 
     describe 'just run' do
-      subject { system("#{ShellWatchRun::EXECUTABLE} > #{null_output}") }
+      subject { system("#{ShellWatchRun::EXECUTABLE} --help > #{null_output}") }
 
       it { is_expected.to be true }
     end

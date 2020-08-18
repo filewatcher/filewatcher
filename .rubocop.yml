@@ -8,6 +8,10 @@ Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
 Layout/FirstArgumentIndentation:
   EnforcedStyle: consistent
 Layout/FirstParameterIndentation:

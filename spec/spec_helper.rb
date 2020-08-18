@@ -200,7 +200,8 @@ class ShellWatchRun < WatchRun
     @options = options
     @options[:interval] ||= 0.2
     @options_string =
-      @options.map { |key, value| "--#{key}=#{value}" }.join(' ')
+      @options
+        .map { |key, value| value.is_a?(TrueClass) ? "--#{key}" : "--#{key}=#{value}" }.join(' ')
     debug "options = #{@options_string}"
     @dumper = dumper
     debug "dumper = #{@dumper}"
