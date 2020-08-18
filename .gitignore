@@ -1,10 +1,11 @@
 *.gem
 
-Gemfile.lock
-.ruby-version
+/Gemfile.lock
+/.ruby-version
 
-node_modules/
-package-lock.json
-yarn.lock
+/node_modules/
+/package-lock.json
+/yarn.lock
+/coverage/
 
 /test/
