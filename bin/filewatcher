@@ -6,108 +6,144 @@ require_relative '../lib/filewatcher/env'
 require_relative '../lib/filewatcher/runner'
 require_relative '../lib/filewatcher/version'
 
-require 'optimist'
+require 'clamp'
 
-options = Optimist.options do
-  version "filewatcher, version #{Filewatcher::VERSION} by Thomas Flemming 2016"
-  banner File.read File.join(__dir__, 'banner.txt')
+class Filewatcher
+  ## Class for CLI
+  class CLI < Clamp::Command
+    banner <<~TEXT
+      Filewatcher scans the file system and executes shell commands when files changes.
+    TEXT
 
-  opt :immediate, 'Immediately execute a command',
-      short: 'I', type: :boolean, default: false
-  opt :every, 'Run command for every updated file in one file system check',
-      short: 'E', type: :boolean, default: false
-  opt :daemon, 'Run in the background as system daemon',
-      short: 'D', type: :boolean, default: false
-  opt :restart, 'Restart process when file system is updated',
-      short: 'r', type: :boolean, default: false
-  opt :restart_signal, 'Termination signal for `restart` option',
-      type: :string, default: 'TERM'
-  opt :list, 'Print name of files being watched'
-  opt :exec, 'Execute file as a script when file is updated',
-      short: 'e', type: :boolean, default: false
-  opt :include, 'Include files',
-      type: :string, default: File.join('**', '*')
-  opt :exclude, 'Exclude file(s) matching',
-      type: :string, default: nil
-  opt :interval, 'Interval to scan file system',
-      short: 'i', type: :float, default: 0.5
-  opt :spinner, 'Show an ASCII spinner',
-      short: 's', type: :boolean, default: false
-end
+    option %w[-I --immediate], :flag, 'immediately execute a command',
+      default: false
 
-Optimist.die Optimist.educate if ARGV.empty?
+    option %w[-E --every], :flag, 'run command for every updated file in one file system check',
+      default: false
 
-files = ARGV[0..-2]
+    option %w[-D --daemon], :flag, 'run in the background as system daemon',
+      default: false
 
-files << ARGV.first if files.empty?
+    option %w[-r --restart], :flag, 'restart process when file system is updated',
+      default: false
 
-def split_files_void_escaped_whitespace(files)
-  files
-    .map { |name| name.gsub(/\\\s/, '_ESCAPED_WHITESPACE_').split(/\s/) }
-    .flatten
-    .uniq
-    .map { |name| name.gsub('_ESCAPED_WHITESPACE_', '\ ') }
-end
+    option '--restart-signal', 'VALUE', 'termination signal for `restart` option',
+      default: 'TERM'
 
-files = split_files_void_escaped_whitespace(files)
-child_pid = nil
+    option '--list', :flag, 'print name of files being watched',
+      default: false
 
-def restart(pid, restart_signal, env, cmd)
-  begin
-    raise Errno::ESRCH unless pid
+    option %w[-e --exec], :flag, 'execute file as a script when file is updated',
+      default: false
 
-    Process.kill(restart_signal, pid)
-    Process.wait(pid)
-  rescue Errno::ESRCH
-    nil # already killed
-  end
-  Process.spawn(env, cmd)
-end
+    option '--include', 'GLOB', 'include files',
+      default: File.join('**', '*')
 
-if options[:exclude].to_s != ''
-  options[:exclude] = split_files_void_escaped_whitespace(
-    options[:exclude].split(' ')
-  )
-end
-
-begin
-  fw = Filewatcher.new(files, options)
-
-  if options[:list]
-    puts 'Watching:'
-    fw.found_filenames.each do |filename|
-      puts " #{filename}"
+    option '--exclude', 'GLOB', 'exclude file(s) matching', default: nil do |string|
+      split_files_void_escaped_whitespace string.split(' ') unless string.to_s.empty?
     end
-  end
 
-  Process.daemon(true, true) if options[:daemon]
+    option %w[-i --interval], 'SECONDS', 'interval to scan file system', default: 0.5 do |string|
+      Float(string)
+    end
 
-  fw.watch do |changes|
-    changes = options[:every] ? changes : changes.first(1)
+    option %w[-s --spinner], :flag, 'show an ASCII spinner',
+      default: false
 
-    changes.each do |filename, event|
-      cmd =
-        if options[:exec] && File.exist?(filename)
-          Filewatcher::Runner.new(filename).command
-        elsif ARGV.length > 1
-          ARGV[-1]
-        end
+    parameter 'FILES', 'file names to scan'
 
-      next puts "file #{event}: #{filename}" unless cmd
+    parameter '[COMMAND]', 'shell command to execute when file changes'
 
-      env = Filewatcher::Env.new(filename, event).to_h
-      if options[:restart]
-        child_pid = restart(child_pid, options[:restart_signal], env, cmd)
-      else
-        begin
-          Process.spawn(env, cmd)
-          Process.wait
-        rescue SystemExit, Interrupt
-          exit(0)
-        end
+    def execute
+      @child_pid = nil
+
+      initialize_filewatcher
+
+      print_if_list
+
+      Process.daemon(true, true) if daemon?
+
+      @filewatcher.watch do |changes|
+        changes = every? ? changes : changes.first(1)
+
+        process_changes changes
+      end
+    rescue SystemExit, Interrupt
+      @filewatcher.finalize
+    end
+
+    private
+
+    def initialize_filewatcher
+      ## https://github.com/mdub/clamp/issues/105
+      @filewatcher = Filewatcher.new(
+        files,
+        immediate: immediate?, every: every?, daemon: daemon?,
+        restart: restart?, restart_signal: restart_signal, list: list?, exec: exec?,
+        include: include, exclude: exclude, interval: interval, spinner: spinner?
+      )
+    end
+
+    def split_files_void_escaped_whitespace(files)
+      files
+        .map { |name| name.gsub(/\\\s/, '_ESCAPED_WHITESPACE_').split(/\s/) }
+        .flatten
+        .uniq
+        .map { |name| name.gsub('_ESCAPED_WHITESPACE_', '\ ') }
+    end
+
+    def process_changes(changes)
+      changes.each do |filename, event|
+        command = command_for_file filename
+
+        next puts "file #{event}: #{filename}" unless command
+
+        @child_pid = execute_command filename, event, command
       end
     end
+
+    def print_if_list
+      return unless list?
+
+      puts 'Watching:'
+      @filewatcher.found_filenames.each { |filename| puts " #{filename}" }
+    end
+
+    def execute_command(filename, event, command)
+      env = Filewatcher::Env.new(filename, event).to_h
+      if restart?
+        restart(@child_pid, restart_signal, env, command)
+      else
+        spawn env, command
+        nil
+      end
+    end
+
+    def command_for_file(filename)
+      if exec? && File.exist?(filename) then Filewatcher::Runner.new(filename).command
+      elsif command then command
+      end
+    end
+
+    def restart(pid, restart_signal, env, command)
+      begin
+        raise Errno::ESRCH unless pid
+
+        Process.kill(restart_signal, pid)
+        Process.wait(pid)
+      rescue Errno::ESRCH
+        nil # already killed
+      end
+      Process.spawn(env, command)
+    end
+
+    def spawn(env, command)
+      Process.spawn(env, command)
+      Process.wait
+    rescue SystemExit, Interrupt
+      exit(0)
+    end
   end
-rescue SystemExit, Interrupt
-  fw.finalize
 end
+
+Filewatcher::CLI.run
