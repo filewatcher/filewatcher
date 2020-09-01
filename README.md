@@ -30,13 +30,6 @@ Needs Ruby and RubyGems:
 $ [sudo] gem install filewatcher
 ```
 
-## Usage warning
-
-JRuby with version < `9.1.9.0` doesn't provide milliseconds of `File.mtime`, as MRI does.
-So be careful with `--interval` less than 1 second.
-
-[Issue](https://github.com/jruby/jruby/issues/4520).
-
 ## Command line utility
 
 Filewatcher scans the file system and execute a shell command when files are
@@ -317,6 +310,13 @@ Filewatcher.new(['**/*.*']).watch do |filename, event|
   puts "Relative filename: #{File.join('.', path)}"
   puts "Absolute filename: #{path.realpath}"
 end
+
+## Usage warning
+
+JRuby with version < `9.1.9.0` doesn't provide milliseconds of `File.mtime`, as MRI does.
+So be careful with `--interval` less than 1 second.
+
+[Issue](https://github.com/jruby/jruby/issues/4520).
 ```
 
 ## Changelog
