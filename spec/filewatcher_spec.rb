@@ -407,9 +407,17 @@ describe Filewatcher do
         watch_run.run(make_changes_times: 2)
       end
 
-      include_examples 'dump file existence'
+      shared_examples 'correct behavior' do
+        include_examples 'dump file existence'
 
-      include_examples 'dump file content'
+        include_examples 'dump file content'
+      end
+
+      include_examples 'correct behavior'
+
+      describe '`--fork` alias' do
+        include_examples 'correct behavior'
+      end
     end
 
     describe '`--restart-signal` option' do
