@@ -3,20 +3,22 @@
 require_relative '../../lib/filewatcher/snapshot'
 
 describe Filewatcher::Snapshot do
+  let(:tmp_dir) { Filewatcher::SpecHelper::WatchRun::TMP_DIR }
+
   let(:tmp_files) do
     (1..4).map do |n|
-      File.join(WatchRun::TMP_DIR, "file#{n}.txt")
+      File.join(tmp_dir, "file#{n}.txt")
     end
   end
 
   def initialize_snapshot
     described_class.new Dir[
-      File.join(WatchRun::TMP_DIR, '**', '*')
+      File.join(tmp_dir, '**', '*')
     ]
   end
 
   before do
-    FileUtils.mkdir_p WatchRun::TMP_DIR
+    FileUtils.mkdir_p tmp_dir
 
     tmp_files.each_with_index do |tmp_file, n|
       File.write tmp_file, "content#{n}"
@@ -24,7 +26,7 @@ describe Filewatcher::Snapshot do
   end
 
   after do
-    FileUtils.rm_r WatchRun::TMP_DIR
+    FileUtils.rm_r tmp_dir
   end
 
   describe '#initialize' do
@@ -42,7 +44,7 @@ describe Filewatcher::Snapshot do
 
     let(:first_snapshot) { initialize_snapshot }
     let(:second_snapshot) { initialize_snapshot }
-    let(:new_file) { File.join(WatchRun::TMP_DIR, 'file5.txt') }
+    let(:new_file) { File.join(tmp_dir, 'file5.txt') }
 
     before do
       first_snapshot
