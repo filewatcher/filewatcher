@@ -21,19 +21,29 @@ class Filewatcher
 
     def pausing_cycle
       while @keep_watching && @pausing
-        update_spinner('Pausing')
+        before_pausing_sleep
+
         sleep @interval
       end
+    end
+
+    def before_pausing_sleep
+      super if defined?(super)
     end
 
     def watching_cycle
       @last_snapshot ||= current_snapshot
       loop do
-        update_spinner('Watching')
+        before_watching_sleep
+
         debug "#{__method__} sleep #{@interval}"
         sleep @interval
         break if !@keep_watching || file_system_updated? || @pausing
       end
+    end
+
+    def before_watching_sleep
+      super if defined?(super)
     end
 
     def trigger_changes(on_update = @on_update)

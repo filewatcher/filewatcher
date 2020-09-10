@@ -6,190 +6,27 @@
 [![Code Climate](https://codeclimate.com/github/filewatcher/filewatcher.png)](https://codeclimate.com/github/filewatcher/filewatcher)
 [![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
 
-Lightweight file watcher weighing about 250 LOC. One dependency (for CLI) and no platform specific code. Works everywhere. Monitors changes in the file system by polling. Has no config files. When running Filewatcher from the command line, you specify which files to monitor and what action to perform on updates. Can be ran as daemon (background process).
+Lightweight file watcher weighing about 300 LOC.
+No runtime dependencies and no platform specific code.
+Works everywhere.
+Monitors changes in the file system by polling.
+Has no config files.
+Can be ran as daemon (background process).
 
-For example to search recursively for JavaScript files and run `jshint` when a file is updated, created, renamed or deleted:
+## Installation
 
-In Linux/macOS:
-
-```
-$ filewatcher '**/*.js' 'jshint $FILENAME'
-```
-
-In Windows:
-
-```
-> filewatcher "**/*.js" "jshint %FILENAME%"
+```bash
+$ gem install filewatcher
 ```
 
-## Install
+or with `bundler`:
 
-Needs Ruby and RubyGems:
-
-```
-$ [sudo] gem install filewatcher
-```
-
-## Usage warning
-
-JRuby with version < `9.1.9.0` doesn't provide milliseconds of `File.mtime`, as MRI does.
-So be careful with `--interval` less than 1 second.
-
-[Issue](https://github.com/jruby/jruby/issues/4520).
-
-## Command line utility
-
-Filewatcher scans the file system and execute a shell command when files are
-updated, created, renamed or deleted.
-
-```
-Usage:
-    filewatcher [<options>] "<filename>" "<shell command>"
-
-Where
-    filename: filename(s) to scan.
-    shell command: shell command to execute when a file is changed
-    options: see below
+```ruby
+# Gemfile
+gem 'filewatcher'
 ```
 
-## Examples
-
-Run the `echo` command when the file `myfile` is changed:
-
-```
-$ filewatcher "myfile" "echo 'myfile has changed'"
-```
-
-Run any JavaScript in the current directory when it is updated in Windows
-PowerShell:
-
-```
-> filewatcher *.js "node %FILENAME%"
-```
-
-In Linux/macOS:
-
-```
-$ filewatcher *.js 'node $FILENAME'
-```
-
-Place filenames in quotes to use Ruby filename globbing instead
-of shell filename globbing. This will make Filewatcher look for files in
-subdirectories too. To watch all JavaScript files in subdirectories in Windows:
-
-```
-> filewatcher "**/*.js" "node %FILENAME%"
-```
-
-In Linux/macOS:
-
-```
-$ filewatcher '**/*.js' 'node $FILENAME'
-```
-
-By default, Filewatcher executes the command only for the first changed file
-that found from file system check, but you can using the `--every/-E` option
-for running the command on each changed file.
-
-```
-$ filewatcher -E * 'echo file: $FILENAME'
-```
-
-Try to run the updated file as a script when it is updated by using the
-`--exec/-e` option. Works with files with file extensions that looks like a
-Python, Ruby, Perl, PHP, JavaScript or AWK script.
-
-```
-$ filewatcher -e *.rb
-```
-
-Print a list of all files matching \*.css first and then output the filename
-when a file is being updated by using the `--list/-l` option:
-
-```
-$ filewatcher -l '**/*.css' 'echo file: $FILENAME'
-```
-
-Watch the "src" and "test" folders recursively, and run test when the file system gets updated:
-
-```
-$ filewatcher "src test" "ruby test/test_suite.rb"
-```
-
-## Restart long running commands
-
-The `--restart/-r` option kills the command if it's still running when
-a file system change happens. Can be used to restart locally running web servers
-on updates, or kill long running tests and restart on updates. This option
-often makes Filewatcher faster in general. To not wait for tests to finish:
-
-```
-$ filewatcher --restart "**/*.rb" "rake test"
-```
-
-By default, it sends `TERM` signal, but you can change it to what you want
-via `--restart-signal` option:
-
-```
-$ filewatcher --restart --restart-signal=KILL "**/*.rb" "rake test"
-```
-
-The `--immediate/-I` option starts the command on startup without waiting for file system updates. To start a web server and have it automatically restart when HTML files are updated:
-
-```
-$ filewatcher --restart --immediate "**/*.html" "python -m SimpleHTTPServer"
-```
-
-## Daemonizing Filewatcher process
-
-The `--daemon/-D` option starts Filewatcher in the background as system daemon, so Filewatcher will not be terminated by `Ctrl+C`, for example.
-
-## Available environment variables
-
-The environment variable $FILENAME is available in the shell command argument.
-On UNIX like systems the command has to be enclosed in single quotes. To run
-node whenever a JavaScript file is updated:
-
-```
-$ filewatcher *.js 'node $FILENAME'
-```
-
-Environment variables available from the command string:
-
-```
-BASENAME           File basename.
-FILENAME           Relative filename.
-ABSOLUTE_FILENAME  Absolute filename.
-RELATIVE_FILENAME  Same as FILENAME but starts with "./"
-EVENT              Event type. Is either 'updated', 'deleted' or 'created'.
-DIRNAME            Absolute directory name.
-```
-
-## Command line options
-
-Useful command line options:
-
-```
-        --list, -l:   Print name of matching files on startup
-     --restart, -r:   Run command in separate fork and kill it on file system updates
-   --immediate, -I:   Run the command before any file system updates
-       --every, -E:   Run the command for every updated file in one file system check
-      --daemon, -D:   Run in the background as system daemon
-     --spinner, -s:   Display an animated spinner while scanning
-```
-
-Other command line options:
-
-```
-     --version, -v:   Print version and exit
-        --help, -h:   Show this message
---interval, -i <f>:   Interval in seconds to scan file system, defaults to 0.5 seconds
-        --exec, -e:   Execute file as a script when file is updated
- --include, -n <s>:   Include files (default: *)
- --exclude, -x <s>:   Exclude file(s) matching (default: "")
- ```
-
-## Ruby API
+## Usage
 
 Watch a list of files and directories:
 
@@ -255,26 +92,21 @@ end
 # File deleted: /absolute/path/lib/old_test.rb
 ```
 
-The API takes some of the same options as the command line interface. To watch all files recursively except files that matches \*.rb, display a spinner and only wait for 0.1 seconds between each scan:
+The API takes some of the same options as the command line interface.
+To watch all files recursively except files that matches \*.rb
+and only wait for 0.1 seconds between each scan:
 
 ```ruby
-Filewatcher.new('**/*.*', exclude: '**/*.rb', spinner: true, interval: 0.1)
+Filewatcher.new('**/*.*', exclude: '**/*.rb', interval: 0.1)
   .watch do |filename, event|
     puts filename
   end
 ```
 
-To do the same from the command line, use the same options:
-
-```
-$ filewatcher '**/*.*' --exclude '**/*.rb' --spinner --interval 0.1 'echo $FILENAME'
-```
-
-Use patterns to match filenames in current directory and subdirectories. The
-pattern is not a regular expression; instead it follows rules similar to shell
-filename globbing. See Ruby
-[documentation](http://www.ruby-doc.org/core-2.1.1/File.html#method-c-fnmatch)
-for syntax.
+Use patterns to match filenames in current directory and subdirectories.
+The pattern is not a regular expression;
+instead it follows rules similar to shell filename globbing.
+See Ruby [documentation](http://www.ruby-doc.org/core-2.1.1/File.html#method-c-fnmatch) for syntax.
 
 ```ruby
 Filewatcher.new(['*.rb', '*.xml']).watch do |filename|
@@ -282,9 +114,9 @@ Filewatcher.new(['*.rb', '*.xml']).watch do |filename|
 end
 ```
 
-Start, pause, resume, stop, and finalize a running watch. This is particularly
-useful when the update block takes a while to process each file (e.g. sending
-over the network)
+Start, pause, resume, stop, and finalize a running watch.
+This is particularly useful when the update block takes a while to process each file
+(e.g. sending over the network).
 
 ```ruby
 filewatcher = Filewatcher.new(['*.rb'])
@@ -306,7 +138,9 @@ filewatcher.finalize    # Ensure all file system changes made prior to
                         # ending the watch are handled.
 ```
 
-If basename, relative filename or absolute filename is necessary use the standard lib 'pathname' like this:
+If basename, relative filename or absolute filename is necessary
+use the standard [`pathname`](https://ruby-doc.org/stdlib/libdoc/pathname/rdoc/Pathname.html)
+like this:
 
 ```ruby
 require 'pathname'
@@ -318,6 +152,38 @@ Filewatcher.new(['**/*.*']).watch do |filename, event|
   puts "Absolute filename: #{path.realpath}"
 end
 ```
+
+### Plugins
+
+You can require plugins for Filewatcher, which extends core functionality.
+
+Example:
+
+```ruby
+require 'filewatcher'
+require 'filewatcher-spinner'
+
+# With the `true` value of option there will be an ASCII spinner in the STDOUT while waiting changes
+Filewatcher.new('lib/', spinner: true).watch do |filename, event|
+  puts "#{filename} #{event}"
+end
+```
+
+Available methods are:
+
+*   `#after_initialize`
+*   `#before_pause_sleep`
+*   `#before_resume_sleep`
+*   `#after_stop`
+*   `#finalizing`
+
+If you have questions, problems or suggestions about plugins system — please,
+don't hesitate to [create a new issue](https://github.com/filewatcher/filewatcher/issues/new).
+
+Official plugins:
+
+*   [CLI](https://github.com/filewatcher/filewatcher-cli)
+*   [Spinner](https://github.com/filewatcher/filewatcher-spinner)
 
 ## Changelog
 
