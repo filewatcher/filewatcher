@@ -63,7 +63,7 @@ test_task:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
       <<: *unix_bundle_cache
       install_script:
-        - ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         - brew install ruby
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
