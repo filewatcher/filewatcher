@@ -11,7 +11,6 @@ No runtime dependencies and no platform specific code.
 Works everywhere.
 Monitors changes in the file system by polling.
 Has no config files.
-Can be ran as daemon (background process).
 
 ## Installation
 
