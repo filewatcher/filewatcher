@@ -187,13 +187,7 @@ Official plugins:
 
 ## Changelog
 
-*   1.1.1 Fix `--restart` option
-*   1.1.0 Replace `Trollop` with `Optimist`
-*   1.0.0 Many refactorings, tests improvements, add `--every` option
-*   0.5.4 Add --daemon option, fix issues with the --restart option.
-*   0.5.3 Exclude files. More environment variables. Options in Ruby API.
-*   0.5.2 Start, stop and finalize API.
-*   0.5.1 Kill and restart long running command with --restart option.
+Changelog can be found in [an adjacent file](CHANGELOG.md).
 
 ## Credits
 
@@ -207,7 +201,7 @@ This project would not be where it is today without the generous help provided b
 
 *   [Kristoffer Roupé](https://github.com/kitofr): Command line globbing.
 
-*   [Alexander Popov](https://github.com/AlexWayfer): Daemon mode, tests improvements, code style improvements, many other fixes and improvements.
+*   [Alexander Popov](https://github.com/AlexWayfer): Plugin system, daemon mode (CLI), tests improvements, code style improvements, many other fixes and improvements.
 
 This gem was initially inspired by [Tom Lieber's blog posting](http://alltom.com/pages/detecting-file-changes-with-ruby) ([Web Archive version](http://web.archive.org/web/20120208094934/http://alltom.com/pages/detecting-file-changes-with-ruby)).
 
