@@ -1,10 +1,10 @@
 # Filewatcher
 
-[![Gem Version](https://badge.fury.io/rb/filewatcher.svg)](http://badge.fury.io/rb/filewatcher)
-[![Build Status](https://api.cirrus-ci.com/github/filewatcher/filewatcher.svg)](https://cirrus-ci.com/github/filewatcher/filewatcher)
-[![Codecov](https://codecov.io/gh/filewatcher/filewatcher/branch/master/graph/badge.svg)](https://codecov.io/gh/filewatcher/filewatcher)
-[![Depfu](https://badges.depfu.com/badges/68e34db402d0a15d49f5a4e5a26a503f/overview.svg)](https://depfu.com/github/filewatcher/filewatcher?project_id=5811)
-[![Code Climate](https://codeclimate.com/github/filewatcher/filewatcher.png)](https://codeclimate.com/github/filewatcher/filewatcher)
+[![Gem Version](https://img.shields.io/gem/v/filewatcher?style=flat-square)](https://rubygems.org/gems/filewatcher)
+[![Build Status](https://img.shields.io/cirrus/github/filewatcher/filewatcher?style=flat-square)](https://cirrus-ci.com/github/filewatcher/filewatcher)
+[![Codecov](https://img.shields.io/codecov/c/gh/filewatcher/filewatcher?style=flat-square)](https://codecov.io/gh/filewatcher/filewatcher)
+[![Depfu](https://img.shields.io/depfu/filewatcher/filewatcher?style=flat-square)](https://depfu.com/github/filewatcher/filewatcher)
+[![Code Climate](https://img.shields.io/codeclimate/maintainability/filewatcher/filewatcher?style=flat-square)](https://codeclimate.com/github/filewatcher/filewatcher)
 [![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
 
 Lightweight file watcher weighing about 300 LOC.
