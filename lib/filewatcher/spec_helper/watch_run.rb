@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 class Filewatcher
   module SpecHelper
     ## Base class for Filewatcher runners in specs
