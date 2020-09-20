@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 class Filewatcher
-  VERSION = '2.0.0.beta1'
+  VERSION = '2.0.0.beta2'
 end
