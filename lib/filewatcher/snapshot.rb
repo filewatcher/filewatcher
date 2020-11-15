@@ -25,8 +25,7 @@ class Filewatcher
         changes[filename] = :deleted unless self[filename]
       end
 
-      changes.reject! { |_filename, event| event.nil? }
-      changes
+      changes.tap(&:compact!)
     end
 
     # Class for one file from snapshot
