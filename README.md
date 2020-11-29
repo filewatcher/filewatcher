@@ -33,15 +33,17 @@ Watch a list of files and directories:
 ```ruby
 require 'filewatcher'
 
-Filewatcher.new(['lib/', 'Rakefile']).watch do |filename, event|
-  puts "#{filename} #{event}"
+Filewatcher.new(['lib/', 'Rakefile']).watch do |changes|
+  changes.each do |filename, event|
+    puts "#{filename} #{event}"
+  end
 end
 ```
 
 Watch a single directory, for changes in all files and subdirectories:
 
 ```ruby
-Filewatcher.new('lib/').watch do |filename, event|
+Filewatcher.new('lib/').watch do |changes|
   # ...
 end
 ```
@@ -49,7 +51,7 @@ end
 Notice that the previous is equivalent to the following:
 
 ```ruby
-Filewatcher.new('lib/**/*').watch do |filename, event|
+Filewatcher.new('lib/**/*').watch do |changes|
   # ...
 end
 ```
@@ -57,7 +59,7 @@ end
 Watch files and directories in the given directory - and not in subdirectories:
 
 ```ruby
-Filewatcher.new('lib/*').watch do |filename, event|
+Filewatcher.new('lib/*').watch do |changes|
   # ...
 end
 ```
@@ -65,7 +67,7 @@ end
 Watch an absolute directory:
 
 ```ruby
-Filewatcher.new('/tmp/foo').watch do |filename, event|
+Filewatcher.new('/tmp/foo').watch do |changes|
   # ...
 end
 ```
@@ -73,8 +75,10 @@ end
 To detect if a file is updated, added or deleted:
 
 ```ruby
-Filewatcher.new(['README.rdoc']).watch do |filename, event|
-  puts "File #{event}: #{filename}"
+Filewatcher.new(['README.rdoc']).watch do |changes|
+  changes.each do |filename, event|
+    puts "File #{event}: #{filename}"
+  end
 end
 ```
 
@@ -82,8 +86,10 @@ When a file is renamed and `every` option is enabled, it is detected as
 a new file followed by a file deletion:
 
 ```ruby
-Filewatcher.new(['lib/'], every: true).watch do |filename, event|
-  puts "File #{event}: #{filename}"
+Filewatcher.new(['lib/'], every: true).watch do |changes|
+  changes.each do |filename, event|
+    puts "File #{event}: #{filename}"
+  end
 end
 
 # Rename from `old_test.rb` to `new_test.rb` will print:
@@ -97,10 +103,11 @@ To watch all files recursively except files that matches \*.rb
 and only wait for 0.1 seconds between each scan:
 
 ```ruby
-Filewatcher.new('**/*.*', exclude: '**/*.rb', interval: 0.1)
-  .watch do |filename, event|
+Filewatcher.new('**/*.*', exclude: '**/*.rb', interval: 0.1).watch do |changes|
+  changes.each do |filename, event|
     puts filename
   end
+end
 ```
 
 Use patterns to match filenames in current directory and subdirectories.
@@ -109,8 +116,10 @@ instead it follows rules similar to shell filename globbing.
 See Ruby [documentation](http://www.ruby-doc.org/core-2.1.1/File.html#method-c-fnmatch) for syntax.
 
 ```ruby
-Filewatcher.new(['*.rb', '*.xml']).watch do |filename|
-  puts "Updated #{filename}"
+Filewatcher.new(['*.rb', '*.xml']).watch do |changes|
+  changes.each do |filename, _event|
+    puts "Updated #{filename}"
+  end
 end
 ```
 
@@ -120,7 +129,7 @@ This is particularly useful when the update block takes a while to process each 
 
 ```ruby
 filewatcher = Filewatcher.new(['*.rb'])
-thread = Thread.new(filewatcher) { |fw| fw.watch{ |f| puts "Updated #{f}" } }
+thread = Thread.new(filewatcher) { |fw| fw.watch { |changes| p changes } }
 # ...
 filewatcher.pause       # block stops responding to file system changes
 filewatcher.finalize    # Ensure all file system changes made prior to
@@ -145,11 +154,13 @@ like this:
 ```ruby
 require 'pathname'
 
-Filewatcher.new(['**/*.*']).watch do |filename, event|
-  path = Pathname.new(filename)
-  puts "Basename         : #{path.basename}"
-  puts "Relative filename: #{File.join('.', path)}"
-  puts "Absolute filename: #{path.realpath}"
+Filewatcher.new(['**/*.*']).watch do |changes|
+  changes.each do |filename, event|
+    path = Pathname.new(filename)
+    puts "Basename         : #{path.basename}"
+    puts "Relative filename: #{File.join('.', path)}"
+    puts "Absolute filename: #{path.realpath}"
+  end
 end
 ```
 
@@ -164,8 +175,10 @@ require 'filewatcher'
 require 'filewatcher-spinner'
 
 # With the `true` value of option there will be an ASCII spinner in the STDOUT while waiting changes
-Filewatcher.new('lib/', spinner: true).watch do |filename, event|
-  puts "#{filename} #{event}"
+Filewatcher.new('lib/', spinner: true).watch do |changes|
+  changes.each do |filename, event|
+    puts "#{filename} #{event}"
+  end
 end
 ```
 
