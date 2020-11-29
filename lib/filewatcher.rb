@@ -97,19 +97,6 @@ class Filewatcher
 
   private
 
-  def expand_directories(patterns)
-    patterns = Array(patterns) unless patterns.is_a? Array
-    expanded_patterns = patterns.map do |pattern|
-      pattern = File.expand_path(pattern)
-      Dir[
-        File.directory?(pattern) ? File.join(pattern, '**', '*') : pattern
-      ]
-    end
-    expanded_patterns.flatten!
-    expanded_patterns.uniq!
-    expanded_patterns
-  end
-
   def debug(data)
     @logger.debug "Thread ##{Thread.current.object_id} #{data}"
   end

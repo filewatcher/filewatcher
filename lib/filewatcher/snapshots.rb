@@ -22,25 +22,26 @@ class Filewatcher
 
     private
 
-    def watching_files
-      expand_directories(@unexpanded_filenames) - expand_directories(@unexpanded_excluded_filenames)
-    end
-
     # Takes a snapshot of the current status of watched files.
     # (Allows avoidance of potential race condition during #finalize)
     def current_snapshot
-      Filewatcher::Snapshot.new(watching_files)
+      Filewatcher::Snapshot.new(
+        expand_directories(@unexpanded_filenames) -
+          expand_directories(@unexpanded_excluded_filenames)
+      )
     end
 
-    def file_mtime(filename)
-      return Time.new(0) unless File.exist?(filename)
-
-      result = File.mtime(filename)
-      if @logger.level <= Logger::DEBUG
-        debug "File.mtime = #{result.strftime('%F %T.%9N')}"
-        debug "stat #{filename}: #{self.class.system_stat(filename)}"
+    def expand_directories(patterns)
+      patterns = Array(patterns) unless patterns.is_a? Array
+      expanded_patterns = patterns.map do |pattern|
+        pattern = File.expand_path(pattern)
+        Dir[
+          File.directory?(pattern) ? File.join(pattern, '**', '*') : pattern
+        ]
       end
-      result
+      expanded_patterns.flatten!
+      expanded_patterns.uniq!
+      expanded_patterns
     end
 
     def file_system_updated?(snapshot = current_snapshot)
