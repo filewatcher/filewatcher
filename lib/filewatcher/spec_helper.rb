@@ -33,7 +33,7 @@ class Filewatcher
         seconds *= coefficient
       end
 
-      if block_given?
+      if block
         wait_with_block seconds, interval, &block
       else
         wait_without_block seconds
