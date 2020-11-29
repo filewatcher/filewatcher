@@ -48,6 +48,19 @@ describe Filewatcher do
 
   let(:processed_files) { watch_run.processed.flat_map(&:keys) }
 
+  describe '.print_version' do
+    subject(:method_call) { described_class.print_version }
+
+    let(:ruby_version_regexp) { 'j?ruby \d+\.\d+\.\d+.*' }
+    let(:filewatcher_version_regexp) { "Filewatcher #{Filewatcher::VERSION}" }
+
+    it do
+      expect { method_call }.to output(
+        /^#{ruby_version_regexp}\n#{filewatcher_version_regexp}$/
+      ).to_stdout_from_any_process
+    end
+  end
+
   describe '#initialize' do
     describe 'regular run' do
       before { watch_run.run }

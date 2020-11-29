@@ -14,6 +14,15 @@ class Filewatcher
   attr_accessor :interval
   attr_reader :keep_watching
 
+  class << self
+    def print_version
+      system 'ruby -v'
+      puts "Filewatcher #{self::VERSION}"
+
+      super if defined? super
+    end
+  end
+
   def initialize(unexpanded_filenames, options = {})
     @unexpanded_filenames = unexpanded_filenames
     @unexpanded_excluded_filenames = options[:exclude]
