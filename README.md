@@ -226,6 +226,14 @@ This gem was initially inspired by [Tom Lieber's blog posting](http://alltom.com
 *   Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 *   Send me a pull request. Bonus points for topic branches.
 
+## Releasing
+
+This section is for maintainers.
+
+Use `toys gem release 9.8.7` for releasing new versions.
+It'll make changes to the `version.rb` file,
+`CHANGELOG.md` (with confirmation, feel free to edit before continue),
+make a git commit, a git tag, push them, build a gem, push the gem.
 
 ## Copyright
 
