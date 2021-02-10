@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## master (unreleased)
 
 *   Add plugin system.
     Take out [CLI](https://github.com/filewatcher/filewatcher-cli)
