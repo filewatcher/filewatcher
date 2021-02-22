@@ -13,6 +13,8 @@ require_relative 'spec_helper/watch_run'
 class Filewatcher
   ## Helper for common spec features between plugins
   module SpecHelper
+    module_function
+
     def logger
       @logger ||= Logger.new($stdout, level: :debug)
     end
@@ -57,10 +59,5 @@ class Filewatcher
     def debug(string)
       logger.debug "Thread ##{Thread.current.object_id} #{string}"
     end
-
-    ## https://github.com/rubocop-hq/ruby-style-guide/issues/556#issuecomment-691274359
-    # rubocop:disable Style/ModuleFunction
-    extend self
-    # rubocop:enable Style/ModuleFunction
   end
 end
