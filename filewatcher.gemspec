@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'gem_toys', '~> 0.6.1'
   s.add_development_dependency 'toys', '~> 0.11.4'
 
-  s.add_development_dependency 'codecov', '~> 0.4.3'
+  s.add_development_dependency 'codecov', '~> 0.5.0'
   s.add_development_dependency 'rspec', '~> 3.8'
 
   s.add_development_dependency 'rubocop', '~> 1.3'
