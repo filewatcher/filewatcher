@@ -139,7 +139,7 @@ filewatcher.resume      # block begins responding again, but is not given
                         # changes made between #pause_watch and
                         # #resume_watch
 # ...
-filewatcher.end         # block stops responding to file system changes
+filewatcher.stop        # block stops responding to file system changes
                         # and takes a final snapshot of the file system
 thread.join
 
