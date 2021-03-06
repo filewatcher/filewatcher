@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'bundler', '~> 2.0'
 
-  s.add_development_dependency 'gem_toys', '~> 0.6.1'
+  s.add_development_dependency 'gem_toys', '~> 0.7.1'
   s.add_development_dependency 'toys', '~> 0.11.4'
 
   s.add_development_dependency 'codecov', '~> 0.5.1'
