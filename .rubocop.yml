@@ -31,7 +31,7 @@ Metrics/BlockLength:
     - spec/**/*.rb
 
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
   NewCops: enable
 
 RSpec/NestedGroups:
