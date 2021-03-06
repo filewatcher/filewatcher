@@ -6,6 +6,7 @@
     Take out [CLI](https://github.com/filewatcher/filewatcher-cli)
     and [spinner](https://github.com/filewatcher/filewatcher-spinner).
 *   Remove `:every` option: do it yourself via `changes.first`, if you want.
+*   Drop Ruby 2.4 support.
 *   Support Ruby 3.
 *   Switch from `bacon` test framework to RSpec.
     Speed up and improve tests, fix many phantom fails.

@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.licenses = ['MIT']
 
-  s.required_ruby_version = '>= 2.4', '< 4'
+  s.required_ruby_version = '>= 2.5', '< 4'
 
   s.add_development_dependency 'bundler', '~> 2.0'
 
