@@ -22,7 +22,7 @@ class Filewatcher
     def environment_specs_coefficients
       @environment_specs_coefficients ||= {
         -> { ENV['CI'] } => 1,
-        -> { RUBY_PLATFORM == 'java' } => 3,
+        -> { RUBY_PLATFORM == 'java' } => 1,
         -> { Gem::Platform.local.os == 'darwin' } => 1
       }
     end
