@@ -14,6 +14,19 @@ unix_bundle_cache: &unix_bundle_cache
   bundle_install_script:
     - bundle update
 
+darwin_bundle_cache: &darwin_bundle_cache
+  bundle_cache:
+    # We can't use the global one in the macOS VM environment
+    folder: vendor/bundle
+    fingerprint_script:
+      - echo $CIRRUS_OS
+      - ruby -v
+      - cat Gemfile
+      - cat *.gemspec
+  bundle_install_script:
+    - bundle config set --local path 'vendor/bundle'
+    - bundle update
+
 remark_task:
   container:
     image: node
@@ -75,7 +88,7 @@ test_task:
 
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
-      <<: *unix_bundle_cache
+      <<: *darwin_bundle_cache
 
     # - windows_container:
     #     image: cirrusci/windowsservercore:2019
