@@ -1,3 +1,8 @@
+# The default 2 CPUs / 4G memory is not required.
+container:
+  cpu: 1
+  memory: 2G
+
 unix_bundle_cache: &unix_bundle_cache
   bundle_cache:
     folder: /usr/local/bundle
