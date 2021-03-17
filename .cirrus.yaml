@@ -1,13 +1,12 @@
 unix_bundle_cache: &unix_bundle_cache
   bundle_cache:
-    folder: vendor/bundle
+    folder: /usr/local/bundle
     fingerprint_script:
       - echo $CIRRUS_OS
       - ruby -v
       - cat Gemfile
       - cat *.gemspec
   bundle_install_script:
-    - bundle config set --local path 'vendor/bundle'
     - bundle update
 
 remark_task:
