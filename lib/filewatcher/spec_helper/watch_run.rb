@@ -10,7 +10,7 @@ class Filewatcher
 
       TMP_DIR = "#{Dir.getwd}/spec/tmp"
 
-      def_delegators Filewatcher::SpecHelper, :debug, :wait
+      def_delegators Filewatcher::SpecHelper, :debug, :wait, :system_stat
 
       attr_reader :filename
 
@@ -68,7 +68,7 @@ class Filewatcher
       end
 
       def debug_file_mtime
-        debug "stat #{@filename}: #{Filewatcher.system_stat(@filename)}"
+        debug "stat #{@filename}: #{system_stat(@filename)}"
         debug "File.mtime = #{File.mtime(@filename).strftime('%F %T.%9N')}"
       end
     end
