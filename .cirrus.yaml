@@ -1,11 +1,14 @@
 unix_bundle_cache: &unix_bundle_cache
   bundle_cache:
-    folder: /usr/local/bundle
+    folder: vendor/bundle
     fingerprint_script:
       - echo $CIRRUS_OS
       - ruby -v
       - cat Gemfile
       - cat *.gemspec
+  bundle_install_script:
+    - bundle config set --local path 'vendor/bundle'
+    - bundle update
 
 remark_task:
   container:
@@ -26,10 +29,9 @@ remark_task:
 rubocop_task:
   container:
     image: ruby:latest
-  <<: *unix_bundle_cache
   install_script:
     - gem install bundler
-    - bundle update
+  <<: *unix_bundle_cache
   lint_script: bundle exec rubocop
   only_if: ($CIRRUS_BRANCH == 'master') ||
     changesInclude(
@@ -50,25 +52,23 @@ test_task:
           image: ruby:2.7
           image: ruby:3.0
           image: jruby:latest
-      <<: *unix_bundle_cache
-      install_script:
+      os_prepare_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         ## For `git`: https://cirrus-ci.com/task/6481022910988288?command=test#L1759
         - apt-get update && apt-get install -y procps git
         - gem install bundler
-        - bundle update
+      <<: *unix_bundle_cache
 
     - osx_instance:
         image: catalina-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
-      <<: *unix_bundle_cache
-      install_script:
+      os_prepare_script:
         - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         - brew install ruby
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
-        - bundle update
+      <<: *unix_bundle_cache
 
     # - windows_container:
     #     image: cirrusci/windowsservercore:2019
