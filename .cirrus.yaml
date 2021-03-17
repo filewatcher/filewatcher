@@ -60,7 +60,7 @@ test_task:
       <<: *unix_bundle_cache
 
     - macos_instance:
-        image: catalina-base
+        image: big-sur-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
       os_prepare_script:
