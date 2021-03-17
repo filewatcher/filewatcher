@@ -7,7 +7,7 @@ unix_bundle_cache: &unix_bundle_cache
       - cat Gemfile
       - cat *.gemspec
   bundle_install_script:
-    - bundle config set --local path 'vendor/bundle'
+    - bundle config set --global path $PWD/vendor/bundle
     - bundle update
 
 remark_task:
