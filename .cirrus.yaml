@@ -59,7 +59,7 @@ test_task:
         - gem install bundler
       <<: *unix_bundle_cache
 
-    - osx_instance:
+    - macos_instance:
         image: catalina-base
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
