@@ -59,5 +59,13 @@ class Filewatcher
     def debug(string)
       logger.debug "Thread ##{Thread.current.object_id} #{string}"
     end
+
+    def system_stat(filename)
+      case (host_os = RbConfig::CONFIG['host_os'])
+      when 'linux' then `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
+      when /darwin\d*/ then `stat #{filename}`
+      else "Unknown OS `#{host_os}` for system's `stat` command"
+      end
+    end
   end
 end
