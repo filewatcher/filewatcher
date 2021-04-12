@@ -26,6 +26,18 @@ remark_task:
       '.cirrus.yaml', '.gitignore', 'package.json', '.remarkrc.yaml', '**.md'
     )
 
+bundle-audit_task:
+  container:
+    image: ruby:latest
+  install_script:
+    - gem install bundler
+  <<: *unix_bundle_cache
+  audit_script: bundle exec bundle-audit check --update
+  only_if: ($CIRRUS_BRANCH == 'master') ||
+    changesInclude(
+      '.cirrus.yaml', '.gitignore', 'Gemfile', '*.gemspec'
+    )
+
 rubocop_task:
   container:
     image: ruby:latest
@@ -43,6 +55,7 @@ test_task:
   name: Test on $CIRRUS_OS
   depends_on:
     - remark
+    - bundle-audit
     - rubocop
   matrix:
     - container:
