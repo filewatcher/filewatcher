@@ -86,38 +86,44 @@ test_task:
         - gem install bundler --force
       <<: *unix_bundle_cache
 
-    # - windows_container:
-    #     image: cirrusci/windowsservercore:2019
-    #     os_version: 2019
-    #   # windows_container:
-    #   #   image: vinogradoff/windows-ruby
-    #   #   os_version: 2016
-    #   env:
-    #     RUBY_VERSION: 2.6.1-1
-    #     PATH: $PATH;C:\Ruby\bin
-    #   install_script:
-    #     - mkdir C:\tmp
-    #     - bitsadmin.exe
-    #         /transfer "Download Ruby"
-    #         https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-%RUBY_VERSION%/rubyinstaller-devkit-%RUBY_VERSION%-x64.exe
-    #         C:\tmp\rubyinstaller.exe
-    #
-    #     - C:\tmp\rubyinstaller.exe
-    #         /silent
-    #         /dir="C:\Ruby"
-    #         /tasks="assocfiles,modpath"
-    #     - gem install bundler
-    #     - dir C:\Ruby
-    #     - rmdir C:\tmp /s /q
-    #   bundle_cache:
-    #     folder: /usr/local/bundle
-    #     fingerprint_script: >
-    #       - echo $CIRRUS_TASK_NAME:$CIRRUS_OS
-    #       - dir C:\Ruby\
-    #       - ruby -v
-    #       - type Gemfile
-    #       - type *.gemspec
-    #     populate_script: bundle install
+    - windows_container:
+        image: cirrusci/windowsservercore:2019
+      env:
+        ## It's better to pre-define here instead of `refreshenv`:
+        ## https://cirrus-ci.org/guide/windows/#environment-variables
+        RUBY_PATH: C:\tools\ruby
+        PATH: $RUBY_PATH\bin;$PATH
+
+      ## Cache populate and upload is slower than clean installation:
+      ## https://github.com/cirruslabs/cirrus-ci-agent/issues/128
+      # ruby_cache:
+      #   folder: $RUBY_PATH
+      #   fingerprint_script:
+      #     - echo $CIRRUS_OS
+      #     ## `--limit-output` to try rid off extra information and avoid cache miss:
+      #     ## https://cirrus-ci.com/task/5913496480120832?logs=ruby#L11-L13
+      #     - choco search --exact "ruby" --limit-output
+      #   populate_script:
+      os_prepare_script:
+        ## Cirrus CI has Chocolatey pre-installed 😍:
+        ## https://cirrus-ci.org/guide/windows/#chocolatey
+
+        ## Install the latest Ruby with Chocolatey: https://community.chocolatey.org/packages/ruby
+        ## But I don't know what to do with cache and new versions (`upgrade`?)
+        - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
+
+        - gem install bundler
+
+      bundle_cache:
+        folder: vendor\bundle
+        fingerprint_script:
+          - echo %CIRRUS_OS%
+          - ruby -v
+          - type Gemfile
+          - type *.gemspec
+      bundle_install_script:
+        - bundle config set --local path 'vendor/bundle'
+        - bundle update
 
   environment:
     CODECOV_TOKEN: ENCRYPTED[9e9a017610883a646df003ae290b6cd3306cd44a3f545dedd258d12e6e41788a66149b9a8f80c62923d225eef6f9190d]
