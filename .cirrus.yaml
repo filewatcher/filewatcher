@@ -103,25 +103,22 @@ test_task:
         RUBY_PATH: C:\tools\ruby
         PATH: $RUBY_PATH\bin;$PATH
 
-      ## Cache populate and upload is slower than clean installation:
-      ## https://github.com/cirruslabs/cirrus-ci-agent/issues/128
-      # ruby_cache:
-      #   folder: $RUBY_PATH
-      #   fingerprint_script:
-      #     - echo $CIRRUS_OS
-      #     ## `--limit-output` to try rid off extra information and avoid cache miss:
-      #     ## https://cirrus-ci.com/task/5913496480120832?logs=ruby#L11-L13
-      #     - choco search --exact "ruby" --limit-output
-      #   populate_script:
-      os_prepare_script:
-        ## Cirrus CI has Chocolatey pre-installed 😍:
-        ## https://cirrus-ci.org/guide/windows/#chocolatey
+      ruby_cache:
+        folder: $RUBY_PATH
+        fingerprint_script:
+          - echo $CIRRUS_OS
+          ## `--limit-output` to try rid off extra information and avoid cache miss:
+          ## https://cirrus-ci.com/task/5913496480120832?logs=ruby#L11-L13
+          - choco search --exact "ruby" --limit-output
+        populate_script:
+          ## Cirrus CI has Chocolatey pre-installed 😍:
+          ## https://cirrus-ci.org/guide/windows/#chocolatey
 
-        ## Install the latest Ruby with Chocolatey: https://community.chocolatey.org/packages/ruby
-        ## But I don't know what to do with cache and new versions (`upgrade`?)
-        - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
+          ## Install the latest Ruby with Chocolatey: https://community.chocolatey.org/packages/ruby
+          ## But I don't know what to do with cache and new versions (`upgrade`?)
+          - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
 
-        - gem install bundler
+          - gem install bundler
 
       bundle_cache:
         folder: vendor\bundle
