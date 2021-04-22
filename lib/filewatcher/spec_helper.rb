@@ -62,10 +62,23 @@ class Filewatcher
 
     def system_stat(filename)
       case (host_os = RbConfig::CONFIG['host_os'])
-      when 'linux' then `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
-      when /darwin\d*/ then `stat #{filename}`
-      else "Unknown OS `#{host_os}` for system's `stat` command"
+      when 'linux'
+        `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
+      when /darwin\d*/
+        `stat #{filename}`
+      when *Gem::WIN_PATTERNS
+        system_stat_windows filename
+      else
+        "Unknown OS `#{host_os}` for system's `stat` command"
       end
+    end
+
+    def system_stat_windows(filename)
+      filename = filename.gsub('/', '\\\\\\')
+      properties = 'CreationDate,InstallDate,LastModified,LastAccessed'
+      command = "wmic datafile where Name=\"#{filename}\" get #{properties}"
+      # debug command
+      `#{command}`
     end
   end
 end
