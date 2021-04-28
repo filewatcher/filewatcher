@@ -76,8 +76,7 @@ test_task:
           image: jruby:latest
       os_prepare_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
-        ## For `git`: https://cirrus-ci.com/task/6481022910988288?command=test#L1759
-        - apt-get update && apt-get install -y procps git
+        - apt-get update && apt-get install -y procps
         - gem install bundler
       <<: *unix_bundle_cache
 
@@ -85,9 +84,8 @@ test_task:
         image: ghcr.io/graalvm/truffleruby:latest
       os_prepare_script:
         ## For `ps`: https://cirrus-ci.com/task/4518391826612224
-        ## For `git`: https://cirrus-ci.com/task/6481022910988288?command=test#L1759
         ## For `gem install`: https://github.com/graalvm/container/issues/9
-        - microdnf install -y glibc-langpack-en procps git
+        - microdnf install -y glibc-langpack-en procps
         - gem install bundler
       <<: *unix_bundle_cache
 
