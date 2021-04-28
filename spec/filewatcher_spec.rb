@@ -51,7 +51,7 @@ describe Filewatcher do
   describe '.print_version' do
     subject(:method_call) { described_class.print_version }
 
-    let(:ruby_version_regexp) { 'j?ruby \d+\.\d+\.\d+.*' }
+    let(:ruby_version_regexp) { '(j|truffle)?ruby \d+\.\d+\.\d+.*' }
     let(:filewatcher_version_regexp) { "Filewatcher #{Filewatcher::VERSION}" }
 
     it do

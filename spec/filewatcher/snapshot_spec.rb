@@ -49,7 +49,8 @@ describe Filewatcher::Snapshot do
     before do
       first_snapshot
 
-      sleep 0.1
+      ## 1 second or more: https://github.com/oracle/truffleruby/issues/2337
+      sleep 1
 
       File.write tmp_files[1], 'new content'
       File.delete tmp_files[2]
