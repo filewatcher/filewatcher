@@ -62,7 +62,7 @@ class Filewatcher
 
     def system_stat(filename)
       case (host_os = RbConfig::CONFIG['host_os'])
-      when 'linux'
+      when /linux(-gnu)?/
         `stat --printf 'Modification: %y, Change: %z\n' #{filename}`
       when /darwin\d*/
         `stat #{filename}`
