@@ -11,7 +11,11 @@
 *   Switch from `bacon` test framework to RSpec.
     Speed up and improve tests, fix many phantom fails.
 *   Update development dependencies.
+*   Add `rubocop-rspec` and `rubocop-performance`.
 *   Resolve new offenses from RuboCop and its plugins.
+*   Switch from Travis CI to Cirrus CI.
+*   Add JRuby, Windows and TruffleRuby to CI.
+*   Add `bundle-audit` CI task.
 
 ## 1.1.1 (2018-09-11)
 
