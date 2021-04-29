@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-
 class Filewatcher
   module SpecHelper
     ## Base class for Filewatcher runners in specs
     class WatchRun
-      extend Forwardable
+      include Filewatcher::SpecHelper
 
       TMP_DIR = "#{Dir.getwd}/spec/tmp"
-
-      def_delegators Filewatcher::SpecHelper, :debug, :wait, :system_stat
 
       attr_reader :filename
 
