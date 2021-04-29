@@ -13,18 +13,18 @@ require_relative 'spec_helper/watch_run'
 class Filewatcher
   ## Helper for common spec features between plugins
   module SpecHelper
-    module_function
+    ENVIRONMENT_SPECS_COEFFICIENTS = {
+      -> { ENV['CI'] } => 1,
+      -> { RUBY_PLATFORM == 'java' } => 1,
+      -> { Gem::Platform.local.os == 'darwin' } => 1
+    }.freeze
 
     def logger
       @logger ||= Logger.new($stdout, level: :debug)
     end
 
     def environment_specs_coefficients
-      @environment_specs_coefficients ||= {
-        -> { ENV['CI'] } => 1,
-        -> { RUBY_PLATFORM == 'java' } => 1,
-        -> { Gem::Platform.local.os == 'darwin' } => 1
-      }
+      ENVIRONMENT_SPECS_COEFFICIENTS
     end
 
     def wait(seconds: 1, interval: 1, &block)
@@ -80,5 +80,10 @@ class Filewatcher
       # debug command
       `#{command}`
     end
+
+    ## https://github.com/rubocop/ruby-style-guide/issues/556#issuecomment-828672008
+    # rubocop:disable Style/ModuleFunction
+    extend self
+    # rubocop:enable Style/ModuleFunction
   end
 end
