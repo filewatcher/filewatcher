@@ -75,24 +75,26 @@ test_task:
           image: ruby:3.0
           image: jruby:latest
       os_prepare_script:
-        ## For `ps`: https://cirrus-ci.com/task/4518391826612224
-        - apt-get update && apt-get install -y procps
         - gem install bundler
       <<: *unix_bundle_cache
 
     - container:
         image: ghcr.io/graalvm/truffleruby:latest
+
       os_prepare_script:
-        ## For `ps`: https://cirrus-ci.com/task/4518391826612224
         ## For `gem install`: https://github.com/graalvm/container/issues/9
-        - microdnf install -y glibc-langpack-en procps
+        - microdnf install -y glibc-langpack-en
+
         - gem install bundler
+
       <<: *unix_bundle_cache
 
     - macos_instance:
         image: big-sur-base
+
       env:
         PATH: "/usr/local/opt/ruby/bin:$PATH"
+
       os_prepare_script:
         ## Brew is pre-installed, as described in the CI docs:
         ## https://cirrus-ci.org/guide/macOS/#list-of-available-images
@@ -101,10 +103,12 @@ test_task:
 
         ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
         - gem install bundler --force
+
       <<: *unix_bundle_cache
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
+
       env:
         ## It's better to pre-define here instead of `refreshenv`:
         ## https://cirrus-ci.org/guide/windows/#environment-variables
@@ -135,6 +139,7 @@ test_task:
           - ruby -v
           - type Gemfile
           - type *.gemspec
+
       bundle_install_script:
         - bundle config set --local path 'vendor/bundle'
         - bundle update
