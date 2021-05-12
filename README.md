@@ -1,6 +1,6 @@
 # Filewatcher
 
-[![Gem Version](https://img.shields.io/gem/v/filewatcher?style=flat-square)](https://rubygems.org/gems/filewatcher)
+[![Gem Version](https://img.shields.io/gem/v/filewatcher?include_prereleases&style=flat-square)](https://rubygems.org/gems/filewatcher)
 [![Build Status](https://img.shields.io/cirrus/github/filewatcher/filewatcher?style=flat-square)](https://cirrus-ci.com/github/filewatcher/filewatcher)
 [![Codecov](https://img.shields.io/codecov/c/gh/filewatcher/filewatcher?style=flat-square)](https://codecov.io/gh/filewatcher/filewatcher)
 [![Depfu](https://img.shields.io/depfu/filewatcher/filewatcher?style=flat-square)](https://depfu.com/github/filewatcher/filewatcher)
