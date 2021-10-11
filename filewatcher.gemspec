@@ -28,7 +28,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'codecov', '~> 0.6.0'
   s.add_development_dependency 'rspec', '~> 3.8'
 
-  s.add_development_dependency 'rubocop', '~> 1.3'
+  ## https://github.com/rubocop/rubocop/issues/10147
+  s.add_development_dependency 'rubocop', '~> 1.21.0'
   s.add_development_dependency 'rubocop-performance', '~> 1.5'
   s.add_development_dependency 'rubocop-rspec', '~> 2.0'
 end
