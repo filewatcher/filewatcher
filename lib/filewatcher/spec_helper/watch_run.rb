@@ -11,10 +11,7 @@ class Filewatcher
       attr_reader :filename
 
       def initialize(filename:, action:, directory:)
-        @filename =
-          if filename.match? %r{^(/|~|[A-Z]:)} then filename
-          else File.join(TMP_DIR, filename)
-          end
+        @filename = filename.match?(%r{^(/|~|[A-Z]:)}) ? filename : File.join(TMP_DIR, filename)
         @directory = directory
         @action = action
         debug "action = #{action}"
