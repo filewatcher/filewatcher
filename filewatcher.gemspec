@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'bundler', '~> 2.0'
   s.add_development_dependency 'bundler-audit', '~> 0.9.0'
 
-  s.add_development_dependency 'gem_toys', '~> 0.10.0'
+  s.add_development_dependency 'gem_toys', '~> 0.11.0'
   s.add_development_dependency 'toys', '~> 0.12.1'
 
   s.add_development_dependency 'codecov', '~> 0.6.0'
