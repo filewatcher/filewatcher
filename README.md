@@ -5,7 +5,7 @@
 [![Codecov](https://img.shields.io/codecov/c/gh/filewatcher/filewatcher?style=flat-square)](https://codecov.io/gh/filewatcher/filewatcher)
 [![Depfu](https://img.shields.io/depfu/filewatcher/filewatcher?style=flat-square)](https://depfu.com/github/filewatcher/filewatcher)
 [![Code Climate](https://img.shields.io/codeclimate/maintainability/filewatcher/filewatcher?style=flat-square)](https://codeclimate.com/github/filewatcher/filewatcher)
-[![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/filewatcher/filewatcher.svg?style=flat-square)](https://github.com/filewatcher/filewatcher/blob/main/LICENSE)
 
 Lightweight file watcher weighing about 300 LOC.
 No runtime dependencies and no platform specific code.
