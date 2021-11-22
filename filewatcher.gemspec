@@ -17,6 +17,10 @@ Gem::Specification.new do |s|
 
   s.licenses = ['MIT']
 
+  s.metadata = {
+    'rubygems_mfa_required' => 'true'
+  }
+
   s.required_ruby_version = '>= 2.5', '< 4'
 
   s.add_development_dependency 'bundler', '~> 2.0'
