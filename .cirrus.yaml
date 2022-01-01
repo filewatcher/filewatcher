@@ -39,7 +39,7 @@ bundle-audit_task:
   container:
     image: ruby:latest
   install_script:
-    - gem install bundler
+    - gem update --system --no-document
   <<: *unix_bundle_cache
   audit_script: bundle exec bundle-audit check --update
   only_if: ($CIRRUS_BRANCH == 'main') ||
@@ -51,7 +51,7 @@ rubocop_task:
   container:
     image: ruby:latest
   install_script:
-    - gem install bundler
+    - gem update --system --no-document
   <<: *unix_bundle_cache
   lint_script: bundle exec rubocop
   only_if: ($CIRRUS_BRANCH == 'main') ||
@@ -75,7 +75,7 @@ test_task:
           image: ruby:3.1
           image: jruby:latest
       os_prepare_script:
-        - gem install bundler
+        - gem update --system --no-document
       <<: *unix_bundle_cache
 
     - container:
@@ -85,7 +85,7 @@ test_task:
         ## For `gem install`: https://github.com/graalvm/container/issues/9
         - dnf install -y glibc-langpack-en
 
-        - gem install bundler
+        - gem update --system --no-document
 
       <<: *unix_bundle_cache
 
@@ -101,8 +101,7 @@ test_task:
         # - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         # - brew install ruby
 
-        ## https://github.com/rubygems/rubygems/issues/2058#issuecomment-342347290
-        - gem install bundler --force
+        - gem update --system --no-document
 
       <<: *unix_bundle_cache
 
