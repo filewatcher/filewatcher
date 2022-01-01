@@ -90,7 +90,7 @@ test_task:
       <<: *unix_bundle_cache
 
     - macos_instance:
-        image: big-sur-base
+        image: monterey-base
 
       env:
         RUBY_PATH: "/usr/local/opt/ruby"
