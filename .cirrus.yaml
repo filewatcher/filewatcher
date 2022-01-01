@@ -130,7 +130,7 @@ test_task:
           ## But I don't know what to do with cache and new versions (`upgrade`?)
           - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
 
-          - gem install bundler
+          - gem update --system --no-document
 
       bundle_cache:
         folder: vendor\bundle
