@@ -93,15 +93,21 @@ test_task:
         image: big-sur-base
 
       env:
-        PATH: "/usr/local/opt/ruby/bin:$PATH"
+        RUBY_PATH: "/usr/local/opt/ruby"
+        PATH: "$RUBY_PATH/bin:$PATH"
 
-      os_prepare_script:
-        ## Brew is pre-installed, as described in the CI docs:
-        ## https://cirrus-ci.org/guide/macOS/#list-of-available-images
-        # - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        # - brew install ruby
+      ruby_cache:
+        folder: $RUBY_PATH
+        fingerprint_script:
+          - echo $CIRRUS_OS
+          - brew info ruby
+        populate_script:
+          ## Brew is pre-installed, as described in the CI docs:
+          ## https://cirrus-ci.org/guide/macOS/#list-of-available-images
+          # - bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          - brew install ruby
 
-        - gem update --system --no-document
+          - gem update --system --no-document
 
       <<: *unix_bundle_cache
 
