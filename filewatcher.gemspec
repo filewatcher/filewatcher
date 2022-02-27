@@ -21,18 +21,18 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true'
   }
 
-  s.required_ruby_version = '>= 2.5', '< 4'
+  s.required_ruby_version = '>= 2.6', '< 4'
 
   s.add_development_dependency 'bundler-audit', '~> 0.9.0'
 
-  s.add_development_dependency 'gem_toys', '~> 0.11.0'
-  s.add_development_dependency 'toys', '~> 0.12.1'
+  s.add_development_dependency 'gem_toys', '~> 0.12.1'
+  s.add_development_dependency 'toys', '~> 0.13.0'
 
   s.add_development_dependency 'codecov', '~> 0.6.0'
   s.add_development_dependency 'rspec', '~> 3.8'
 
   ## https://github.com/rubocop/rubocop/issues/10147
-  s.add_development_dependency 'rubocop', '~> 1.24.1'
+  s.add_development_dependency 'rubocop', '~> 1.25.1'
   s.add_development_dependency 'rubocop-performance', '~> 1.5'
   s.add_development_dependency 'rubocop-rspec', '~> 2.0'
 end

@@ -69,10 +69,10 @@ test_task:
   matrix:
     - container:
         matrix:
-          image: ruby:2.5
           image: ruby:2.6
           image: ruby:2.7
           image: ruby:3.0
+          image: ruby:3.1
           image: jruby:latest
       os_prepare_script:
         - gem update --system --no-document
@@ -83,7 +83,7 @@ test_task:
 
       os_prepare_script:
         ## For `gem install`: https://github.com/graalvm/container/issues/9
-        - microdnf install -y glibc-langpack-en
+        - dnf install -y glibc-langpack-en
 
         - gem update --system --no-document
 
