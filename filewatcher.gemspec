@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.6', '< 4'
 
+  s.add_development_dependency 'bundler', '~> 2.0'
   s.add_development_dependency 'bundler-audit', '~> 0.9.0'
 
   s.add_development_dependency 'gem_toys', '~> 0.12.1'
