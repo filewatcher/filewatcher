@@ -83,7 +83,7 @@ test_task:
 
       os_prepare_script:
         ## For `gem install`: https://github.com/graalvm/container/issues/9
-        - microdnf install -y glibc-langpack-en
+        - dnf install -y glibc-langpack-en
 
         - gem install bundler
 
