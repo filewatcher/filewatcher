@@ -76,6 +76,7 @@ test_task:
           image: jruby:latest
       os_prepare_script:
         - gem update --system --no-document
+        - gem install bundler --no-document
       <<: *unix_bundle_cache
 
     - container:
@@ -86,6 +87,7 @@ test_task:
         - dnf install -y glibc-langpack-en
 
         - gem update --system --no-document
+        - gem install bundler --no-document
 
       <<: *unix_bundle_cache
 
@@ -108,6 +110,7 @@ test_task:
           - brew install ruby
 
           - gem update --system --no-document
+          - gem install bundler --no-document
 
       <<: *unix_bundle_cache
 
@@ -136,6 +139,7 @@ test_task:
           - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
 
           - gem update --system --no-document
+          - gem install bundler --no-document
 
       bundle_cache:
         folder: vendor\bundle
