@@ -73,6 +73,7 @@ test_task:
           image: ruby:2.6
           image: ruby:2.7
           image: ruby:3.0
+          image: ruby:3.1
           image: jruby:latest
       os_prepare_script:
         - gem install bundler
