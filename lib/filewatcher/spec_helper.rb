@@ -14,7 +14,7 @@ class Filewatcher
   ## Helper for common spec features between plugins
   module SpecHelper
     ENVIRONMENT_SPECS_COEFFICIENTS = {
-      -> { ENV['CI'] } => 1,
+      -> { ENV.fetch('CI', false) } => 1,
       -> { RUBY_PLATFORM == 'java' } => 1,
       -> { Gem::Platform.local.os == 'darwin' } => 1
     }.freeze
