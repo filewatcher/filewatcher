@@ -28,7 +28,6 @@ describe Filewatcher do
 
   let(:filename) { 'tmp_file.txt' }
   let(:action) { :update }
-  let(:directory) { false }
   ## TODO: Check its needless
   let(:every) { false }
   let(:immediate) { false }
@@ -41,8 +40,7 @@ describe Filewatcher do
 
   let(:watch_run) do
     Filewatcher::SpecHelper::RubyWatchRun.new(
-      filename: filename, filewatcher: filewatcher, action: action,
-      directory: directory
+      filename: filename, filewatcher: filewatcher, action: action
     )
   end
 
@@ -189,8 +187,7 @@ describe Filewatcher do
 
       context 'when there are new subdirectories' do
         let(:filename) { 'new_sub_directory' }
-        let(:directory) { true }
-        let(:action) { :create }
+        let(:action) { :create_dir }
 
         it { is_expected.to eq [{ watch_run.filename => :created }] }
       end
