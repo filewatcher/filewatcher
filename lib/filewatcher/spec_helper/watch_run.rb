@@ -59,7 +59,7 @@ class Filewatcher
       def make_changes
         debug "make changes, @action = #{@action}, @filename = #{@filename}"
 
-        action = ACTIONS.fetch(@action) { raise "Unknown action `#{@action}`" }
+        action = self.class::ACTIONS.fetch(@action) { raise "Unknown action `#{@action}`" }
 
         instance_exec(&action)
 
