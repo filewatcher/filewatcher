@@ -2,8 +2,8 @@
 
 class Filewatcher
   module SpecHelper
-    ## Base class for Filewatcher runners in specs
-    class WatchRun
+    ## Base module for Filewatcher runners in specs
+    module WatchRun
       include Filewatcher::SpecHelper
 
       TMP_DIR = "#{Dir.getwd}/spec/tmp"
