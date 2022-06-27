@@ -9,6 +9,7 @@ rescue LoadError
 end
 
 require_relative 'spec_helper/watch_run'
+require_relative 'spec_helper/ruby_watch_run'
 
 class Filewatcher
   ## Helper for common spec features between plugins

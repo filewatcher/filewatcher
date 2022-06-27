@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'watch_run'
+
 class Filewatcher
   module SpecHelper
     class RubyWatchRun < WatchRun
