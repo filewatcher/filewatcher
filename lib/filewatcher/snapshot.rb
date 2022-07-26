@@ -30,30 +30,53 @@ class Filewatcher
 
     # Class for one file from snapshot
     class SnapshotFile
-      STATS = %i[mtime].freeze
+      class << self
+        def stats
+          @stats ||= populate_stats %i[mtime]
+        end
 
-      attr_reader(*STATS)
+        def populate_stats(stats)
+          defined?(super) ? super(stats) : stats
+        end
+
+        def subtractions
+          @subtractions ||= populate_subtractions(
+            created: ->(other) { other.nil? },
+            updated: ->(other) { mtime && mtime > other.mtime }
+          )
+        end
+
+        def populate_subtractions(hash)
+          hash = super(hash) if defined?(super)
+          hash
+        end
+      end
+
+      attr_reader :mtime
 
       def initialize(filename)
         @filename = filename
-        STATS.each do |stat|
+        self.class.stats.each do |stat|
           time = File.public_send(stat, filename) if File.exist?(filename)
           instance_variable_set :"@#{stat}", time || Time.new(0)
         end
       end
 
       def -(other)
-        if other.nil?
-          :created
-        elsif other.mtime < mtime
-          :updated
-        end
+        self.class.subtractions.find do |_event, block|
+          instance_exec(other, &block)
+        end&.first
       end
 
       def inspect
+        stats_string =
+          self.class.stats
+            .map { |stat| "#{stat}=#{public_send(stat)&.strftime('%F %T.%9N')&.inspect}" }
+            .join(', ')
+
         <<~OUTPUT
           #<Filewatcher::Snapshot::SnapshotFile:#{object_id}
-            @filename=#{@filename.inspect}, mtime=#{mtime.strftime('%F %T.%9N').inspect}
+            @filename=#{@filename.inspect}, #{stats_string}
           >
         OUTPUT
       end
