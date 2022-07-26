@@ -121,10 +121,11 @@ test_task:
         ## It's better to pre-define here instead of `refreshenv`:
         ## https://cirrus-ci.org/guide/windows/#environment-variables
         RUBY_PATH: C:\tools\ruby
-        PATH: $RUBY_PATH\bin;$PATH
+        MSYS2_PATH: C:\tools\msys2
+        PATH: $MSYS2_PATH;$RUBY_PATH\bin;$PATH
 
       ruby_cache:
-        folder: $RUBY_PATH
+        folder: C:\tools
         fingerprint_script:
           - echo $CIRRUS_OS
           ## `--limit-output` to try rid off extra information and avoid cache miss:
@@ -134,9 +135,19 @@ test_task:
           ## Cirrus CI has Chocolatey pre-installed 😍:
           ## https://cirrus-ci.org/guide/windows/#chocolatey
 
+          ## https://community.chocolatey.org/packages/ruby#notes
+          - choco install msys2 -y --no-progress --params "/NoPath /InstallDir:%MSYS2_PATH%"
+
           ## Install the latest Ruby with Chocolatey: https://community.chocolatey.org/packages/ruby
           ## But I don't know what to do with cache and new versions (`upgrade`?)
           - choco install ruby -y --no-progress --params "/NoPath /InstallDir:%RUBY_PATH%"
+
+          ## ```
+          ## Installing json 2.6.2 with native extensions
+          ## MSYS2 could not be found. Please run 'ridk install'
+          ## or download and install MSYS2 manually from https://msys2.github.io/
+          ## ```
+          - ridk install 3
 
           - gem update --system --no-document
           - gem install bundler --no-document
