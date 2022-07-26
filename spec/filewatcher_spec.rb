@@ -28,7 +28,6 @@ describe Filewatcher do
 
   let(:filename) { 'tmp_file.txt' }
   let(:action) { :update }
-  let(:directory) { false }
   ## TODO: Check its needless
   let(:every) { false }
   let(:immediate) { false }
@@ -41,8 +40,7 @@ describe Filewatcher do
 
   let(:watch_run) do
     Filewatcher::SpecHelper::RubyWatchRun.new(
-      filename: filename, filewatcher: filewatcher, action: action,
-      directory: directory
+      filename: filename, filewatcher: filewatcher, action: action
     )
   end
 
@@ -146,52 +144,59 @@ describe Filewatcher do
   end
 
   describe '#watch' do
-    before do
-      FileUtils.mkdir_p subdirectory if defined? subdirectory
+    context 'when action is known' do
+      before do
+        FileUtils.mkdir_p subdirectory if defined? subdirectory
 
-      watch_run.run
-    end
+        watch_run.run
+      end
 
-    describe 'detecting file deletions' do
-      let(:action) { :delete }
+      context 'when there are file deletions' do
+        let(:action) { :delete }
 
-      it { is_expected.to eq [{ watch_run.filename => :deleted }] }
-    end
+        it { is_expected.to eq [{ watch_run.filename => :deleted }] }
+      end
 
-    context 'when there are file additions' do
-      let(:action) { :create }
+      context 'when there are file additions' do
+        let(:action) { :create }
 
-      it { is_expected.to eq [{ watch_run.filename => :created }] }
-    end
+        it { is_expected.to eq [{ watch_run.filename => :created }] }
+      end
 
-    context 'when there are file updates' do
-      let(:action) { :update }
+      context 'when there are file updates' do
+        let(:action) { :update }
 
-      it { is_expected.to eq [{ watch_run.filename => :updated }] }
-    end
+        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+      end
 
-    context 'when there are new files in subdirectories' do
-      let(:subdirectory) { File.expand_path('spec/tmp/new_sub_directory') }
+      context 'when there are new files in subdirectories' do
+        let(:subdirectory) { File.expand_path('spec/tmp/new_sub_directory') }
 
-      let(:filename) { File.join(subdirectory, 'file.txt') }
-      let(:action) { :create }
-      let(:every) { true }
-      ## https://github.com/filewatcher/filewatcher/pull/115#issuecomment-674581595
-      let(:interval) { 0.4 }
+        let(:filename) { File.join(subdirectory, 'file.txt') }
+        let(:action) { :create }
+        let(:every) { true }
+        ## https://github.com/filewatcher/filewatcher/pull/115#issuecomment-674581595
+        let(:interval) { 0.4 }
 
-      it do
-        expect(processed).to eq [
-          { subdirectory => :updated, watch_run.filename => :created }
-        ]
+        it do
+          expect(processed).to eq [
+            { subdirectory => :updated, watch_run.filename => :created }
+          ]
+        end
+      end
+
+      context 'when there are new subdirectories' do
+        let(:filename) { 'new_sub_directory' }
+        let(:action) { :create_dir }
+
+        it { is_expected.to eq [{ watch_run.filename => :created }] }
       end
     end
 
-    context 'when there are new subdirectories' do
-      let(:filename) { 'new_sub_directory' }
-      let(:directory) { true }
-      let(:action) { :create }
+    context 'when action is unknown' do
+      let(:action) { :foo }
 
-      it { is_expected.to eq [{ watch_run.filename => :created }] }
+      specify { expect { watch_run.run }.to raise_error(RuntimeError, 'Unknown action `foo`') }
     end
   end
 

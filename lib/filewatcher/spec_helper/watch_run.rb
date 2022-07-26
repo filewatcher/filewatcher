@@ -2,24 +2,23 @@
 
 class Filewatcher
   module SpecHelper
-    ## Base class for Filewatcher runners in specs
-    class WatchRun
+    ## Base module for Filewatcher runners in specs
+    module WatchRun
       include Filewatcher::SpecHelper
 
       TMP_DIR = "#{Dir.getwd}/spec/tmp"
 
       attr_reader :filename
 
-      def initialize(filename:, action:, directory:)
+      def initialize(filename:, action:)
         @filename = filename.match?(%r{^(/|~|[A-Z]:)}) ? filename : File.join(TMP_DIR, filename)
-        @directory = directory
         @action = action
         debug "action = #{action}"
       end
 
       def start
         debug 'start'
-        File.write(@filename, 'content1') unless @action == :create
+        File.write(@filename, 'content1') unless %i[create create_dir].include? @action
 
         wait seconds: 1
       end
@@ -43,19 +42,26 @@ class Filewatcher
 
       private
 
+      create_update_action = lambda do
+        ## There is no `File.write` because of strange difference in parallel `File.mtime`
+        ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
+        system "echo 'content2' > #{@filename}"
+        debug_file_mtime
+      end.freeze
+
+      ACTIONS = {
+        create: create_update_action,
+        update: create_update_action,
+        create_dir: -> { FileUtils.mkdir_p(@filename) },
+        delete: -> { FileUtils.remove(@filename) }
+      }.freeze
+
       def make_changes
         debug "make changes, @action = #{@action}, @filename = #{@filename}"
 
-        if @action == :delete
-          FileUtils.remove(@filename)
-        elsif @directory
-          FileUtils.mkdir_p(@filename)
-        else
-          ## There is no `File.write` because of strange difference in parallel `File.mtime`
-          ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
-          system "echo 'content2' > #{@filename}"
-          debug_file_mtime
-        end
+        action = self.class::ACTIONS.fetch(@action) { raise "Unknown action `#{@action}`" }
+
+        instance_exec(&action)
 
         wait seconds: 1
       end

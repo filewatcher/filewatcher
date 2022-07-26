@@ -4,7 +4,9 @@ require_relative 'watch_run'
 
 class Filewatcher
   module SpecHelper
-    class RubyWatchRun < WatchRun
+    class RubyWatchRun
+      include WatchRun
+
       attr_reader :filewatcher, :thread, :watched, :processed
 
       def initialize(filewatcher:, **args)
