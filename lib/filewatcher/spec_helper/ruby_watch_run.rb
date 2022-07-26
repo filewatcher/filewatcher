@@ -4,6 +4,7 @@ require_relative 'watch_run'
 
 class Filewatcher
   module SpecHelper
+    ## Ruby API watcher for specs
     class RubyWatchRun
       include WatchRun
 
