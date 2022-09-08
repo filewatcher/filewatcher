@@ -196,7 +196,9 @@ don't hesitate to [create a new issue](https://github.com/filewatcher/filewatche
 Official plugins:
 
 *   [CLI](https://github.com/filewatcher/filewatcher-cli)
+*   [Matrix](https://github.com/filewatcher/filewatcher-matrix)
 *   [Spinner](https://github.com/filewatcher/filewatcher-spinner)
+*   [Access](https://github.com/filewatcher/filewatcher-access)
 
 ## Changelog
 
