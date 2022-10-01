@@ -75,7 +75,7 @@ class Filewatcher
       CHANGES = {
         create: create_update_action,
         update: create_update_action,
-        create_dir: ->(change_file, *_args) { p change_file; FileUtils.mkdir_p(change_file) },
+        create_dir: ->(change_file, *_args) { FileUtils.mkdir_p(change_file) },
         delete: ->(change_file, *_args) { FileUtils.remove(change_file) }
       }.freeze
 
