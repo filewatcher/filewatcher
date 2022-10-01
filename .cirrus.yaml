@@ -10,6 +10,18 @@ unix_bundle_cache: &unix_bundle_cache
     - bundle config set --local path 'vendor/bundle'
     - bundle update
 
+unix_codecov: &unix_codecov
+  codecov_uploader_cache:
+    folder: codecov
+    fingerprint_script:
+      - curl -Os https://uploader.codecov.io/latest/${CODECOV_OS}/codecov.SHA256SUM
+    populate_script:
+      - mkdir -p codecov
+      - curl -s https://uploader.codecov.io/latest/${CODECOV_OS}/codecov -o codecov/uploader
+      - chmod +x codecov/uploader
+
+  codecov_script: codecov/uploader
+
 env:
   ## To suppress flood of warnings:
   ## https://github.com/cirruslabs/cirrus-ci-docs/issues/814
@@ -71,13 +83,25 @@ test_task:
           image: ruby:3.0
           image: ruby:3.1
           image: jruby:latest
+
+      env:
+        CODECOV_OS: linux
+
       os_prepare_script:
         - gem update --system --no-document
         - gem install bundler --no-document
+
       <<: *unix_bundle_cache
+
+      test_script: bundle exec rspec
+
+      <<: *unix_codecov
 
     - container:
         image: ghcr.io/graalvm/truffleruby:latest
+
+      env:
+        CODECOV_OS: linux
 
       os_prepare_script:
         ## For `gem install`: https://github.com/graalvm/container/issues/9
@@ -88,12 +112,17 @@ test_task:
 
       <<: *unix_bundle_cache
 
+      test_script: bundle exec rspec
+
+      <<: *unix_codecov
+
     - macos_instance:
         image: monterey-base
 
       env:
         RUBY_PATH: "/usr/local/opt/ruby"
         PATH: "$RUBY_PATH/bin:$PATH"
+        CODECOV_OS: macos
 
       ruby_cache:
         folder: $RUBY_PATH
@@ -110,6 +139,10 @@ test_task:
           - gem install bundler --no-document
 
       <<: *unix_bundle_cache
+
+      test_script: bundle exec rspec
+
+      <<: *unix_codecov
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
@@ -161,18 +194,17 @@ test_task:
         - bundle config set --local path 'vendor/bundle'
         - bundle update
 
-  test_script: bundle exec rspec
+      test_script: bundle exec rspec
 
-  codecov_uploader_cache:
-    folder: codecov
-    fingerprint_script:
-      - curl --no-progress-meter https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
-    populate_script:
-      - mkdir -p codecov
-      - curl https://uploader.codecov.io/latest/linux/codecov -o codecov/uploader
-      - chmod +x codecov/uploader
+      codecov_uploader_cache:
+        folder: codecov
+        fingerprint_script:
+          - Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM
+        populate_script:
+          - mkdir -p codecov
+          - Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov/uploader.exe
 
-  codecov_script: codecov/uploader
+      codecov_script: .\codecov\uploader.exe
 
   only_if: ($CIRRUS_BRANCH == 'main') ||
     changesInclude(
