@@ -12,7 +12,7 @@ describe Filewatcher do
 
   after do
     logger.debug "FileUtils.rm_r #{tmp_dir}"
-    FileUtils.rm_r tmp_dir
+    FileUtils.rm_r tmp_dir if File.exist?(tmp_dir)
 
     Filewatcher::SpecHelper.wait seconds: 5, interval: 0.2 do
       !File.exist?(tmp_dir)
@@ -23,24 +23,45 @@ describe Filewatcher do
     described_class.new(path, options.merge(logger: logger))
   end
 
+  def transform_spec_files(file)
+    ruby_watch_run_class.transform_spec_files(file)
+  end
+
   let(:tmp_dir) { Filewatcher::SpecHelper::WatchRun::TMP_DIR }
   let(:logger) { Filewatcher::SpecHelper.logger }
 
-  let(:filename) { 'tmp_file.txt' }
-  let(:action) { :update }
+  let(:raw_file_name) { 'tmp_file.txt' }
+  let(:initial_files) { { raw_file_name => {} } }
+
+  let(:change_event) { :update }
+  let(:change_directory) { false }
+
+  let(:changes) do
+    files = Array(initial_files.keys)
+    files << raw_file_name if files.empty?
+    files.to_h do |file|
+      [transform_spec_files(file), { event: change_event, directory: change_directory }]
+    end
+  end
+
+  let(:result_transformed_filename) do
+    transform_spec_files(initial_files.any? ? initial_files.keys.first : raw_file_name)
+  end
+
+  let(:ruby_watch_run_class) { Filewatcher::SpecHelper::RubyWatchRun }
+
   ## TODO: Check its needless
   let(:every) { false }
   let(:immediate) { false }
   let(:interval) { 0.2 }
+  let(:filewatcher_files) { File.expand_path('spec/tmp/**/*') }
   let(:filewatcher) do
-    initialize_filewatcher(
-      File.join(tmp_dir, '**', '*'), interval: interval, every: every, immediate: immediate
-    )
+    initialize_filewatcher filewatcher_files, interval: interval, every: every, immediate: immediate
   end
 
   let(:watch_run) do
-    Filewatcher::SpecHelper::RubyWatchRun.new(
-      filename: filename, filewatcher: filewatcher, action: action
+    ruby_watch_run_class.new(
+      initial_files: initial_files, filewatcher: filewatcher, changes: changes
     )
   end
 
@@ -66,7 +87,7 @@ describe Filewatcher do
       context 'with excluding selected file patterns' do
         let(:filewatcher) do
           initialize_filewatcher(
-            File.expand_path('spec/tmp/**/*'),
+            filewatcher_files,
             exclude: File.expand_path('spec/tmp/**/*.txt')
           )
         end
@@ -75,39 +96,34 @@ describe Filewatcher do
       end
 
       context 'with absolute paths including globs' do
-        let(:filewatcher) do
-          initialize_filewatcher(
-            File.expand_path('spec/tmp/**/*')
-          )
-        end
+        let(:filewatcher_files) { File.expand_path('spec/tmp/**/*') }
 
-        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+        it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with globs' do
-        let(:filewatcher) { initialize_filewatcher('spec/tmp/**/*') }
+        let(:filewatcher_files) { 'spec/tmp/**/*' }
 
-        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+        it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with explicit relative paths with globs' do
-        let(:filewatcher) { initialize_filewatcher('./spec/tmp/**/*') }
+        let(:filewatcher_files) { './spec/tmp/**/*' }
 
-        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+        it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with explicit relative paths' do
-        let(:filewatcher) { initialize_filewatcher('./spec/tmp') }
+        let(:filewatcher_files) { './spec/tmp' }
 
-        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+        it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with tilde expansion' do
-        let(:filename) { File.expand_path('~/file_watcher_1.txt') }
+        let(:filewatcher_files) { '~/file_watcher_1.txt' }
+        let(:raw_file_name) { '~/file_watcher_1.txt' }
 
-        let(:filewatcher) { initialize_filewatcher('~/file_watcher_1.txt') }
-
-        it { is_expected.to eq [{ filename => :updated }] }
+        it { is_expected.to eq [{ File.expand_path(raw_file_name) => :updated }] }
       end
     end
 
@@ -152,51 +168,56 @@ describe Filewatcher do
       end
 
       context 'when there are file deletions' do
-        let(:action) { :delete }
+        let(:change_event) { :delete }
 
-        it { is_expected.to eq [{ watch_run.filename => :deleted }] }
+        it { is_expected.to eq [{ result_transformed_filename => :deleted }] }
       end
 
       context 'when there are file additions' do
-        let(:action) { :create }
+        let(:initial_files) { {} }
+        let(:changes) { { result_transformed_filename => { event: :create } } }
 
-        it { is_expected.to eq [{ watch_run.filename => :created }] }
+        it { is_expected.to eq [{ result_transformed_filename => :created }] }
       end
 
       context 'when there are file updates' do
-        let(:action) { :update }
+        let(:change_event) { :update }
 
-        it { is_expected.to eq [{ watch_run.filename => :updated }] }
+        it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'when there are new files in subdirectories' do
         let(:subdirectory) { File.expand_path('spec/tmp/new_sub_directory') }
 
-        let(:filename) { File.join(subdirectory, 'file.txt') }
-        let(:action) { :create }
+        let(:initial_files) { {} }
+        let(:created_filename) { File.join(subdirectory, 'file.txt') }
+        let(:changes) { { created_filename => { event: :create } } }
+
         let(:every) { true }
         ## https://github.com/filewatcher/filewatcher/pull/115#issuecomment-674581595
         let(:interval) { 0.4 }
 
         it do
           expect(processed).to eq [
-            { subdirectory => :updated, watch_run.filename => :created }
+            { subdirectory => :updated, created_filename => :created }
           ]
         end
       end
 
       context 'when there are new subdirectories' do
-        let(:filename) { 'new_sub_directory' }
-        let(:action) { :create_dir }
+        let(:initial_files) { {} }
+        let(:raw_file_name) { 'new_sub_directory' }
+        let(:change_event) { :create }
+        let(:change_directory) { true }
 
-        it { is_expected.to eq [{ watch_run.filename => :created }] }
+        it { is_expected.to eq [{ result_transformed_filename => :created }] }
       end
     end
 
     context 'when action is unknown' do
-      let(:action) { :foo }
+      let(:change_event) { :foo }
 
-      specify { expect { watch_run.run }.to raise_error(RuntimeError, 'Unknown action `foo`') }
+      specify { expect { watch_run.run }.to raise_error(RuntimeError, 'Unknown change `foo`') }
     end
   end
 

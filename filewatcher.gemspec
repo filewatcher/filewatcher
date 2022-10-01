@@ -23,6 +23,8 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.6', '< 4'
 
+  s.add_runtime_dependency 'module_methods', '~> 0.1.0'
+
   s.add_development_dependency 'bundler', '~> 2.0'
   s.add_development_dependency 'bundler-audit', '~> 0.9.0'
 
