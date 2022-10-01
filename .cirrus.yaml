@@ -164,10 +164,18 @@ test_task:
         - bundle config set --local path 'vendor/bundle'
         - bundle update
 
-  environment:
-    CODECOV_TOKEN: ENCRYPTED[9e9a017610883a646df003ae290b6cd3306cd44a3f545dedd258d12e6e41788a66149b9a8f80c62923d225eef6f9190d]
-
   test_script: bundle exec rspec
+
+  codecov_uploader_cache:
+    folder: codecov
+    fingerprint_script:
+      - curl --no-progress-meter https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+    populate_script:
+      - mkdir -p codecov
+      - curl https://uploader.codecov.io/latest/linux/codecov -o codecov/uploader
+      - chmod +x codecov/uploader
+
+  codecov_script: codecov/uploader
 
   only_if: ($CIRRUS_BRANCH == 'main') ||
     changesInclude(
