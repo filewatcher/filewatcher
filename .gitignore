@@ -6,8 +6,7 @@
 /node_modules/
 /package-lock.json
 /yarn.lock
-/coverage/
 
+/coverage/
 /test/
-
-/coverage/
+/spec/examples.txt

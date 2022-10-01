@@ -11,6 +11,10 @@ SimpleCov.start
 
 require_relative '../lib/filewatcher/spec_helper'
 
+RSpec.configure do |config|
+  config.example_status_persistence_file_path = "#{__dir__}/examples.txt"
+end
+
 ## For case when required from dumpers
 if Object.const_defined?(:RSpec)
   RSpec::Matchers.define :include_all_files do |expected|
