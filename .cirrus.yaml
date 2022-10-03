@@ -200,10 +200,10 @@ test_task:
       codecov_uploader_cache:
         folder: codecov
         fingerprint_script:
-          - Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM
+          - Invoke-WebRequest -UseBasicParsing -Uri https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM
         populate_script:
           - mkdir -p codecov
-          - Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov/uploader.exe
+          - Invoke-WebRequest -UseBasicParsing -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov/uploader.exe
 
       codecov_script: .\codecov\uploader.exe
 
