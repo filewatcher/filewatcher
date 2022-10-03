@@ -153,6 +153,7 @@ test_task:
         RUBY_PATH: C:\tools\ruby
         MSYS2_PATH: C:\tools\msys2
         PATH: $MSYS2_PATH;$RUBY_PATH\bin;$PATH
+        CIRRUS_SHELL: powershell
 
       ruby_cache:
         folder: C:\tools
