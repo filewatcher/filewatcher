@@ -35,6 +35,9 @@ Metrics/BlockLength:
     - '*.gemspec'
     - spec/**/*.rb
 
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
 AllCops:
   TargetRubyVersion: 2.6
   NewCops: enable

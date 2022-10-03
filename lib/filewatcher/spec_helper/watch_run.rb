@@ -65,6 +65,8 @@ class Filewatcher
       create_update_action = lambda do |change_file, change_data|
         new_content = change_data.fetch(:content, 'content2')
 
+        FileUtils.mkdir_p File.dirname(change_file)
+
         ## There is no `File.write` because of strange difference in parallel `File.mtime`
         ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
         system "echo '#{new_content}' > #{change_file}"

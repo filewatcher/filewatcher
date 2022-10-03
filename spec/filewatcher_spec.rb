@@ -125,6 +125,36 @@ describe Filewatcher do
 
         it { is_expected.to eq [{ raw_file_name => :updated }] }
       end
+
+      context 'with Array of paths' do
+        let(:file_1) { 'tmp_file_1.txt' }
+        let(:subdir) { 'subdir' }
+        let(:file_2) { "#{subdir}/tmp_file_2.txt" }
+
+        let(:filewatcher_files) { ["spec/tmp/#{file_1}", "spec/tmp/#{subdir}"] }
+
+        let(:initial_files) do
+          {
+            file_1 => {}
+          }
+        end
+
+        let(:changes) do
+          {
+            **initial_files.to_h { |key, _value| [transform_spec_files(key), { event: :update }] },
+            transform_spec_files(file_2) => { event: :create }
+          }
+        end
+
+        let(:expected_changes) do
+          [
+            **initial_files.to_h { |key, _value| [transform_spec_files(key), :updated] },
+            transform_spec_files(file_2) => :created
+          ]
+        end
+
+        it { is_expected.to eq expected_changes }
+      end
     end
 
     describe '`:immediate` option' do
