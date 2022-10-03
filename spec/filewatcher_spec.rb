@@ -121,9 +121,9 @@ describe Filewatcher do
 
       context 'with tilde expansion' do
         let(:filewatcher_files) { '~/file_watcher_1.txt' }
-        let(:raw_file_name) { '~/file_watcher_1.txt' }
+        let(:raw_file_name) { File.expand_path('~/file_watcher_1.txt') }
 
-        it { is_expected.to eq [{ File.expand_path(raw_file_name) => :updated }] }
+        it { is_expected.to eq [{ raw_file_name => :updated }] }
       end
     end
 
