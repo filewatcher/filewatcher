@@ -153,7 +153,7 @@ describe Filewatcher do
           ]
         end
 
-        it { is_expected.to eq expected_changes }
+        it { is_expected.to contain_exactly(*expected_changes) }
       end
     end
 
