@@ -140,20 +140,22 @@ describe Filewatcher do
         end
 
         let(:changes) do
-          {
-            **initial_files.to_h { |key, _value| [transform_spec_files(key), { event: :update }] },
-            transform_spec_files(file_2) => { event: :create }
-          }
+          initial_files.to_h { |key, _value| [transform_spec_files(key), { event: :update }] }
+            .merge(
+              transform_spec_files(file_2) => { event: :create }
+            )
         end
 
         let(:expected_changes) do
           [
-            **initial_files.to_h { |key, _value| [transform_spec_files(key), :updated] },
-            transform_spec_files(file_2) => :created
+            initial_files.to_h { |key, _value| [transform_spec_files(key), :updated] }
+              .merge(
+                transform_spec_files(file_2) => :created
+              )
           ]
         end
 
-        it { is_expected.to contain_exactly(*expected_changes) }
+        it { is_expected.to eq expected_changes }
       end
     end
 
