@@ -150,12 +150,25 @@ describe Filewatcher do
           [
             initial_files.to_h { |key, _value| [transform_spec_files(key), :updated] }
               .merge(
-                transform_spec_files(file_2) => :created
+                expected_file_2_change
               )
           ]
         end
 
-        it { is_expected.to eq expected_changes }
+        let(:expected_file_2_change) do
+          {
+            transform_spec_files(file_2) => :created
+          }
+        end
+
+        specify do
+          ## For case when changes detected separately, in CI for example, probably just slowly
+          expect(processed).to eq(expected_changes)
+            .or contain_exactly(
+              *initial_files.map { |key, _value| { transform_spec_files(key) => :updated } },
+              expected_file_2_change
+            )
+        end
       end
     end
 
