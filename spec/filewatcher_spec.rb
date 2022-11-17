@@ -6,10 +6,6 @@ require_relative '../lib/filewatcher'
 describe Filewatcher do
   subject(:processed) { watch_run.processed }
 
-  before do
-    FileUtils.mkdir_p tmp_dir
-  end
-
   after do
     logger.debug "FileUtils.rm_r #{tmp_dir}"
     FileUtils.rm_r tmp_dir if File.exist?(tmp_dir)
@@ -27,7 +23,10 @@ describe Filewatcher do
     ruby_watch_run_class.transform_spec_files(file)
   end
 
-  let(:tmp_dir) { Filewatcher::SpecHelper::WatchRun::TMP_DIR }
+  let(:ruby_watch_run_class) { Filewatcher::SpecHelper::RubyWatchRun }
+
+  let(:tmp_dir) { ruby_watch_run_class::TMP_DIR }
+  let(:tmp_files_dir) { ruby_watch_run_class::TMP_FILES_DIR }
   let(:logger) { Filewatcher::SpecHelper.logger }
 
   let(:raw_file_name) { 'tmp_file.txt' }
@@ -48,13 +47,11 @@ describe Filewatcher do
     transform_spec_files(initial_files.any? ? initial_files.keys.first : raw_file_name)
   end
 
-  let(:ruby_watch_run_class) { Filewatcher::SpecHelper::RubyWatchRun }
-
   ## TODO: Check its needless
   let(:every) { false }
   let(:immediate) { false }
   let(:interval) { 0.2 }
-  let(:filewatcher_files) { File.expand_path('spec/tmp/**/*') }
+  let(:filewatcher_files) { File.expand_path("#{tmp_files_dir}/**/*") }
   let(:filewatcher) do
     initialize_filewatcher filewatcher_files, interval: interval, every: every, immediate: immediate
   end
@@ -88,7 +85,7 @@ describe Filewatcher do
         let(:filewatcher) do
           initialize_filewatcher(
             filewatcher_files,
-            exclude: File.expand_path('spec/tmp/**/*.txt')
+            exclude: File.expand_path("#{tmp_files_dir}/**/*.txt")
           )
         end
 
@@ -96,25 +93,25 @@ describe Filewatcher do
       end
 
       context 'with absolute paths including globs' do
-        let(:filewatcher_files) { File.expand_path('spec/tmp/**/*') }
+        let(:filewatcher_files) { File.expand_path("#{tmp_files_dir}/**/*") }
 
         it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with globs' do
-        let(:filewatcher_files) { 'spec/tmp/**/*' }
+        let(:filewatcher_files) { "#{tmp_files_dir}/**/*" }
 
         it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with explicit relative paths with globs' do
-        let(:filewatcher_files) { './spec/tmp/**/*' }
+        let(:filewatcher_files) { "./#{tmp_files_dir}/**/*" }
 
         it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
 
       context 'with explicit relative paths' do
-        let(:filewatcher_files) { './spec/tmp' }
+        let(:filewatcher_files) { "./#{tmp_files_dir}" }
 
         it { is_expected.to eq [{ result_transformed_filename => :updated }] }
       end
@@ -131,7 +128,7 @@ describe Filewatcher do
         let(:subdir) { 'subdir' }
         let(:file_2) { "#{subdir}/tmp_file_2.txt" }
 
-        let(:filewatcher_files) { ["spec/tmp/#{file_1}", "spec/tmp/#{subdir}"] }
+        let(:filewatcher_files) { ["#{tmp_files_dir}/#{file_1}", "#{tmp_files_dir}/#{subdir}"] }
 
         let(:initial_files) do
           {
@@ -232,7 +229,7 @@ describe Filewatcher do
       end
 
       context 'when there are new files in subdirectories' do
-        let(:subdirectory) { File.expand_path('spec/tmp/new_sub_directory') }
+        let(:subdirectory) { File.expand_path("#{tmp_files_dir}/new_sub_directory") }
 
         let(:initial_files) { {} }
         let(:created_filename) { File.join(subdirectory, 'file.txt') }
@@ -280,11 +277,10 @@ describe Filewatcher do
   def write_tmp_files(range)
     logger.debug "#{__method__} #{range}"
 
-    directory = 'spec/tmp'
-    FileUtils.mkdir_p directory
+    FileUtils.mkdir_p tmp_files_dir
 
     range.to_a.map do |n|
-      File.write(file = "#{directory}/file#{n}.txt", "content#{n}")
+      File.write(file = "#{tmp_files_dir}/file#{n}.txt", "content#{n}")
 
       Filewatcher::SpecHelper.wait seconds: 1
 

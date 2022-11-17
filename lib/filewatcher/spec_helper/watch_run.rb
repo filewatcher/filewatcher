@@ -10,14 +10,22 @@ class Filewatcher
 
       include Filewatcher::SpecHelper
 
-      TMP_DIR = "#{Dir.getwd}/spec/tmp"
+      TMP_DIR = 'spec/tmp'
+      ## It's requried to split modifying files from result files like CLI dumpers
+      TMP_FILES_DIR = "#{TMP_DIR}/files"
 
       attr_reader :initial_files
 
       ## Class methods for this and inherited modules
       module ClassMethods
         def transform_spec_files(file)
-          file.match?(%r{^(/|~|[A-Z]:)}) ? file : File.join(TMP_DIR, file)
+          tmp_files_dir = File.join(Dir.getwd, TMP_FILES_DIR)
+
+          return tmp_files_dir if file.to_s.empty?
+
+          return file if file.match?(%r{^(/|~|[A-Z]:)})
+
+          File.join(tmp_files_dir, file)
         end
       end
 
@@ -31,6 +39,9 @@ class Filewatcher
 
       def start
         debug 'start'
+
+        FileUtils.mkdir_p self.class::TMP_FILES_DIR
+
         initial_files.each do |initial_file_path, initial_file_data|
           File.write(
             File.expand_path(initial_file_path),
@@ -57,7 +68,7 @@ class Filewatcher
 
       def stop
         debug 'stop'
-        FileUtils.rm_r(self.class::TMP_DIR) if File.exist?(self.class::TMP_DIR)
+        FileUtils.rm_r(self.class::TMP_FILES_DIR) if File.exist?(self.class::TMP_FILES_DIR)
       end
 
       private
