@@ -142,7 +142,8 @@ test_task:
 
       test_script: bundle exec rspec
 
-      <<: *unix_codecov
+      ## https://github.com/codecov/uploader/issues/523#issuecomment-1318842102
+      # <<: *unix_codecov
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
