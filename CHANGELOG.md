@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 2.1.0 (2022-11-17)
+
+*   Improve documentation about existing plugins.
+*   Change specs to a new multi-pattern system.
+*   Update development dependencies.
+*   Upgrade Codecov uploader for tests coverage.
+*   Enable RSpec `--only-fail` feature.
+*   Resolve new RuboCop offenses.
+*   Improve Cirrus CI config.
+
 ## 2.0.0 (2022-09-09)
 
 *   Add plugin system.
