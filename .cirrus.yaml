@@ -117,7 +117,7 @@ test_task:
       <<: *unix_codecov
 
     - macos_instance:
-        image: monterey-base
+        image: ghcr.io/cirruslabs/macos-ventura-base:latest
 
       env:
         RUBY_PATH: "/usr/local/opt/ruby"
