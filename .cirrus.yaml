@@ -82,6 +82,7 @@ test_task:
           image: ruby:2.7
           image: ruby:3.0
           image: ruby:3.1
+          image: ruby:3.2
           image: jruby:latest
 
       env:
