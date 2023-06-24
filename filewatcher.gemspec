@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov-cobertura', '~> 2.1'
 
   ## https://github.com/rubocop/rubocop/issues/10147
-  s.add_development_dependency 'rubocop', '~> 1.50.0'
+  s.add_development_dependency 'rubocop', '~> 1.53.0'
   s.add_development_dependency 'rubocop-performance', '~> 1.5'
   s.add_development_dependency 'rubocop-rspec', '~> 2.0'
 end
