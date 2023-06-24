@@ -24,19 +24,4 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.7', '< 4'
 
   s.add_runtime_dependency 'module_methods', '~> 0.1.0'
-
-  s.add_development_dependency 'bundler', '~> 2.0'
-  s.add_development_dependency 'bundler-audit', '~> 0.9.0'
-
-  s.add_development_dependency 'gem_toys', '~> 0.12.1'
-  s.add_development_dependency 'toys', '~> 0.14.2'
-
-  s.add_development_dependency 'rspec', '~> 3.8'
-  s.add_development_dependency 'simplecov', '~> 0.21.0'
-  s.add_development_dependency 'simplecov-cobertura', '~> 2.1'
-
-  ## https://github.com/rubocop/rubocop/issues/10147
-  s.add_development_dependency 'rubocop', '~> 1.53.0'
-  s.add_development_dependency 'rubocop-performance', '~> 1.5'
-  s.add_development_dependency 'rubocop-rspec', '~> 2.0'
 end
