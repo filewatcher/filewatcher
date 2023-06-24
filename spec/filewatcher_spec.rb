@@ -124,22 +124,24 @@ describe Filewatcher do
       end
 
       context 'with Array of paths' do
-        let(:file_1) { 'tmp_file_1.txt' }
+        let(:initial_file) { 'tmp_initial_file.txt' }
         let(:subdir) { 'subdir' }
-        let(:file_2) { "#{subdir}/tmp_file_2.txt" }
+        let(:new_file) { "#{subdir}/tmp_new_file.txt" }
 
-        let(:filewatcher_files) { ["#{tmp_files_dir}/#{file_1}", "#{tmp_files_dir}/#{subdir}"] }
+        let(:filewatcher_files) do
+          ["#{tmp_files_dir}/#{initial_file}", "#{tmp_files_dir}/#{subdir}"]
+        end
 
         let(:initial_files) do
           {
-            file_1 => {}
+            initial_file => {}
           }
         end
 
         let(:changes) do
           initial_files.to_h { |key, _value| [transform_spec_files(key), { event: :update }] }
             .merge(
-              transform_spec_files(file_2) => { event: :create }
+              transform_spec_files(new_file) => { event: :create }
             )
         end
 
@@ -147,14 +149,14 @@ describe Filewatcher do
           [
             initial_files.to_h { |key, _value| [transform_spec_files(key), :updated] }
               .merge(
-                expected_file_2_change
+                expected_new_file_change
               )
           ]
         end
 
-        let(:expected_file_2_change) do
+        let(:expected_new_file_change) do
           {
-            transform_spec_files(file_2) => :created
+            transform_spec_files(new_file) => :created
           }
         end
 
@@ -163,7 +165,7 @@ describe Filewatcher do
           expect(processed).to eq(expected_changes)
             .or contain_exactly(
               *initial_files.map { |key, _value| { transform_spec_files(key) => :updated } },
-              expected_file_2_change
+              expected_new_file_change
             )
         end
       end
