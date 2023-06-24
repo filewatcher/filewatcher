@@ -39,7 +39,7 @@ Naming/VariableNumber:
   EnforcedStyle: snake_case
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   NewCops: enable
   Exclude:
     <% `git status --ignored --porcelain`.lines.grep(/^!! /).each do |path| %>
