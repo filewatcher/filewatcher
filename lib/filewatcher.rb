@@ -36,12 +36,16 @@ class Filewatcher
     after_initialize unexpanded_filenames, options
   end
 
-  def watch(&on_update)
+  def trap_signals
     ## The set of available signals depends on the OS
     ## Windows doesn't support `HUP` signal, for example
     (%w[HUP INT TERM] & Signal.list.keys).each do |signal|
       trap(signal) { exit }
-    end if @trap_interrupt
+    end
+  end
+
+  def watch(&on_update)
+    trap_signals if @trap_interrupt
 
     @on_update = on_update
     @keep_watching = true
