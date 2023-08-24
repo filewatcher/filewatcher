@@ -31,6 +31,7 @@ class Filewatcher
     @immediate = options[:immediate]
     @interval = options.fetch(:interval, 0.5)
     @logger = options.fetch(:logger, Logger.new($stdout, level: :info))
+    @trap_interrupt = options.fetch(:trap, true)
 
     after_initialize unexpanded_filenames, options
   end
@@ -40,7 +41,7 @@ class Filewatcher
     ## Windows doesn't support `HUP` signal, for example
     (%w[HUP INT TERM] & Signal.list.keys).each do |signal|
       trap(signal) { exit }
-    end
+    end if @trap_interrupt
 
     @on_update = on_update
     @keep_watching = true
