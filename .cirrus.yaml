@@ -83,30 +83,12 @@ test_task:
           image: ruby:3.1
           image: ruby:3.2
           image: jruby:latest
+          image: ghcr.io/graalvm/truffleruby-community:latest
 
       env:
         CODECOV_OS: linux
 
       os_prepare_script:
-        - gem update --system --no-document
-        - gem install bundler --no-document
-
-      <<: *unix_bundle_cache
-
-      test_script: bundle exec rspec
-
-      <<: *unix_codecov
-
-    - container:
-        image: ghcr.io/graalvm/truffleruby-community:latest
-
-      env:
-        CODECOV_OS: linux
-
-      os_prepare_script:
-        ## For `gem install`: https://github.com/graalvm/container/issues/9
-        - dnf install -y glibc-langpack-en
-
         - gem update --system --no-document
         - gem install bundler --no-document
 
