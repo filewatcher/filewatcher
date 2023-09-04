@@ -103,7 +103,7 @@ test_task:
       env:
         RUBY_PATH: "/usr/local/opt/ruby"
         PATH: "$RUBY_PATH/bin:$PATH"
-        CODECOV_OS: macos
+        CODECOV_OS: aarch64
 
       ruby_cache:
         folder: $RUBY_PATH
