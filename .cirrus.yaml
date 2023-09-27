@@ -123,7 +123,14 @@ test_task:
 
       test_script: bundle exec rspec
 
-      <<: *unix_codecov
+      # <<: *unix_codecov
+
+      codecov_script:
+        - mkdir -p codecov
+        - curl -s https://uploader.codecov.io/latest/aarch64/codecov -o codecov/uploader
+        - ls -lah codecov/
+        - chmod +x codecov/uploader
+        - codecov/uploader
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
