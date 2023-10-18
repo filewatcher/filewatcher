@@ -6,7 +6,7 @@ gemspec
 
 group :development do
   gem 'gem_toys', '~> 0.12.1'
-  gem 'toys', '~> 0.14.2'
+  gem 'toys', '~> 0.15.2'
 end
 
 group :audit do
