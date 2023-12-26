@@ -6,7 +6,7 @@ class Filewatcher
   # Class for snapshots of file system
   class Snapshot
     extend Forwardable
-    def_delegators :@data, :[], :each, :keys
+    def_delegators :@data, :[], :each, :each_key, :keys
 
     def initialize(filenames)
       @data = filenames.each_with_object({}) do |filename, data|
@@ -21,7 +21,7 @@ class Filewatcher
         changes[filename] = snapshot_file - other[filename]
       end
 
-      other.each do |filename, _snapshot_file|
+      other.each_key do |filename|
         changes[filename] = :deleted unless self[filename]
       end
 
