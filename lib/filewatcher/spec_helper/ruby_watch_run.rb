@@ -40,7 +40,7 @@ class Filewatcher
       end
 
       def wait(seconds: 1)
-        super seconds: seconds, interval: filewatcher.interval
+        super(seconds: seconds, interval: filewatcher.interval)
       end
 
       private
