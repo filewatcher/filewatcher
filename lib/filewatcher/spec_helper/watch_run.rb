@@ -12,7 +12,7 @@ class Filewatcher
 
       TMP_DIR = 'spec/tmp'
       ## It's requried to split modifying files from result files like CLI dumpers
-      TMP_FILES_DIR = "#{TMP_DIR}/files"
+      TMP_FILES_DIR = "#{TMP_DIR}/files".freeze
 
       attr_reader :initial_files
 
