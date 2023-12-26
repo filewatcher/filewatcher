@@ -10,7 +10,7 @@ unix_bundle_cache: &unix_bundle_cache
     - bundle config set --local path 'vendor/bundle'
     - bundle update
 
-unix_codecov: &unix_codecov
+unix_codecov_uploader_cache: &unix_codecov_uploader_cache
   codecov_uploader_cache:
     folder: codecov
     fingerprint_script:
@@ -19,6 +19,9 @@ unix_codecov: &unix_codecov
       - mkdir -p codecov
       - curl -s https://uploader.codecov.io/latest/${CODECOV_OS}/codecov -o codecov/uploader
       - chmod +x codecov/uploader
+
+unix_codecov: &unix_codecov
+  <<: *unix_codecov_uploader_cache
 
   codecov_script: codecov/uploader
 
@@ -127,14 +130,11 @@ test_task:
 
       test_script: bundle exec rspec
 
+      ## https://github.com/codecov/feedback/issues/141#issuecomment-1797830585
       # <<: *unix_codecov
+      <<: *unix_codecov_uploader_cache
 
-      codecov_script:
-        - mkdir -p codecov
-        - curl -s https://uploader.codecov.io/latest/aarch64/codecov -o codecov/uploader
-        - ls -lah codecov/
-        - chmod +x codecov/uploader
-        - arch -x86_64 codecov/uploader
+      codecov_script: arch -x86_64 codecov/uploader
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
