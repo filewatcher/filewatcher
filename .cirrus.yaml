@@ -122,7 +122,11 @@ test_task:
       env:
         RUBY_PATH: "/usr/local/opt/ruby"
         PATH: "$RUBY_PATH/bin:$PATH"
-        CODECOV_OS: aarch64
+        CODECOV_OS: macos
+
+      os_prepare_script:
+        ## https://github.com/codecov/feedback/issues/141#issuecomment-1797830585
+        softwareupdate --install-rosetta --agree-to-license
 
       ruby_cache:
         folder: $RUBY_PATH
@@ -149,7 +153,7 @@ test_task:
         - curl -s https://uploader.codecov.io/latest/aarch64/codecov -o codecov/uploader
         - ls -lah codecov/
         - chmod +x codecov/uploader
-        - codecov/uploader
+        - arch -x86_64 codecov/uploader
 
     - windows_container:
         image: cirrusci/windowsservercore:2019
