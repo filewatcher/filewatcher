@@ -5,8 +5,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'gem_toys', '~> 0.12.1'
-  gem 'toys', '~> 0.14.2'
+  gem 'gem_toys', '~> 0.13.0'
+  gem 'toys', '~> 0.15.3'
 end
 
 group :audit do
@@ -16,13 +16,13 @@ end
 
 group :test do
   gem 'rspec', '~> 3.8'
-  gem 'simplecov', '~> 0.21.0'
+  gem 'simplecov', '~> 0.22.0'
   gem 'simplecov-cobertura', '~> 2.1'
 end
 
 group :lint do
   ## https://github.com/rubocop/rubocop/issues/10147
-  gem 'rubocop', '~> 1.56.0'
+  gem 'rubocop', '~> 1.59.0'
   gem 'rubocop-performance', '~> 1.5'
   gem 'rubocop-rspec', '~> 2.0'
 end

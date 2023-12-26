@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true'
   }
 
-  s.required_ruby_version = '>= 2.7', '< 4'
+  s.required_ruby_version = '>= 3.0', '< 4'
 
   s.add_runtime_dependency 'module_methods', '~> 0.1.0'
 end
