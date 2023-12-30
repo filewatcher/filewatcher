@@ -14,7 +14,7 @@ unix_codecov_uploader_cache: &unix_codecov_uploader_cache
   codecov_uploader_cache:
     folder: codecov
     fingerprint_script:
-      - curl -Os https://uploader.codecov.io/latest/${CODECOV_OS}/codecov.SHA256SUM
+      - curl -s https://uploader.codecov.io/latest/${CODECOV_OS}/codecov.SHA256SUM
     populate_script:
       - mkdir -p codecov
       - curl -s https://uploader.codecov.io/latest/${CODECOV_OS}/codecov -o codecov/uploader
