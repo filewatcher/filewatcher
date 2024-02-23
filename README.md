@@ -239,4 +239,4 @@ make a git commit, a git tag, push them, build a gem, push the gem.
 
 ## Copyright
 
-Copyright (c) 2010 - 2018 Thomas Flemming. See LICENSE for details.
+Copyright (c) 2010 - 2024 Thomas Flemming. See LICENSE for details.
