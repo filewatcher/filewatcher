@@ -10,7 +10,7 @@ describe Filewatcher do
     logger.debug "FileUtils.rm_r #{tmp_dir}"
     FileUtils.rm_r tmp_dir if File.exist?(tmp_dir)
 
-    Filewatcher::SpecHelper.wait seconds: 5, interval: 0.2 do
+    described_class::SpecHelper.wait seconds: 5, interval: 0.2 do
       !File.exist?(tmp_dir)
     end
   end
@@ -23,11 +23,11 @@ describe Filewatcher do
     ruby_watch_run_class.transform_spec_files(file)
   end
 
-  let(:ruby_watch_run_class) { Filewatcher::SpecHelper::RubyWatchRun }
+  let(:ruby_watch_run_class) { described_class::SpecHelper::RubyWatchRun }
 
   let(:tmp_dir) { ruby_watch_run_class::TMP_DIR }
   let(:tmp_files_dir) { ruby_watch_run_class::TMP_FILES_DIR }
-  let(:logger) { Filewatcher::SpecHelper.logger }
+  let(:logger) { described_class::SpecHelper.logger }
 
   let(:raw_file_name) { 'tmp_file.txt' }
   let(:initial_files) { { raw_file_name => {} } }
@@ -68,7 +68,7 @@ describe Filewatcher do
     subject(:method_call) { described_class.print_version }
 
     let(:ruby_version_regexp) { '(j|truffle)?ruby \d+\.\d+\.\d+.*' }
-    let(:filewatcher_version_regexp) { "Filewatcher #{Filewatcher::VERSION}" }
+    let(:filewatcher_version_regexp) { "Filewatcher #{described_class::VERSION}" }
 
     it do
       expect { method_call }.to output(
@@ -300,7 +300,7 @@ describe Filewatcher do
       logger.debug 'filewatcher.pause'
       watch_run.filewatcher.pause
 
-      Filewatcher::SpecHelper.wait seconds: 1
+      described_class::SpecHelper.wait seconds: 1
 
       write_tmp_files 1..4
     end
