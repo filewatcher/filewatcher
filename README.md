@@ -164,6 +164,20 @@ Filewatcher.new(['**/*.*']).watch do |changes|
 end
 ```
 
+By default, Filewatcher calls `Kernel#exit` when the process receives a SIG_INT.
+You may change this behavior:
+
+```ruby
+filewatcher = Filewatcher.new('**/*', trap: false)
+trap('INT') { filewatcher.stop }
+filewatcher.watch do |changes|
+  p changes
+end
+
+# Hit ^C, and this line of code will be reached.
+puts 'Filewatcher stopped'
+```
+
 ### Plugins
 
 You can require plugins for Filewatcher, which extends core functionality.
