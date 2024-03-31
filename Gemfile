@@ -23,6 +23,6 @@ end
 group :lint do
   ## https://github.com/rubocop/rubocop/issues/10147
   gem 'rubocop', '~> 1.61.0'
-  gem 'rubocop-performance', '~> 1.20.2'
+  gem 'rubocop-performance', '~> 1.21.0'
   gem 'rubocop-rspec', '~> 2.27.0'
 end
