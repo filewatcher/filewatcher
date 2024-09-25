@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 3.0', '< 4'
 
-  s.add_runtime_dependency 'module_methods', '~> 0.1.0'
+  s.add_dependency 'module_methods', '~> 0.1.0'
 end

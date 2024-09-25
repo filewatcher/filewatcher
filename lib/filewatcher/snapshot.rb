@@ -36,18 +36,18 @@ class Filewatcher
         end
 
         def populate_stats(stats)
-          defined?(super) ? super(stats) : stats
+          defined?(super) ? super : stats
         end
 
         def subtractions
           @subtractions ||= populate_subtractions(
-            created: ->(other) { other.nil? },
+            created: lambda(&:nil?),
             updated: ->(other) { mtime && mtime > other.mtime }
           )
         end
 
         def populate_subtractions(hash)
-          hash = super(hash) if defined?(super)
+          hash = super if defined?(super)
           hash
         end
       end
