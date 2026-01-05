@@ -14,6 +14,25 @@ class Filewatcher
       ## It's requried to split modifying files from result files like CLI dumpers
       TMP_FILES_DIR = "#{TMP_DIR}/files".freeze
 
+      create_update_action = lambda do |change_file, change_data|
+        new_content = change_data.fetch(:content, 'content2')
+
+        FileUtils.mkdir_p File.dirname(change_file)
+
+        ## There is no `File.write` because of strange difference in parallel `File.mtime`
+        ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
+        system "echo '#{new_content}' > #{change_file}"
+
+        debug_file_mtime(change_file)
+      end.freeze
+
+      CHANGES = {
+        create: create_update_action,
+        update: create_update_action,
+        create_dir: ->(change_file, *_args) { FileUtils.mkdir_p(change_file) },
+        delete: ->(change_file, *_args) { FileUtils.remove(change_file) }
+      }.freeze
+
       attr_reader :initial_files
 
       ## Class methods for this and inherited modules
@@ -72,25 +91,6 @@ class Filewatcher
       end
 
       private
-
-      create_update_action = lambda do |change_file, change_data|
-        new_content = change_data.fetch(:content, 'content2')
-
-        FileUtils.mkdir_p File.dirname(change_file)
-
-        ## There is no `File.write` because of strange difference in parallel `File.mtime`
-        ## https://cirrus-ci.com/task/6107605053472768?command=test#L497-L511
-        system "echo '#{new_content}' > #{change_file}"
-
-        debug_file_mtime(change_file)
-      end.freeze
-
-      CHANGES = {
-        create: create_update_action,
-        update: create_update_action,
-        create_dir: ->(change_file, *_args) { FileUtils.mkdir_p(change_file) },
-        delete: ->(change_file, *_args) { FileUtils.remove(change_file) }
-      }.freeze
 
       def make_changes
         @changes.each do |change_file, change_data|

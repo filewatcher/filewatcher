@@ -6,6 +6,7 @@ class Filewatcher
   # Class for snapshots of file system
   class Snapshot
     extend Forwardable
+
     def_delegators :@data, :[], :each, :each_key, :keys
 
     def initialize(filenames)
