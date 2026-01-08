@@ -8,7 +8,7 @@ unix_bundle_cache: &unix_bundle_cache
       - cat *.gemspec
   bundle_install_script:
     - bundle config set --local path 'vendor/bundle'
-    - bundle update
+    - bundle update --all
 
 unix_codecov_uploader_cache: &unix_codecov_uploader_cache
   codecov_uploader_cache:
@@ -188,7 +188,7 @@ test_task:
 
       bundle_install_script:
         - bundle config set --local path 'vendor/bundle'
-        - bundle update
+        - bundle update --all
 
       test_script: bundle exec rspec
 
