@@ -86,6 +86,7 @@ test_task:
           image: ruby:3.2
           image: ruby:3.3
           image: ruby:3.4
+          image: ruby:4.0
           image: jruby:latest
           image: ghcr.io/graalvm/truffleruby-community:latest
 
