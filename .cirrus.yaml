@@ -94,6 +94,7 @@ test_task:
         CODECOV_OS: linux
 
       os_prepare_script:
+        - apt-get install -y build-essential
         - gem update --system --no-document
         - gem install bundler --no-document
 
