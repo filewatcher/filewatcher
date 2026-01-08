@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'lib/filewatcher'
 require_relative 'lib/filewatcher/version'
 
 Gem::Specification.new do |s|
