@@ -87,14 +87,12 @@ test_task:
           image: ruby:3.3
           image: ruby:3.4
           image: ruby:4.0
-          image: jruby:latest
           image: ghcr.io/graalvm/truffleruby-community:latest
 
       env:
         CODECOV_OS: linux
 
       os_prepare_script:
-        - apt-get install -y build-essential
         - gem update --system --no-document
         - gem install bundler --no-document
 
@@ -103,6 +101,24 @@ test_task:
       test_script: bundle exec rspec
 
       <<: *unix_codecov
+
+    - jruby_container:
+        image: jruby:latest
+
+        env:
+          CODECOV_OS: linux
+
+        os_prepare_script:
+          - apt-get update
+          - apt-get install -y build-essential
+          - gem update --system --no-document
+          - gem install bundler --no-document
+
+        <<: *unix_bundle_cache
+
+        test_script: bundle exec rspec
+
+        <<: *unix_codecov
 
     - macos_instance:
         image: ghcr.io/cirruslabs/macos-ventura-base:latest
