@@ -154,7 +154,7 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-ventura-base:latest
 
   env:
-    RUBY_PATH: "/usr/local/opt/ruby"
+    RUBY_PATH: "/opt/homebrew/opt/ruby"
     PATH: "$RUBY_PATH/bin:$PATH"
     CODECOV_OS: macos
 
