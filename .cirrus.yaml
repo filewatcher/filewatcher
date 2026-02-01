@@ -158,10 +158,6 @@ test_macos_task:
     PATH: "$RUBY_PATH/bin:$PATH"
     CODECOV_OS: macos
 
-  os_prepare_script:
-    ## https://github.com/codecov/feedback/issues/141#issuecomment-1797830585
-    softwareupdate --install-rosetta --agree-to-license
-
   ruby_cache:
     folder: $RUBY_PATH
     fingerprint_script:
