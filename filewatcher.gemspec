@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true'
   }
 
-  s.required_ruby_version = '>= 3.0', '< 5'
+  s.required_ruby_version = '>= 3.2', '< 5'
 
   s.add_dependency 'logger', '~> 1.7'
   s.add_dependency 'module_methods', '~> 0.1.0'
