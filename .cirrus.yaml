@@ -180,11 +180,7 @@ test_macos_task:
 
   test_script: bundle exec rspec
 
-  ## https://github.com/codecov/feedback/issues/141#issuecomment-1797830585
-  # <<: *unix_codecov
-  <<: *unix_codecov_uploader_cache
-
-  codecov_script: arch -x86_64 codecov/uploader
+  <<: *unix_codecov
 
   only_if: *only_if_test_changes
 
