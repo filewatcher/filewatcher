@@ -151,7 +151,7 @@ test_macos_task:
   name: Test on macOS
 
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-base:latest
+    image: ghcr.io/cirruslabs/macos-runner:sonoma
 
   env:
     RUBY_PATH: "/opt/homebrew/opt/ruby"
