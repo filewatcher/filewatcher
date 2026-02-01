@@ -163,7 +163,7 @@ test_macos_task:
     folder: /opt/homebrew/Cellar/ruby
     fingerprint_script:
       - echo $CIRRUS_OS
-      - brew info ruby
+      - brew info --json=v2 ruby | jq -r '.formulae[0].versions.stable'
     populate_script:
       ## Brew is pre-installed, as described in the CI docs:
       ## https://cirrus-ci.org/guide/macOS/#list-of-available-images
