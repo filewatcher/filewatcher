@@ -43,7 +43,7 @@ class Filewatcher
       end
     end
 
-    def wait_with_block(seconds, interval, &_block)
+    def wait_with_block(seconds, interval, &)
       (seconds / interval).ceil.times do
         break if yield
 
