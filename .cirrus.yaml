@@ -154,8 +154,6 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-runner:sonoma
 
   env:
-    RUBY_PATH: "/opt/homebrew/opt/ruby"
-    PATH: "$RUBY_PATH/bin:$PATH"
     CODECOV_OS: macos
 
   ruby_cache:
