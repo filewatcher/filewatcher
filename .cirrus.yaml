@@ -195,7 +195,7 @@ test_windows_task:
     CIRRUS_SHELL: powershell
 
   ruby_cache:
-    folder: $Env:RUBY_PATH
+    folder: C:\tools\ruby
     fingerprint_script:
       - echo $Env:CIRRUS_OS
       ## `--limit-output` to try rid off extra information and avoid cache miss:
