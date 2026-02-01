@@ -159,7 +159,8 @@ test_macos_task:
     CODECOV_OS: macos
 
   ruby_cache:
-    folder: $RUBY_PATH
+    ## `/opt/homebrew/opt/ruby` is a symlink, and Cirrus CI can't cache it properly
+    folder: /opt/homebrew/Cellar/ruby
     fingerprint_script:
       - echo $CIRRUS_OS
       - brew info ruby
