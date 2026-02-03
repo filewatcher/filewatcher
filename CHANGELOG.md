@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 3.0.0 (2026-02-03)
+
+*   Drop Ruby 2.6, 2.7, 3.0 and 3.1 support.
+*   Add Ruby 3.2, 3.3, 3.4 and 4.0 support.
+*   Add `logger` dependency.
+    It's not bundled anymore.
+*   Move development dependencies from `gemspec` into `Gemfile`.
+*   Update development dependencies.
+*   Resolve new RuboCop offenses.
+*   Improve CI.
+
 ## 2.1.0 (2022-11-17)
 
 *   Improve documentation about existing plugins.
