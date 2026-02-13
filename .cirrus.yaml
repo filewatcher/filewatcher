@@ -25,8 +25,7 @@ unix_codecov: &unix_codecov
 only_if_test_changes: &only_if_test_changes
   ($CIRRUS_BRANCH == 'main') ||
   changesInclude(
-    '.cirrus.yaml', '.gitignore', 'Gemfile', 'Rakefile', '.rspec', '*.gemspec', 'lib/**', 'bin/**',
-    'spec/**'
+    '.cirrus.yaml', '.gitignore', 'Gemfile', '.toys.rb', '.rspec', '*.gemspec', 'lib/**', 'spec/**'
   )
 
 env:
@@ -75,8 +74,7 @@ rubocop_task:
   lint_script: bundle exec rubocop
   only_if: ($CIRRUS_BRANCH == 'main') ||
     changesInclude(
-      '.cirrus.yaml', '.gitignore', 'Gemfile', 'Rakefile', '.rubocop.yml', '*.gemspec', '**.rb',
-      'bin/**'
+      '.cirrus.yaml', '.gitignore', 'Gemfile', '.rubocop.yml', '*.gemspec', '**.rb'
     )
 
 test_mri_task:
