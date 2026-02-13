@@ -100,6 +100,8 @@ test_mri_task:
 
   <<: *unix_codecov
 
+  only_if: *only_if_test_changes
+
 test_jruby_task:
   name: Test on JRuby
 
