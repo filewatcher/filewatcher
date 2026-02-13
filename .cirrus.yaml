@@ -10,7 +10,7 @@ unix_bundle_cache: &unix_bundle_cache
     - bundle config set --local path 'vendor/bundle'
     - bundle update --all
 
-unix_codecov_uploader_cache: &unix_codecov_uploader_cache
+unix_codecov: &unix_codecov
   codecov_uploader_cache:
     folder: codecov
     fingerprint_script:
@@ -19,9 +19,6 @@ unix_codecov_uploader_cache: &unix_codecov_uploader_cache
       - mkdir -p codecov
       - curl -s https://uploader.codecov.io/latest/${CODECOV_OS}/codecov -o codecov/uploader
       - chmod +x codecov/uploader
-
-unix_codecov: &unix_codecov
-  <<: *unix_codecov_uploader_cache
 
   codecov_script: codecov/uploader
 
