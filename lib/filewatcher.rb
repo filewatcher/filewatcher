@@ -39,7 +39,12 @@ class Filewatcher
     ## The set of available signals depends on the OS
     ## Windows doesn't support `HUP` signal, for example
     (%w[HUP INT TERM] & Signal.list.keys).each do |signal|
-      trap(signal) { exit }
+      old_handler = Signal.trap(signal) do
+        if old_handler.respond_to?(:call)
+          old_handler.call
+        end
+        stop
+      end
     end
 
     @on_update = on_update
